@@ -52,15 +52,12 @@
         }
 
         .hidden { display: none !important; }
-
         .screen { animation: fadeIn 0.4s ease; }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ===== 通用头部 ===== */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -91,7 +88,6 @@
             filter: drop-shadow(0 3px 3px rgba(0,0,0,0.15));
         }
 
-        /* ===== 模式切换 ===== */
         .mode-switch {
             display: flex;
             background: #e0d5c0;
@@ -120,7 +116,6 @@
             box-shadow: 0 3px 8px rgba(0,0,0,0.15);
         }
 
-        /* ===== 首页统计 ===== */
         .home-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -226,7 +221,6 @@
             gap: 10px;
         }
 
-        /* ===== 关卡选择器 ===== */
         .level-picker {
             background: white;
             border-radius: 24px;
@@ -299,7 +293,6 @@
             border-left: 5px solid #2196f3;
         }
 
-        /* ===== 游戏界面 ===== */
         .level-bar {
             display: flex;
             justify-content: space-between;
@@ -412,7 +405,6 @@
             color: #8a7a6a;
         }
 
-        /* ===== 消消乐面板 ===== */
         .board-candy {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -460,6 +452,20 @@
             gap: 2px;
         }
 
+        .card-candy[data-type="image"] {
+            background: linear-gradient(145deg, #f3e5f5, #e1bee7);
+            border: 4px solid #ba68c8;
+            box-shadow: 0 8px 0 #8e24aa, 0 10px 15px rgba(0, 0, 0, 0.15),
+                        inset 0 -4px 0 #ce93d8, inset 0 4px 0 #f3e5f5;
+            font-size: 3rem;
+        }
+
+        .card-candy.decoy {
+            background: linear-gradient(145deg, #f0e0f8, #e1bee7);
+            border: 4px dashed #b39ddb;
+            box-shadow: 0 8px 0 #9575cd, 0 10px 15px rgba(0, 0, 0, 0.15);
+        }
+
         .card-candy .word-text {
             font-size: 1.3rem;
             font-weight: 800;
@@ -469,19 +475,6 @@
             word-break: break-all;
             text-align: center;
             letter-spacing: 0.3px;
-        }
-
-        .card-candy .ipa-text {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #e91e63;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 12px;
-            padding: 1px 8px;
-            line-height: 1.3;
-            white-space: nowrap;
-            border: 1px solid #f8bbd0;
-            margin-top: 2px;
         }
 
         .card-candy[data-type="word"]::after {
@@ -510,8 +503,7 @@
             pointer-events: none;
         }
 
-        .card-candy.eliminated .word-text,
-        .card-candy.eliminated .ipa-text {
+        .card-candy.eliminated .word-text {
             display: none;
         }
 
@@ -525,7 +517,6 @@
             bottom: auto !important;
         }
 
-        /* ===== 记忆闯关面板 ===== */
         .board-memory {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -617,7 +608,6 @@
             box-shadow: 0 0 0 #c9a53a;
         }
 
-        /* ===== 消息区和按钮 ===== */
         .message-area {
             min-height: 58px;
             text-align: center;
@@ -688,7 +678,6 @@
             text-shadow: 1px 1px 0 #4e342e;
         }
 
-        /* ===== 弹窗 ===== */
         .overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -803,7 +792,6 @@
             box-shadow: 0 3px 0 #ab8e6a;
         }
 
-        /* ===== 特效 ===== */
         .star-fall {
             position: fixed;
             font-size: 1.8rem;
@@ -851,7 +839,6 @@
             100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
         }
 
-        /* ===== 小屏幕 ===== */
         @media (max-width: 650px) {
             .game-wrapper { padding: 14px; }
             .main-title h1 { font-size: 1.3rem; }
@@ -862,8 +849,8 @@
             .board-candy { gap: 8px; }
             .card-candy[data-type="letter"] { font-size: 2.2rem; border-width: 3px; border-radius: 18px; }
             .card-candy[data-type="word"] { border-width: 3px; border-radius: 18px; padding: 4px 2px; }
+            .card-candy[data-type="image"] { font-size: 2.2rem; border-width: 3px; border-radius: 18px; }
             .card-candy .word-text { font-size: 1rem; }
-            .card-candy .ipa-text { font-size: 0.65rem; padding: 0 5px; }
             .board-memory { gap: 8px; }
             .card-memory .word-text { font-size: 0.95rem; }
             .card-memory .emoji { font-size: 2rem; }
@@ -893,11 +880,10 @@
 
     <div class="game-wrapper">
 
-        <!-- ========== 通用顶部：标题 + 模式切换 ========== -->
         <div class="top-bar">
             <div class="main-title">
-                <span class="title-emoji" id="mainEmoji">🎓</span>
-                <h1 id="mainTitle">趣味英语</h1>
+                <span class="title-emoji" id="mainEmoji">🧩</span>
+                <h1 id="mainTitle">字母消消乐</h1>
             </div>
             <div class="mode-switch">
                 <button class="mode-btn active" id="modeCandy" data-mode="candy">🧩 消消乐</button>
@@ -905,9 +891,7 @@
             </div>
         </div>
 
-        <!-- =================================================== -->
-        <!-- 消消乐模式 · 首页 ================================== -->
-        <!-- =================================================== -->
+        <!-- 消消乐首页 -->
         <div id="candy-home" class="screen">
             <div class="home-stats">
                 <div class="home-stat">
@@ -916,7 +900,7 @@
                 </div>
                 <div class="home-stat">
                     <div class="stat-num" id="candyHomeWords">0</div>
-                    <div class="stat-label">已消单词</div>
+                    <div class="stat-label">已掌握单词</div>
                 </div>
                 <div class="home-stat">
                     <div class="stat-num" id="candyHomeStars">0</div>
@@ -925,11 +909,11 @@
             </div>
 
             <div class="progress-bar-wrapper">
-                <div class="progress-bar-fill" id="candyProgressFill" style="width: 1%;">1 / 100</div>
+                <div class="progress-bar-fill" id="candyProgressFill" style="width: 1%;">1 / 1000</div>
             </div>
 
             <div class="learning-hint">
-                🔤 字母 + 单词配对 · 🔊 美式发音 · 📖 上海一年级核心词汇
+                🔤 字母配单词 · 🖼️ 图片配单词 · 🧠 科学记忆法 · 🔊 美式发音
             </div>
 
             <button class="big-btn green" id="candyContinueBtn">
@@ -937,9 +921,9 @@
             </button>
 
             <div class="level-picker">
-                <div class="level-picker-label">🔍 跳转到指定关卡（1-100）</div>
+                <div class="level-picker-label">🔍 跳转到指定关卡（1-1000）</div>
                 <div class="level-input-row">
-                    <input type="number" class="level-input" id="candyJumpInput" min="1" max="100" value="1">
+                    <input type="number" class="level-input" id="candyJumpInput" min="1" max="1000" value="1">
                     <button class="level-go-btn" id="candyJumpBtn">前往</button>
                 </div>
             </div>
@@ -951,15 +935,22 @@
             </div>
         </div>
 
-        <!-- =================================================== -->
-        <!-- 消消乐模式 · 游戏 ================================== -->
-        <!-- =================================================== -->
+        <!-- 消消乐游戏 -->
         <div id="candy-game" class="screen hidden">
             <div class="level-bar">
-                <div class="level-badge" id="candyLevelDisplay">第 1 / 100 关</div>
+                <div class="level-badge" id="candyLevelDisplay">第 1 / 1000 关</div>
+                <div class="stars-display" id="candyStarsDisplay">
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                </div>
                 <div class="stats">
-                    <span>⭐ <span id="candyPairsMatched">0</span>/8</span>
+                    <span>⭐ <span id="candyPairsMatched">0</span></span>
                     <span>🔤 <span id="candyMoves">0</span></span>
+                </div>
+                <div class="timer-box" id="candyTimerBox" style="display: none;">
+                    <span>⏱️</span>
+                    <span id="candyTimerValue">60</span>s
                 </div>
             </div>
 
@@ -967,24 +958,20 @@
                 <div class="progress-bar-fill" id="candyProgressGame" style="width: 0%;"></div>
             </div>
 
+            <div class="learning-hint" id="candyGameHint">🧠 科学记忆</div>
+
             <div class="board-candy" id="candyBoard"></div>
 
-            <div class="message-area" id="candyMessage">👆 点一点字母和单词，消掉它们吧！</div>
+            <div class="message-area" id="candyMessage">👆 点一点卡片，配对它们吧！</div>
 
             <div class="controls">
                 <button class="ctrl-btn gray" id="candyBackHome">🏠 返回首页</button>
                 <button class="ctrl-btn" id="candyResetLevel">🔄 重玩本关</button>
                 <button class="ctrl-btn green" id="candyNextBtn" disabled>➡️ 下一关</button>
             </div>
-
-            <div class="learning-hint" style="margin-top: 10px;">
-                🧠 科学记忆 · 🔊 点击单词卡听美式发音 · 📖 上海一年级核心词汇
-            </div>
         </div>
 
-        <!-- =================================================== -->
-        <!-- 记忆闯关模式 · 首页 ================================ -->
-        <!-- =================================================== -->
+        <!-- 记忆闯关首页 -->
         <div id="memory-home" class="screen hidden">
             <div class="home-stats">
                 <div class="home-stat">
@@ -1006,7 +993,7 @@
             </div>
 
             <div class="learning-hint">
-                🧠 科学记忆法 · 每个单词会在第 1、3、7、15、30 关后再次出现
+                🧠 科学记忆法 · 每关至少 6 对 · 单词按 1/3/7/15/30 关间隔复习
             </div>
 
             <button class="big-btn green" id="memoryContinueBtn">
@@ -1028,9 +1015,7 @@
             </div>
         </div>
 
-        <!-- =================================================== -->
-        <!-- 记忆闯关模式 · 游戏 ================================ -->
-        <!-- =================================================== -->
+        <!-- 记忆闯关游戏 -->
         <div id="memory-game" class="screen hidden">
             <div class="level-bar">
                 <div class="level-badge" id="memoryLevelBadge">第 1 关</div>
@@ -1070,17 +1055,13 @@
     <script>
         (function() {
             // ============================================================
-            // 全局：音效引擎（共用）
+            // 音效 + 语音 + 特效（共用）
             // ============================================================
             let audioCtx = null;
-
             function initAudio() {
-                if (!audioCtx) {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                }
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 if (audioCtx.state === 'suspended') audioCtx.resume();
             }
-
             function playTone(freq, duration = 0.1, type = 'sine', volume = 0.2) {
                 try {
                     initAudio();
@@ -1096,7 +1077,6 @@
                     osc.stop(audioCtx.currentTime + duration);
                 } catch (e) {}
             }
-
             function playSelectSound() { playTone(880, 0.08, 'sine', 0.15); }
             function playMatchSound() {
                 playTone(660, 0.1, 'triangle', 0.2);
@@ -1113,33 +1093,22 @@
                 setTimeout(() => playTone(784, 0.15, 'sine', 0.25), 240);
                 setTimeout(() => playTone(1046, 0.3, 'sine', 0.25), 380);
             }
-            function playNextLevelSound() {
-                playTone(800, 0.1, 'square', 0.1);
-                setTimeout(() => playTone(1000, 0.15, 'square', 0.1), 100);
-            }
 
-            // ============================================================
-            // 全局：语音（共用）
-            // ============================================================
             let speechSynth = window.speechSynthesis || null;
             let voices = [];
             let americanVoice = null;
             let soundEnabled = true;
-
             function loadVoices() {
                 if (!speechSynth) return;
                 voices = speechSynth.getVoices();
                 americanVoice = voices.find(v => v.lang === 'en-US' && v.name.includes('Google')) ||
                                voices.find(v => v.lang === 'en-US') ||
-                               voices.find(v => v.lang === 'en') ||
-                               voices[0] || null;
+                               voices.find(v => v.lang === 'en') || voices[0] || null;
             }
-
             if (speechSynth) {
                 loadVoices();
                 speechSynth.onvoiceschanged = loadVoices;
             }
-
             function speakWord(word, rate = 0.85) {
                 if (!soundEnabled || !speechSynth) return false;
                 try {
@@ -1153,7 +1122,6 @@
                     return true;
                 } catch (e) { return false; }
             }
-
             function speakLetter(letter) {
                 if (!soundEnabled || !speechSynth) return false;
                 try {
@@ -1168,9 +1136,6 @@
                 } catch (e) { return false; }
             }
 
-            // ============================================================
-            // 特效（共用）
-            // ============================================================
             function createStars(x, y, count = 5) {
                 for (let i = 0; i < count; i++) {
                     const star = document.createElement('div');
@@ -1184,7 +1149,6 @@
                     setTimeout(() => star.remove(), 1500);
                 }
             }
-
             function createConfetti(count = 20) {
                 const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#1dd1a1', '#f368e0', '#ff9f43'];
                 for (let i = 0; i < count; i++) {
@@ -1202,7 +1166,6 @@
                     setTimeout(() => conf.remove(), 2500);
                 }
             }
-
             function showAnimalBubble(x, y, animalType = 'dog') {
                 const animals = { dog: '🐶', cat: '🐱', bird: '🐦', duck: '🦆',
                                   bear: '🐻', rabbit: '🐰', panda: '🐼', lion: '🦁' };
@@ -1214,7 +1177,6 @@
                 document.body.appendChild(bubble);
                 setTimeout(() => bubble.remove(), 900);
             }
-
             function shuffleArray(arr) {
                 for (let i = arr.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
@@ -1226,15 +1188,12 @@
             // ============================================================
             // 模式切换
             // ============================================================
-            let currentMode = 'candy'; // 'candy' | 'memory'
-
             const modeCandy = document.getElementById('modeCandy');
             const modeMemory = document.getElementById('modeMemory');
             const mainEmoji = document.getElementById('mainEmoji');
             const mainTitle = document.getElementById('mainTitle');
 
             function switchMode(mode) {
-                currentMode = mode;
                 modeCandy.classList.toggle('active', mode === 'candy');
                 modeMemory.classList.toggle('active', mode === 'memory');
                 mainEmoji.textContent = mode === 'candy' ? '🧩' : '🧠';
@@ -1248,19 +1207,15 @@
                     document.getElementById('memory-home').classList.remove('hidden');
                 }
             }
-
             function hideAllScreens() {
                 ['candy-home', 'candy-game', 'memory-home', 'memory-game'].forEach(id => {
                     document.getElementById(id).classList.add('hidden');
                 });
             }
-
             modeCandy.addEventListener('click', () => switchMode('candy'));
             modeMemory.addEventListener('click', () => switchMode('memory'));
 
-            // ============================================================
-            // 鼓励语库
-            // ============================================================
+            // 鼓励语
             const ENCOURAGE_3STAR = [
                 '🏆 完美通关！你就是英语小天才！',
                 '🌟 太厉害了！全对！继续保持！',
@@ -1268,7 +1223,6 @@
                 '✨ 完美！这些单词你全记住了！',
                 '👑 你是单词小王子/小公主！'
             ];
-
             const ENCOURAGE_2STAR = [
                 '😊 很不错！再细心一点就满分啦！',
                 '💪 做得很好！下次挑战零失误！',
@@ -1276,7 +1230,6 @@
                 '🎯 差一点点就完美！继续加油！',
                 '👍 表现不错！再来一次会更好！'
             ];
-
             const ENCOURAGE_1STAR = [
                 '🎈 完成啦！多练习就会越来越棒！',
                 '🌱 不错哦！每一次都是进步！',
@@ -1284,7 +1237,6 @@
                 '🤗 完成通关！下次试试更快？',
                 '🌈 做得好！继续努力会有惊喜！'
             ];
-
             function getEncourageText(starCount) {
                 const pool = starCount >= 3 ? ENCOURAGE_3STAR :
                              starCount === 2 ? ENCOURAGE_2STAR : ENCOURAGE_1STAR;
@@ -1292,92 +1244,188 @@
             }
 
             // ============================================================
+            // 共用词库
             // ============================================================
-            // 消消乐模式
+            const WORD_BANK = [
+                { word: 'cat', emoji: '🐱' }, { word: 'dog', emoji: '🐶' },
+                { word: 'fish', emoji: '🐟' }, { word: 'bird', emoji: '🐦' },
+                { word: 'rabbit', emoji: '🐰' }, { word: 'bear', emoji: '🐻' },
+                { word: 'lion', emoji: '🦁' }, { word: 'monkey', emoji: '🐵' },
+                { word: 'elephant', emoji: '🐘' }, { word: 'tiger', emoji: '🐯' },
+                { word: 'panda', emoji: '🐼' }, { word: 'penguin', emoji: '🐧' },
+                { word: 'horse', emoji: '🐴' }, { word: 'cow', emoji: '🐮' },
+                { word: 'pig', emoji: '🐷' }, { word: 'sheep', emoji: '🐑' },
+                { word: 'duck', emoji: '🦆' }, { word: 'frog', emoji: '🐸' },
+                { word: 'whale', emoji: '🐳' }, { word: 'dolphin', emoji: '🐬' },
+                { word: 'butterfly', emoji: '🦋' }, { word: 'bee', emoji: '🐝' },
+                { word: 'mouse', emoji: '🐭' }, { word: 'fox', emoji: '🦊' },
+                { word: 'owl', emoji: '🦉' }, { word: 'parrot', emoji: '🦜' },
+                { word: 'apple', emoji: '🍎' }, { word: 'banana', emoji: '🍌' },
+                { word: 'orange', emoji: '🍊' }, { word: 'grape', emoji: '🍇' },
+                { word: 'watermelon', emoji: '🍉' }, { word: 'strawberry', emoji: '🍓' },
+                { word: 'cherry', emoji: '🍒' }, { word: 'peach', emoji: '🍑' },
+                { word: 'pear', emoji: '🍐' }, { word: 'lemon', emoji: '🍋' },
+                { word: 'bread', emoji: '🍞' }, { word: 'cake', emoji: '🍰' },
+                { word: 'pizza', emoji: '🍕' }, { word: 'hamburger', emoji: '🍔' },
+                { word: 'egg', emoji: '🥚' }, { word: 'milk', emoji: '🥛' },
+                { word: 'cheese', emoji: '🧀' }, { word: 'cookie', emoji: '🍪' },
+                { word: 'red', emoji: '🔴' }, { word: 'blue', emoji: '🔵' },
+                { word: 'green', emoji: '🟢' }, { word: 'yellow', emoji: '🟡' },
+                { word: 'purple', emoji: '🟣' }, { word: 'black', emoji: '⚫' },
+                { word: 'white', emoji: '⚪' }, { word: 'brown', emoji: '🟤' },
+                { word: 'house', emoji: '🏠' }, { word: 'book', emoji: '📖' },
+                { word: 'pen', emoji: '🖊️' }, { word: 'pencil', emoji: '✏️' },
+                { word: 'phone', emoji: '📱' }, { word: 'clock', emoji: '⏰' },
+                { word: 'key', emoji: '🔑' }, { word: 'bag', emoji: '👜' },
+                { word: 'cup', emoji: '☕' }, { word: 'chair', emoji: '🪑' },
+                { word: 'bed', emoji: '🛏️' }, { word: 'lamp', emoji: '💡' },
+                { word: 'shoe', emoji: '👟' }, { word: 'hat', emoji: '🎩' },
+                { word: 'car', emoji: '🚗' }, { word: 'bus', emoji: '🚌' },
+                { word: 'train', emoji: '🚂' }, { word: 'plane', emoji: '✈️' },
+                { word: 'ship', emoji: '🚢' }, { word: 'bike', emoji: '🚲' },
+                { word: 'rocket', emoji: '🚀' },
+                { word: 'sun', emoji: '☀️' }, { word: 'moon', emoji: '🌙' },
+                { word: 'cloud', emoji: '☁️' }, { word: 'rain', emoji: '🌧️' },
+                { word: 'snow', emoji: '❄️' }, { word: 'rainbow', emoji: '🌈' },
+                { word: 'tree', emoji: '🌳' }, { word: 'flower', emoji: '🌸' },
+                { word: 'star', emoji: '⭐' }, { word: 'heart', emoji: '❤️' }
+            ];
+
             // ============================================================
+            // 消消乐模式（1000 关）
             // ============================================================
+            const CANDY_TOTAL_LEVELS = 1000;
 
-            // 上海一年级词汇库
-            const CANDY_WORD_MAP = {
-                A: [['APPLE','/ˈæp.əl/'], ['ANT','/ænt/'], ['ARM','/ɑːrm/']],
-                B: [['BAG','/bæɡ/'], ['BALL','/bɔːl/'], ['BEAR','/ber/'], ['BIRD','/bɜːrd/'], ['BOOK','/bʊk/'], ['BOY','/bɔɪ/']],
-                C: [['CAT','/kæt/'], ['CAKE','/keɪk/'], ['CAR','/kɑːr/'], ['COW','/kaʊ/'], ['CUP','/kʌp/']],
-                D: [['DOG','/dɔːɡ/'], ['DOLL','/dɑːl/'], ['DUCK','/dʌk/'], ['DOOR','/dɔːr/']],
-                E: [['EGG','/eɡ/'], ['ELEPHANT','/ˈel.ɪ.fənt/'], ['EYE','/aɪ/'], ['EAR','/ɪr/']],
-                F: [['FISH','/fɪʃ/'], ['FROG','/frɔːɡ/'], ['FACE','/feɪs/'], ['FLOWER','/ˈflaʊ.ɚ/'], ['FOOT','/fʊt/']],
-                G: [['GIRL','/ɡɜːrl/'], ['GREEN','/ɡriːn/'], ['GLASS','/ɡlæs/'], ['GOAT','/ɡoʊt/']],
-                H: [['HAT','/hæt/'], ['HAND','/hænd/'], ['HORSE','/hɔːrs/'], ['HOUSE','/haʊs/']],
-                I: [['ICE','/aɪs/'], ['ICE CREAM','/ˈaɪs kriːm/'], ['ISLAND','/ˈaɪ.lənd/']],
-                J: [['JAM','/dʒæm/'], ['JUICE','/dʒuːs/'], ['JEEP','/dʒiːp/'], ['JELLY','/ˈdʒel.i/']],
-                K: [['KEY','/kiː/'], ['KITE','/kaɪt/'], ['KID','/kɪd/'], ['KANGAROO','/ˌkæŋ.ɡəˈruː/']],
-                L: [['LION','/ˈlaɪ.ən/'], ['LEAF','/liːf/'], ['LEMON','/ˈlem.ən/'], ['LAMP','/læmp/']],
-                M: [['MILK','/mɪlk/'], ['MOON','/muːn/'], ['MOUSE','/maʊs/'], ['MONKEY','/ˈmʌŋ.ki/'], ['MOUTH','/maʊθ/']],
-                N: [['NOSE','/noʊz/'], ['NEST','/nest/'], ['NURSE','/nɜːrs/'], ['NUT','/nʌt/']],
-                O: [['ORANGE','/ˈɔːr.ɪndʒ/'], ['OWL','/aʊl/'], ['ONION','/ˈʌn.jən/'], ['OCEAN','/ˈoʊ.ʃən/']],
-                P: [['PIG','/pɪɡ/'], ['PEAR','/per/'], ['PEN','/pen/'], ['PANDA','/ˈpæn.də/'], ['PENCIL','/ˈpen.səl/']],
-                Q: [['QUEEN','/kwiːn/'], ['QUESTION','/ˈkwes.tʃən/'], ['QUILT','/kwɪlt/']],
-                R: [['RABBIT','/ˈræb.ɪt/'], ['RICE','/raɪs/'], ['ROSE','/roʊz/'], ['RAIN','/reɪn/']],
-                S: [['SUN','/sʌn/'], ['STAR','/stɑːr/'], ['SHIP','/ʃɪp/'], ['SNAKE','/sneɪk/'], ['SCHOOL','/skuːl/']],
-                T: [['TIGER','/ˈtaɪ.ɡɚ/'], ['TREE','/triː/'], ['TABLE','/ˈteɪ.bəl/'], ['TRAIN','/treɪn/'], ['TOY','/tɔɪ/']],
-                U: [['UMBRELLA','/ʌmˈbrel.ə/'], ['UP','/ʌp/'], ['UNCLE','/ˈʌŋ.kəl/'], ['UNICORN','/ˈjuː.nɪ.kɔːrn/']],
-                V: [['VAN','/væn/'], ['VASE','/veɪs/'], ['VIOLIN','/ˌvaɪ.əˈlɪn/'], ['VEGETABLE','/ˈvedʒ.tə.bəl/']],
-                W: [['WATER','/ˈwɔː.tɚ/'], ['WINDOW','/ˈwɪn.doʊ/'], ['WATCH','/wɑːtʃ/'], ['WHALE','/weɪl/']],
-                X: [['XYLOPHONE','/ˈzaɪ.lə.foʊn/'], ['X-RAY','/ˈeks.reɪ/']],
-                Y: [['YELLOW','/ˈjel.oʊ/'], ['YARD','/jɑːrd/'], ['YO-YO','/ˈjoʊ.joʊ/'], ['YOGURT','/ˈjoʊ.ɡɚt/']],
-                Z: [['ZOO','/zuː/'], ['ZEBRA','/ˈziː.brə/'], ['ZIPPER','/ˈzɪp.ɚ/']]
-            };
+            function candyGetLevelConfig(level) {
+                // 卡片对数：6 → 10
+                let pairCount;
+                if (level <= 100) pairCount = 6;
+                else if (level <= 300) pairCount = 7;
+                else if (level <= 600) pairCount = 8;
+                else if (level <= 900) pairCount = 9;
+                else pairCount = 10;
 
-            const CANDY_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-            const CANDY_TOTAL_LEVELS = 100;
-            const CANDY_PAIRS_PER_LEVEL = 8;
+                // 复习 vs 新词
+                let newWordCount, reviewWordCount;
+                if (level <= 100) { newWordCount = 4; reviewWordCount = pairCount - newWordCount; }
+                else if (level <= 300) { newWordCount = 4; reviewWordCount = pairCount - newWordCount; }
+                else if (level <= 600) { newWordCount = 3; reviewWordCount = pairCount - newWordCount; }
+                else { newWordCount = 3; reviewWordCount = pairCount - newWordCount; }
+                if (reviewWordCount < 0) reviewWordCount = 0;
 
-            function candyGenerateLevels() {
-                const levels = [];
-                for (let level = 1; level <= CANDY_TOTAL_LEVELS; level++) {
-                    const unlockCount = Math.min(8 + Math.floor((level - 1) / 4), 26);
-                    const availableLetters = CANDY_LETTERS.slice(0, unlockCount);
-                    const shuffled = [...availableLetters].sort(() => Math.random() - 0.5);
-                    const selectedLetters = shuffled.slice(0, CANDY_PAIRS_PER_LEVEL);
-                    const pairs = selectedLetters.map(letter => {
-                        const wordList = CANDY_WORD_MAP[letter] || [[`${letter}WORD`, `/${letter.toLowerCase()}/`]];
-                        const entry = wordList[Math.floor(Math.random() * wordList.length)];
-                        return { letter, word: entry[0], ipa: entry[1] };
-                    });
-                    levels.push(pairs);
-                }
-                return levels;
+                // 时间限制：400 关后
+                let timeLimit = null;
+                if (level > 400) timeLimit = Math.max(40, 100 - Math.floor((level - 400) / 25));
+                if (level > 800) timeLimit = Math.max(35, 80 - Math.floor((level - 800) / 30));
+
+                // 干扰卡：600 关后
+                let decoys = 0;
+                if (level > 600) decoys = 1;
+                if (level > 850) decoys = 2;
+
+                let phase;
+                if (level <= 100) phase = '入门';
+                else if (level <= 300) phase = '基础';
+                else if (level <= 600) phase = '进阶';
+                else if (level <= 850) phase = '强化';
+                else phase = '大师';
+
+                return { pairCount, newWordCount, reviewWordCount, timeLimit, decoys, phase };
             }
 
-            const CANDY_LEVELS = candyGenerateLevels();
-
-            // 消消乐进度
             let candyProgress = candyLoadProgress();
-
             function candyLoadProgress() {
                 try {
-                    const saved = localStorage.getItem('candyProgress');
+                    const saved = localStorage.getItem('candyProgressV3');
                     if (saved) {
                         const d = JSON.parse(saved);
-                        return { currentLevel: d.currentLevel || 1, levelStars: d.levelStars || {} };
+                        return {
+                            currentLevel: d.currentLevel || 1,
+                            levelStars: d.levelStars || {},
+                            wordStats: d.wordStats || {}
+                        };
                     }
                 } catch (e) {}
-                return { currentLevel: 1, levelStars: {} };
+                return { currentLevel: 1, levelStars: {}, wordStats: {} };
             }
-
             function candySaveProgress() {
-                try { localStorage.setItem('candyProgress', JSON.stringify(candyProgress)); } catch (e) {}
+                try { localStorage.setItem('candyProgressV3', JSON.stringify(candyProgress)); } catch (e) {}
             }
 
-            // 消消乐状态
+            function candySelectWordsForLevel(level) {
+                const config = candyGetLevelConfig(level);
+                const selected = [];
+                // 复习
+                const reviewCandidates = [];
+                Object.keys(candyProgress.wordStats).forEach(word => {
+                    const stat = candyProgress.wordStats[word];
+                    if (!stat.mastered && stat.nextReview <= level) {
+                        reviewCandidates.push({ word, ...stat });
+                    }
+                });
+                reviewCandidates.sort((a, b) => a.nextReview - b.nextReview);
+                for (let i = 0; i < config.reviewWordCount && i < reviewCandidates.length; i++) {
+                    const r = reviewCandidates[i];
+                    const wd = WORD_BANK.find(w => w.word === r.word);
+                    if (wd) selected.push(wd);
+                }
+                // 新词
+                const unseen = WORD_BANK.filter(w => !candyProgress.wordStats[w.word]);
+                for (let i = 0; i < config.newWordCount && i < unseen.length; i++) {
+                    selected.push(unseen[i]);
+                }
+                // 已掌握补位
+                if (selected.length < config.pairCount) {
+                    const mastered = Object.keys(candyProgress.wordStats)
+                        .filter(w => candyProgress.wordStats[w].mastered)
+                        .sort((a, b) => candyProgress.wordStats[a].lastSeen - candyProgress.wordStats[b].lastSeen);
+                    for (const w of mastered) {
+                        if (selected.length >= config.pairCount) break;
+                        if (selected.some(s => s.word === w)) continue;
+                        const wd = WORD_BANK.find(x => x.word === w);
+                        if (wd) selected.push(wd);
+                    }
+                }
+                while (selected.length < config.pairCount) {
+                    const rand = WORD_BANK[Math.floor(Math.random() * WORD_BANK.length)];
+                    if (!selected.some(s => s.word === rand.word)) selected.push(rand);
+                }
+                return selected.slice(0, config.pairCount);
+            }
+
+            function candyRecordWord(word, level) {
+                if (!candyProgress.wordStats[word]) {
+                    candyProgress.wordStats[word] = {
+                        learned: 0, lastSeen: level, nextReview: level + 1, mastered: false
+                    };
+                }
+                const stat = candyProgress.wordStats[word];
+                stat.learned++;
+                stat.lastSeen = level;
+                const intervals = [1, 3, 7, 15, 30];
+                if (stat.learned <= intervals.length) {
+                    stat.nextReview = level + intervals[stat.learned - 1];
+                } else {
+                    stat.mastered = true;
+                    stat.nextReview = Infinity;
+                }
+                candySaveProgress();
+            }
+
             let candyCurrentLevel = 1;
             let candyCards = [];
             let candySelectedId = null;
             let candyMatched = 0;
             let candyMoves = 0;
             let candyFinished = false;
-            let candyCurrentPairs = [];
+            let candyCurrentWords = [];
+            let candyLock = false;
+            let candyTimeoutId = null;
+            let candyTimerInterval = null;
+            let candyTimeLeft = 0;
+            let candyGameActive = false;
+            let candyConfig = null;
 
-            // DOM
             const candyBoard = document.getElementById('candyBoard');
             const candyLevelDisplay = document.getElementById('candyLevelDisplay');
             const candyPairsMatchedSpan = document.getElementById('candyPairsMatched');
@@ -1396,19 +1444,36 @@
             const candyJumpInput = document.getElementById('candyJumpInput');
             const candyJumpBtn = document.getElementById('candyJumpBtn');
             const candyResetBtn = document.getElementById('candyResetBtn');
+            const candyStarsDisplay = document.getElementById('candyStarsDisplay');
+            const candyTimerBox = document.getElementById('candyTimerBox');
+            const candyTimerValue = document.getElementById('candyTimerValue');
+            const candyGameHint = document.getElementById('candyGameHint');
 
+            function candyGetMasteredCount() {
+                return Object.values(candyProgress.wordStats).filter(w => w.mastered).length;
+            }
             function candyTotalStars() {
                 return Object.values(candyProgress.levelStars).reduce((a, b) => a + b, 0);
             }
-
-            function candyTotalWords() {
-                return Object.keys(candyProgress.levelStars).length * CANDY_PAIRS_PER_LEVEL;
+            function candyUpdateStars(stars) {
+                const s = candyStarsDisplay.querySelectorAll('.star');
+                s.forEach((el, idx) => {
+                    if (idx < stars) {
+                        el.textContent = '★';
+                        el.classList.add('earned');
+                        el.style.color = '#ffb800';
+                    } else {
+                        el.textContent = '☆';
+                        el.classList.remove('earned');
+                        el.style.color = '#aaa';
+                    }
+                });
             }
 
             function candyRenderHome() {
                 candyCurrentLevel = candyProgress.currentLevel || 1;
                 candyHomeLevel.textContent = candyCurrentLevel;
-                candyHomeWords.textContent = candyTotalWords();
+                candyHomeWords.textContent = candyGetMasteredCount();
                 candyHomeStars.textContent = candyTotalStars();
                 const percent = Math.max(1, (candyCurrentLevel / CANDY_TOTAL_LEVELS) * 100);
                 candyProgressFill.style.width = percent + '%';
@@ -1417,27 +1482,48 @@
                 candyJumpInput.value = candyCurrentLevel;
             }
 
-            function candyBuildCards(pairs) {
+            function candyBuildCards(words) {
                 const newCards = [];
-                pairs.forEach((pair, idx) => {
-                    newCards.push({
-                        id: `cl-${candyCurrentLevel}-${idx}-${Date.now()}-${Math.random()}`,
-                        type: 'letter', content: pair.letter, ipa: '',
-                        pairId: idx, eliminated: false
-                    });
+                words.forEach((wd, idx) => {
+                    const pairType = Math.random() < 0.5 ? 'letter' : 'image';
+                    if (pairType === 'letter') {
+                        const firstLetter = wd.word[0].toUpperCase();
+                        newCards.push({
+                            id: `cl-${candyCurrentLevel}-${idx}-${Date.now()}-${Math.random()}`,
+                            type: 'letter', content: firstLetter,
+                            pairId: idx, pairKey: wd.word, matched: false, isDecoy: false
+                        });
+                    } else {
+                        newCards.push({
+                            id: `ci-${candyCurrentLevel}-${idx}-${Date.now()}-${Math.random()}`,
+                            type: 'image', content: wd.emoji,
+                            pairId: idx, pairKey: wd.word, matched: false, isDecoy: false
+                        });
+                    }
                     newCards.push({
                         id: `cw-${candyCurrentLevel}-${idx}-${Date.now()}-${Math.random()}`,
-                        type: 'word', content: pair.word, ipa: pair.ipa,
-                        pairId: idx, eliminated: false
+                        type: 'word', content: wd.word,
+                        pairId: idx, pairKey: wd.word, matched: false, isDecoy: false
                     });
                 });
+                // 干扰卡
+                if (candyConfig && candyConfig.decoys > 0) {
+                    const decoyEmojis = ['👻', '🎃', '🦄', '🐉', '🍀', '💎', '🔮', '🎈'];
+                    for (let i = 0; i < candyConfig.decoys; i++) {
+                        newCards.push({
+                            id: `cd-${candyCurrentLevel}-${i}-${Date.now()}-${Math.random()}`,
+                            type: 'image', content: decoyEmojis[i % decoyEmojis.length],
+                            pairId: -1, pairKey: '', matched: false, isDecoy: true
+                        });
+                    }
+                }
                 return shuffleArray(newCards);
             }
 
             function candyUpdateStats() {
                 candyPairsMatchedSpan.textContent = candyMatched;
                 candyMovesSpan.textContent = candyMoves;
-                const percent = (candyMatched / CANDY_PAIRS_PER_LEVEL) * 100;
+                const percent = (candyMatched / candyConfig.pairCount) * 100;
                 candyProgressGame.style.width = percent + '%';
                 candyLevelDisplay.textContent = `第 ${candyCurrentLevel} / ${CANDY_TOTAL_LEVELS} 关`;
             }
@@ -1448,27 +1534,25 @@
                     const cardDiv = document.createElement('div');
                     cardDiv.className = 'card-candy';
                     cardDiv.dataset.type = card.type;
-                    if (card.eliminated) cardDiv.classList.add('eliminated');
-                    if (candySelectedId === card.id && !card.eliminated) cardDiv.classList.add('selected');
+                    if (card.matched) cardDiv.classList.add('eliminated');
+                    if (card.isDecoy) cardDiv.classList.add('decoy');
+                    if (candySelectedId === card.id && !card.matched) cardDiv.classList.add('selected');
 
                     if (card.type === 'letter') {
                         cardDiv.innerHTML = `<span style="font-size:inherit;">${card.content}</span>`;
+                    } else if (card.type === 'image') {
+                        cardDiv.innerHTML = `<span style="font-size:inherit;">${card.content}</span>`;
                     } else {
-                        cardDiv.innerHTML = `
-                            <div class="word-text">${card.content}</div>
-                            <div class="ipa-text">${card.ipa}</div>
-                        `;
+                        cardDiv.innerHTML = `<div class="word-text">${card.content}</div>`;
                     }
 
                     cardDiv.addEventListener('click', (e) => {
-                        if (card.type === 'word' && !card.eliminated) {
-                            const spoken = speakWord(card.content);
-                            if (!spoken) {
-                                playTone(600, 0.15, 'sine', 0.15);
-                                setTimeout(() => playTone(800, 0.15, 'sine', 0.15), 150);
-                            }
-                        } else if (card.type === 'letter' && !card.eliminated) {
-                            speakLetter(card.content);
+                        if (card.matched) return;
+                        if (card.type === 'word') speakWord(card.content);
+                        else if (card.type === 'letter') speakLetter(card.content);
+                        else if (card.type === 'image' && !card.isDecoy) {
+                            const wordCard = candyCards.find(c => c.pairId === card.pairId && c.type === 'word');
+                            if (wordCard) speakWord(wordCard.content);
                         }
                         candyHandleClick(card.id, e);
                     });
@@ -1477,10 +1561,25 @@
             }
 
             function candyHandleClick(cardId, event) {
-                if (candyFinished) return;
+                if (candyFinished || candyLock || !candyGameActive) return;
                 initAudio();
                 const card = candyCards.find(c => c.id === cardId);
-                if (!card || card.eliminated) return;
+                if (!card || card.matched) return;
+
+                // 干扰卡：直接消失
+                if (card.isDecoy) {
+                    card.matched = true;
+                    const el = document.querySelector(`.card-candy[data-id="${card.id}"]`);
+                    if (el) { el.classList.add('eliminated'); el.style.opacity = '0.3'; }
+                    candyMessage.textContent = '👻 捣蛋卡消失啦！';
+                    if (candySelectedId !== null) {
+                        const prev = candyCards.find(c => c.id === candySelectedId);
+                        if (prev) prev.selected = false;
+                        candySelectedId = null;
+                    }
+                    candyRenderBoard();
+                    return;
+                }
 
                 if (candySelectedId === null) {
                     candySelectedId = cardId;
@@ -1488,15 +1587,13 @@
                     candyRenderBoard();
                     return;
                 }
-
                 const firstCard = candyCards.find(c => c.id === candySelectedId);
-                if (!firstCard || firstCard.eliminated) {
+                if (!firstCard || firstCard.matched) {
                     candySelectedId = cardId;
                     playSelectSound();
                     candyRenderBoard();
                     return;
                 }
-
                 if (candySelectedId === cardId) {
                     candySelectedId = null;
                     playSelectSound();
@@ -1507,14 +1604,24 @@
                 candyMoves++;
                 candyMovesSpan.textContent = candyMoves;
 
-                const isLetterAndWord = (firstCard.type === 'letter' && card.type === 'word') ||
-                                        (firstCard.type === 'word' && card.type === 'letter');
                 let isMatch = false;
+                let matchedWord = '';
+                const t1 = firstCard.type, t2 = card.type;
 
-                if (isLetterAndWord) {
-                    const letterCard = firstCard.type === 'letter' ? firstCard : card;
-                    const wordCard = firstCard.type === 'word' ? firstCard : card;
-                    if (wordCard.content[0] === letterCard.content) isMatch = true;
+                if ((t1 === 'letter' && t2 === 'word') || (t1 === 'word' && t2 === 'letter')) {
+                    const l = t1 === 'letter' ? firstCard : card;
+                    const w = t1 === 'word' ? firstCard : card;
+                    if (w.content[0].toUpperCase() === l.content.toUpperCase()) {
+                        isMatch = true;
+                        matchedWord = w.content;
+                    }
+                } else if ((t1 === 'image' && t2 === 'word') || (t1 === 'word' && t2 === 'image')) {
+                    const i = t1 === 'image' ? firstCard : card;
+                    const w = t1 === 'word' ? firstCard : card;
+                    if (i.pairId === w.pairId) {
+                        isMatch = true;
+                        matchedWord = w.content;
+                    }
                 }
 
                 const rect = event ? event.target.getBoundingClientRect() :
@@ -1523,21 +1630,18 @@
                 const clickY = rect.top + rect.height / 2;
 
                 if (isMatch) {
-                    firstCard.eliminated = true;
-                    card.eliminated = true;
+                    firstCard.matched = true;
+                    card.matched = true;
                     candyMatched++;
                     candySelectedId = null;
                     candyUpdateStats();
                     candyRenderBoard();
                     playMatchSound();
                     createStars(clickX, clickY, 6);
-                    const animals = ['dog', 'cat', 'bird', 'duck'];
-                    const randomAnimal = animals[Math.floor(Math.random() * animals.length)];
-                    setTimeout(() => playTone(400, 0.1, 'sawtooth', 0.15), 200);
-                    showAnimalBubble(clickX, clickY, randomAnimal);
-                    const wordCard = firstCard.type === 'word' ? firstCard : card;
-                    setTimeout(() => speakWord(wordCard.content, 0.8), 250);
-                    candyMessage.textContent = `✔️ 正确！${wordCard.content} ${wordCard.ipa} 配对成功！`;
+                    showAnimalBubble(clickX, clickY, ['dog', 'cat', 'bird', 'duck'][Math.floor(Math.random() * 4)]);
+                    setTimeout(() => speakWord(matchedWord, 0.8), 250);
+                    candyMessage.textContent = `✔️ 正确！${matchedWord} 配对成功！`;
+                    candyRecordWord(matchedWord, candyCurrentLevel);
                     candyCheckComplete();
                 } else {
                     candySelectedId = null;
@@ -1546,19 +1650,21 @@
                     candyMessage.textContent = `❌ 不对应，再试试看！`;
                     setTimeout(() => {
                         if (!candyFinished && candyMessage.textContent.includes('不对应')) {
-                            candyMessage.textContent = '👆 点一点字母和单词，消掉它们吧！';
+                            candyMessage.textContent = '👆 点一点卡片，配对它们吧！';
                         }
                     }, 800);
                 }
             }
 
             function candyCheckComplete() {
-                if (candyMatched === CANDY_PAIRS_PER_LEVEL) {
+                if (candyMatched === candyConfig.pairCount) {
                     candyFinished = true;
-                    // 简单星级：用步数判断
+                    candyGameActive = false;
+                    stopCandyTimer();
                     let stars = 3;
-                    if (candyMoves > 20) stars = 1;
-                    else if (candyMoves > 14) stars = 2;
+                    if (candyMoves > candyConfig.pairCount * 3) stars = 1;
+                    else if (candyMoves > candyConfig.pairCount * 2) stars = 2;
+                    candyUpdateStars(stars);
 
                     const prev = candyProgress.levelStars[candyCurrentLevel] || 0;
                     if (stars > prev) candyProgress.levelStars[candyCurrentLevel] = stars;
@@ -1571,14 +1677,63 @@
                     candyNextBtn.disabled = false;
                     playLevelCompleteSound();
                     createConfetti(30);
-
-                    // 通关鼓励弹窗
-                    setTimeout(() => {
-                        showCandyCompleteModal(stars);
-                    }, 600);
+                    setTimeout(() => showCandyCompleteModal(stars), 600);
                 } else {
                     candyNextBtn.disabled = true;
                 }
+            }
+
+            function stopCandyTimer() {
+                if (candyTimerInterval) {
+                    clearInterval(candyTimerInterval);
+                    candyTimerInterval = null;
+                }
+                candyGameActive = false;
+            }
+
+            function startCandyTimer() {
+                if (!candyConfig.timeLimit) return;
+                stopCandyTimer();
+                candyTimeLeft = candyConfig.timeLimit;
+                candyTimerValue.textContent = candyTimeLeft;
+                candyTimerBox.classList.remove('warning');
+                candyGameActive = true;
+                candyTimerInterval = setInterval(() => {
+                    if (!candyGameActive) return;
+                    candyTimeLeft--;
+                    candyTimerValue.textContent = candyTimeLeft;
+                    if (candyTimeLeft <= 10) candyTimerBox.classList.add('warning');
+                    if (candyTimeLeft <= 0) {
+                        stopCandyTimer();
+                        candyMessage.textContent = '⏰ 时间到！';
+                        candyLock = true;
+                        showCandyTimeUpModal();
+                    }
+                }, 1000);
+            }
+
+            function showCandyTimeUpModal() {
+                const overlay = document.createElement('div');
+                overlay.className = 'overlay';
+                overlay.innerHTML = `
+                    <div class="modal">
+                        <h2>⏰ 时间到啦</h2>
+                        <div class="big-stars">😢</div>
+                        <div class="encourage-text">别灰心，再试一次一定可以！</div>
+                        <div class="modal-buttons">
+                            <button class="modal-btn primary" id="candyTimeRetry">🔄 重玩本关</button>
+                            <button class="modal-btn secondary" id="candyTimeHome">🏠 首页</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+                document.getElementById('candyTimeRetry').addEventListener('click', () => {
+                    overlay.remove(); candyLoadLevel(candyCurrentLevel);
+                });
+                document.getElementById('candyTimeHome').addEventListener('click', () => {
+                    overlay.remove(); candyRenderHome(); hideAllScreens();
+                    document.getElementById('candy-home').classList.remove('hidden');
+                });
             }
 
             function showCandyCompleteModal(starCount) {
@@ -1595,7 +1750,6 @@
                             <span class="big-star">${starCount >= 3 ? '★' : '☆'}</span>
                         </div>
                         <div class="encourage-text">${encourage}</div>
-                        ${isLast ? '<div class="encourage-sub">你已掌握全部字母和核心单词！</div>' : ''}
                         <div class="modal-buttons">
                             ${!isLast ? '<button class="modal-btn primary" id="candyNextModalBtn">➡️ 下一关</button>' : ''}
                             <button class="modal-btn secondary" id="candyRetryModalBtn">🔄 重玩</button>
@@ -1604,7 +1758,6 @@
                     </div>
                 `;
                 document.body.appendChild(overlay);
-
                 const nextM = document.getElementById('candyNextModalBtn');
                 if (nextM) {
                     nextM.addEventListener('click', () => {
@@ -1616,31 +1769,47 @@
                     });
                 }
                 document.getElementById('candyRetryModalBtn').addEventListener('click', () => {
-                    overlay.remove();
-                    candyLoadLevel(candyCurrentLevel);
+                    overlay.remove(); candyLoadLevel(candyCurrentLevel);
                 });
                 document.getElementById('candyHomeModalBtn').addEventListener('click', () => {
-                    overlay.remove();
-                    candyRenderHome();
-                    hideAllScreens();
+                    overlay.remove(); candyRenderHome(); hideAllScreens();
                     document.getElementById('candy-home').classList.remove('hidden');
                 });
             }
 
             function candyLoadLevel(level) {
                 if (level < 1 || level > CANDY_TOTAL_LEVELS) return;
+                stopCandyTimer();
+                if (candyTimeoutId) { clearTimeout(candyTimeoutId); candyTimeoutId = null; }
                 if (speechSynth) speechSynth.cancel();
+
                 candyCurrentLevel = level;
-                candyCurrentPairs = (CANDY_LEVELS[level - 1] || CANDY_LEVELS[0]).map(p => ({ ...p }));
-                candyCards = candyBuildCards(candyCurrentPairs);
+                candyConfig = candyGetLevelConfig(level);
+                candyCurrentWords = candySelectWordsForLevel(level);
+                candyCards = candyBuildCards(candyCurrentWords);
                 candySelectedId = null;
                 candyMatched = 0;
                 candyMoves = 0;
                 candyFinished = false;
+                candyLock = false;
+                candyGameActive = true;
                 candyNextBtn.disabled = true;
-                candyMessage.textContent = `第 ${candyCurrentLevel} 关：点一点字母和单词，消掉它们吧！`;
+
+                candyUpdateStars(0);
+                if (candyConfig.timeLimit) {
+                    candyTimerBox.style.display = 'flex';
+                    candyTimeLeft = candyConfig.timeLimit;
+                    candyTimerValue.textContent = candyTimeLeft;
+                    candyTimerBox.classList.remove('warning');
+                } else {
+                    candyTimerBox.style.display = 'none';
+                }
+
+                candyGameHint.textContent = `🧠 ${candyConfig.phase} · ${candyConfig.pairCount}对 · 复习 ${candyConfig.reviewWordCount}`;
+                candyMessage.textContent = `第 ${candyCurrentLevel} 关：点一点卡片，配对它们吧！`;
                 candyUpdateStats();
                 candyRenderBoard();
+                if (candyConfig.timeLimit) startCandyTimer();
             }
 
             function candyStart(level) {
@@ -1649,26 +1818,18 @@
                 candyLoadLevel(level);
             }
 
-            // 消消乐事件
-            candyResetLevel.addEventListener('click', () => {
-                playSelectSound();
-                candyLoadLevel(candyCurrentLevel);
-            });
+            candyResetLevel.addEventListener('click', () => candyLoadLevel(candyCurrentLevel));
             candyNextBtn.addEventListener('click', () => {
-                if (candyCurrentLevel < CANDY_TOTAL_LEVELS) {
-                    playNextLevelSound();
-                    candyLoadLevel(candyCurrentLevel + 1);
-                }
+                if (candyCurrentLevel < CANDY_TOTAL_LEVELS) candyLoadLevel(candyCurrentLevel + 1);
             });
             candyBackHome.addEventListener('click', () => {
                 if (speechSynth) speechSynth.cancel();
+                stopCandyTimer();
                 candyRenderHome();
                 hideAllScreens();
                 document.getElementById('candy-home').classList.remove('hidden');
             });
-            candyContinueBtn.addEventListener('click', () => {
-                candyStart(candyProgress.currentLevel || 1);
-            });
+            candyContinueBtn.addEventListener('click', () => candyStart(candyProgress.currentLevel || 1));
             candyJumpBtn.addEventListener('click', () => {
                 const val = parseInt(candyJumpInput.value);
                 if (isNaN(val) || val < 1 || val > CANDY_TOTAL_LEVELS) {
@@ -1679,148 +1840,51 @@
             });
             candyResetBtn.addEventListener('click', () => {
                 if (confirm('确定重置消消乐进度吗？')) {
-                    candyProgress = { currentLevel: 1, levelStars: {} };
+                    candyProgress = { currentLevel: 1, levelStars: {}, wordStats: {} };
                     candySaveProgress();
                     candyRenderHome();
                 }
             });
 
             // ============================================================
+            // 记忆闯关模式（1000 关，每关至少 6 对）
             // ============================================================
-            // 记忆闯关模式（科学记忆法）
-            // ============================================================
-            // ============================================================
-
-            const MEMORY_WORD_BANK = [
-                { word: 'cat', emoji: '🐱' }, { word: 'dog', emoji: '🐶' },
-                { word: 'fish', emoji: '🐟' }, { word: 'bird', emoji: '🐦' },
-                { word: 'rabbit', emoji: '🐰' }, { word: 'bear', emoji: '🐻' },
-                { word: 'lion', emoji: '🦁' }, { word: 'monkey', emoji: '🐵' },
-                { word: 'elephant', emoji: '🐘' }, { word: 'tiger', emoji: '🐯' },
-                { word: 'panda', emoji: '🐼' }, { word: 'penguin', emoji: '🐧' },
-                { word: 'horse', emoji: '🐴' }, { word: 'cow', emoji: '🐮' },
-                { word: 'pig', emoji: '🐷' }, { word: 'sheep', emoji: '🐑' },
-                { word: 'chicken', emoji: '🐔' }, { word: 'duck', emoji: '🦆' },
-                { word: 'frog', emoji: '🐸' }, { word: 'turtle', emoji: '🐢' },
-                { word: 'snake', emoji: '🐍' }, { word: 'whale', emoji: '🐳' },
-                { word: 'dolphin', emoji: '🐬' }, { word: 'butterfly', emoji: '🦋' },
-                { word: 'bee', emoji: '🐝' }, { word: 'ant', emoji: '🐜' },
-                { word: 'spider', emoji: '🕷️' }, { word: 'mouse', emoji: '🐭' },
-                { word: 'fox', emoji: '🦊' }, { word: 'wolf', emoji: '🐺' },
-                { word: 'deer', emoji: '🦌' }, { word: 'giraffe', emoji: '🦒' },
-                { word: 'zebra', emoji: '🦓' }, { word: 'crocodile', emoji: '🐊' },
-                { word: 'octopus', emoji: '🐙' }, { word: 'crab', emoji: '🦀' },
-                { word: 'shark', emoji: '🦈' }, { word: 'owl', emoji: '🦉' },
-                { word: 'parrot', emoji: '🦜' }, { word: 'swan', emoji: '🦢' },
-                { word: 'apple', emoji: '🍎' }, { word: 'banana', emoji: '🍌' },
-                { word: 'orange', emoji: '🍊' }, { word: 'grape', emoji: '🍇' },
-                { word: 'watermelon', emoji: '🍉' }, { word: 'strawberry', emoji: '🍓' },
-                { word: 'cherry', emoji: '🍒' }, { word: 'peach', emoji: '🍑' },
-                { word: 'pear', emoji: '🍐' }, { word: 'lemon', emoji: '🍋' },
-                { word: 'pineapple', emoji: '🍍' }, { word: 'coconut', emoji: '🥥' },
-                { word: 'bread', emoji: '🍞' }, { word: 'cake', emoji: '🍰' },
-                { word: 'pizza', emoji: '🍕' }, { word: 'hamburger', emoji: '🍔' },
-                { word: 'rice', emoji: '🍚' }, { word: 'noodles', emoji: '🍜' },
-                { word: 'egg', emoji: '🥚' }, { word: 'milk', emoji: '🥛' },
-                { word: 'cheese', emoji: '🧀' }, { word: 'cookie', emoji: '🍪' },
-                { word: 'chocolate', emoji: '🍫' }, { word: 'candy', emoji: '🍬' },
-                { word: 'ice cream', emoji: '🍦' }, { word: 'donut', emoji: '🍩' },
-                { word: 'coffee', emoji: '☕' }, { word: 'tea', emoji: '🍵' },
-                { word: 'juice', emoji: '🧃' }, { word: 'honey', emoji: '🍯' },
-                { word: 'red', emoji: '🔴' }, { word: 'blue', emoji: '🔵' },
-                { word: 'green', emoji: '🟢' }, { word: 'yellow', emoji: '🟡' },
-                { word: 'purple', emoji: '🟣' }, { word: 'black', emoji: '⚫' },
-                { word: 'white', emoji: '⚪' }, { word: 'brown', emoji: '🟤' },
-                { word: 'star', emoji: '⭐' }, { word: 'heart', emoji: '❤️' },
-                { word: 'circle', emoji: '⭕' }, { word: 'triangle', emoji: '🔺' },
-                { word: 'square', emoji: '🟦' }, { word: 'diamond', emoji: '💎' },
-                { word: 'house', emoji: '🏠' }, { word: 'book', emoji: '📖' },
-                { word: 'pen', emoji: '🖊️' }, { word: 'pencil', emoji: '✏️' },
-                { word: 'phone', emoji: '📱' }, { word: 'computer', emoji: '💻' },
-                { word: 'clock', emoji: '⏰' }, { word: 'key', emoji: '🔑' },
-                { word: 'bag', emoji: '👜' }, { word: 'cup', emoji: '☕' },
-                { word: 'chair', emoji: '🪑' }, { word: 'bed', emoji: '🛏️' },
-                { word: 'lamp', emoji: '💡' }, { word: 'shoe', emoji: '👟' },
-                { word: 'hat', emoji: '🎩' }, { word: 'glasses', emoji: '👓' },
-                { word: 'umbrella', emoji: '☂️' }, { word: 'watch', emoji: '⌚' },
-                { word: 'camera', emoji: '📷' }, { word: 'gift', emoji: '🎁' },
-                { word: 'ball', emoji: '⚽' }, { word: 'doll', emoji: '🧸' },
-                { word: 'kite', emoji: '🪁' }, { word: 'balloon', emoji: '🎈' },
-                { word: 'car', emoji: '🚗' }, { word: 'bus', emoji: '🚌' },
-                { word: 'train', emoji: '🚂' }, { word: 'plane', emoji: '✈️' },
-                { word: 'ship', emoji: '🚢' }, { word: 'bike', emoji: '🚲' },
-                { word: 'rocket', emoji: '🚀' }, { word: 'taxi', emoji: '🚕' },
-                { word: 'sun', emoji: '☀️' }, { word: 'moon', emoji: '🌙' },
-                { word: 'cloud', emoji: '☁️' }, { word: 'rain', emoji: '🌧️' },
-                { word: 'snow', emoji: '❄️' }, { word: 'rainbow', emoji: '🌈' },
-                { word: 'fire', emoji: '🔥' }, { word: 'tree', emoji: '🌳' },
-                { word: 'flower', emoji: '🌸' }, { word: 'leaf', emoji: '🍃' },
-                { word: 'mountain', emoji: '⛰️' }, { word: 'ocean', emoji: '🌊' },
-                { word: 'beach', emoji: '🏖️' }, { word: 'cactus', emoji: '🌵' },
-                { word: 'mushroom', emoji: '🍄' }, { word: 'eye', emoji: '👁️' },
-                { word: 'ear', emoji: '👂' }, { word: 'nose', emoji: '👃' },
-                { word: 'mouth', emoji: '👄' }, { word: 'hand', emoji: '✋' },
-                { word: 'foot', emoji: '🦶' }, { word: 'tooth', emoji: '🦷' },
-                { word: 'happy', emoji: '😊' }, { word: 'sad', emoji: '😢' },
-                { word: 'angry', emoji: '😠' }, { word: 'sleepy', emoji: '😴' },
-                { word: 'love', emoji: '😍' }, { word: 'laugh', emoji: '😂' },
-                { word: 'cool', emoji: '😎' }, { word: 'boy', emoji: '👦' },
-                { word: 'girl', emoji: '👧' }, { word: 'man', emoji: '👨' },
-                { word: 'woman', emoji: '👩' }, { word: 'baby', emoji: '👶' },
-                { word: 'teacher', emoji: '👨‍🏫' }, { word: 'doctor', emoji: '👨‍⚕️' },
-                { word: 'police', emoji: '👮' }, { word: 'chef', emoji: '👨‍🍳' },
-                { word: 'princess', emoji: '👸' }, { word: 'king', emoji: '🤴' },
-                { word: 'music', emoji: '🎵' }, { word: 'game', emoji: '🎮' },
-                { word: 'movie', emoji: '🎬' }, { word: 'photo', emoji: '📸' },
-                { word: 'money', emoji: '💰' }, { word: 'crown', emoji: '👑' },
-                { word: 'trophy', emoji: '🏆' }, { word: 'medal', emoji: '🥇' },
-                { word: 'magic', emoji: '✨' }, { word: 'ghost', emoji: '👻' },
-                { word: 'robot', emoji: '🤖' }, { word: 'dragon', emoji: '🐉' },
-                { word: 'unicorn', emoji: '🦄' }
-            ];
-
             const MEMORY_TOTAL_LEVELS = 1000;
 
             function memoryGetLevelConfig(level) {
                 let pairCount;
-                if (level <= 50) pairCount = 3;
-                else if (level <= 150) pairCount = 4;
-                else if (level <= 300) pairCount = 5;
-                else if (level <= 500) pairCount = 6;
-                else if (level <= 800) pairCount = 7;
-                else pairCount = 8;
+                if (level <= 100) pairCount = 6;
+                else if (level <= 300) pairCount = 7;
+                else if (level <= 600) pairCount = 8;
+                else if (level <= 900) pairCount = 9;
+                else pairCount = 10;
 
                 let newWordCount, reviewWordCount;
-                if (level <= 50) { newWordCount = Math.min(2, pairCount); reviewWordCount = pairCount - newWordCount; }
-                else if (level <= 150) { newWordCount = Math.min(3, pairCount - 1); reviewWordCount = pairCount - newWordCount; }
-                else if (level <= 300) { newWordCount = Math.min(3, pairCount - 2); reviewWordCount = pairCount - newWordCount; }
-                else if (level <= 500) { newWordCount = Math.min(4, pairCount - 2); reviewWordCount = pairCount - newWordCount; }
-                else { newWordCount = Math.min(4, pairCount - 3); reviewWordCount = pairCount - newWordCount; }
+                if (level <= 100) { newWordCount = 3; reviewWordCount = pairCount - newWordCount; }
+                else if (level <= 300) { newWordCount = 3; reviewWordCount = pairCount - newWordCount; }
+                else if (level <= 600) { newWordCount = 4; reviewWordCount = pairCount - newWordCount; }
+                else { newWordCount = 4; reviewWordCount = pairCount - newWordCount; }
                 if (reviewWordCount < 0) reviewWordCount = 0;
-                if (newWordCount < 1) newWordCount = 1;
 
                 let timeLimit = null;
-                if (level > 300) timeLimit = Math.max(30, 90 - Math.floor((level - 300) / 20));
-                if (level > 800) timeLimit = Math.max(25, 60 - Math.floor((level - 800) / 30));
+                if (level > 300) timeLimit = Math.max(40, 100 - Math.floor((level - 300) / 20));
+                if (level > 800) timeLimit = Math.max(30, 70 - Math.floor((level - 800) / 30));
 
                 let decoys = 0;
                 if (level > 500) decoys = 1;
                 if (level > 800) decoys = 2;
 
                 let phase;
-                if (level <= 50) phase = '入门';
-                else if (level <= 150) phase = '基础';
-                else if (level <= 300) phase = '进阶';
-                else if (level <= 500) phase = '强化';
-                else if (level <= 800) phase = '精通';
+                if (level <= 100) phase = '入门';
+                else if (level <= 300) phase = '基础';
+                else if (level <= 600) phase = '进阶';
+                else if (level <= 800) phase = '强化';
                 else phase = '大师';
 
                 return { pairCount, newWordCount, reviewWordCount, timeLimit, decoys, phase };
             }
 
-            // 记忆闯关进度
             let memoryProgress = memoryLoadProgress();
-
             function memoryLoadProgress() {
                 try {
                     const saved = localStorage.getItem('memoryProgress');
@@ -1835,12 +1899,10 @@
                 } catch (e) {}
                 return { currentLevel: 1, wordStats: {}, levelStars: {} };
             }
-
             function memorySaveProgress() {
                 try { localStorage.setItem('memoryProgress', JSON.stringify(memoryProgress)); } catch (e) {}
             }
 
-            // 记忆状态
             let memoryCurrentLevel = 1;
             let memoryCards = [];
             let memorySelectedIdx = null;
@@ -1854,7 +1916,6 @@
             let memoryConfig = null;
             let memoryCurrentWords = [];
 
-            // DOM
             const memoryBoard = document.getElementById('memoryBoard');
             const memoryLevelBadge = document.getElementById('memoryLevelBadge');
             const memoryPairsMatchedSpan = document.getElementById('memoryPairsMatched');
@@ -1882,7 +1943,6 @@
             function memoryGetMastered() {
                 return Object.values(memoryProgress.wordStats).filter(w => w.mastered).length;
             }
-
             function memoryGetStars() {
                 return Object.values(memoryProgress.levelStars).reduce((a, b) => a + b, 0);
             }
@@ -1912,10 +1972,10 @@
                 reviewCandidates.sort((a, b) => a.nextReview - b.nextReview);
                 for (let i = 0; i < config.reviewWordCount && i < reviewCandidates.length; i++) {
                     const r = reviewCandidates[i];
-                    const wd = MEMORY_WORD_BANK.find(w => w.word === r.word);
+                    const wd = WORD_BANK.find(w => w.word === r.word);
                     if (wd) selected.push(wd);
                 }
-                const unseen = MEMORY_WORD_BANK.filter(w => !memoryProgress.wordStats[w.word]);
+                const unseen = WORD_BANK.filter(w => !memoryProgress.wordStats[w.word]);
                 for (let i = 0; i < config.newWordCount && i < unseen.length; i++) {
                     selected.push(unseen[i]);
                 }
@@ -1926,12 +1986,12 @@
                     for (const w of mastered) {
                         if (selected.length >= config.pairCount) break;
                         if (selected.some(s => s.word === w)) continue;
-                        const wd = MEMORY_WORD_BANK.find(x => x.word === w);
+                        const wd = WORD_BANK.find(x => x.word === w);
                         if (wd) selected.push(wd);
                     }
                 }
                 while (selected.length < config.pairCount) {
-                    const rand = MEMORY_WORD_BANK[Math.floor(Math.random() * MEMORY_WORD_BANK.length)];
+                    const rand = WORD_BANK[Math.floor(Math.random() * WORD_BANK.length)];
                     if (!selected.some(s => s.word === rand.word)) selected.push(rand);
                 }
                 return selected.slice(0, config.pairCount);
@@ -1988,7 +2048,9 @@
 
             function memorySetMessage(text, isGood = true) {
                 memoryMessage.textContent = text;
-                memoryMessage.style.background = isGood ? 'linear-gradient(135deg, #fff8e1, #ffecb3)' : 'linear-gradient(135deg, #ffcdd2, #ef9a9a)';
+                memoryMessage.style.background = isGood ?
+                    'linear-gradient(135deg, #fff8e1, #ffecb3)' :
+                    'linear-gradient(135deg, #ffcdd2, #ef9a9a)';
             }
 
             function memoryUpdateStars(starCount) {
@@ -2007,8 +2069,8 @@
             }
 
             function memoryCalculateStars(pairCount, attempts) {
-                if (attempts <= pairCount + 1) return 3;
-                if (attempts <= Math.ceil(pairCount * 1.6)) return 2;
+                if (attempts <= pairCount + 2) return 3;
+                if (attempts <= Math.ceil(pairCount * 1.8)) return 2;
                 return 1;
             }
 
@@ -2027,7 +2089,7 @@
                     return !stat || stat.learned <= 1;
                 }).length;
                 const reviewCount = memoryConfig.pairCount - newCount;
-                memoryGameHint.textContent = `🧠 ${memoryConfig.phase}阶段 · 新词 ${newCount} · 复习 ${reviewCount}`;
+                memoryGameHint.textContent = `🧠 ${memoryConfig.phase}阶段 · ${memoryConfig.pairCount}对 · 新词 ${newCount} · 复习 ${reviewCount}`;
                 memoryUpdateStars(0);
             }
 
@@ -2106,7 +2168,6 @@
                     </div>
                 `;
                 document.body.appendChild(overlay);
-
                 const nextBtn = document.getElementById('memNextBtn');
                 if (nextBtn) {
                     nextBtn.addEventListener('click', () => {
@@ -2288,7 +2349,6 @@
                 memoryLoadLevel(level);
             }
 
-            // 记忆闯关事件
             memoryResetLevel.addEventListener('click', () => memoryLoadLevel(memoryCurrentLevel));
             memoryBackHome.addEventListener('click', () => {
                 if (speechSynth) speechSynth.cancel();
@@ -2297,9 +2357,7 @@
                 hideAllScreens();
                 document.getElementById('memory-home').classList.remove('hidden');
             });
-            memoryContinueBtn.addEventListener('click', () => {
-                memoryStart(memoryProgress.currentLevel || 1);
-            });
+            memoryContinueBtn.addEventListener('click', () => memoryStart(memoryProgress.currentLevel || 1));
             memoryJumpBtn.addEventListener('click', () => {
                 const val = parseInt(memoryJumpInput.value);
                 if (isNaN(val) || val < 1 || val > MEMORY_TOTAL_LEVELS) {
@@ -2329,9 +2387,7 @@
                 }
             });
 
-            // ============================================================
             // 启动
-            // ============================================================
             document.body.addEventListener('click', function initAudioOnce() {
                 initAudio();
                 if (speechSynth && voices.length === 0) loadVoices();
