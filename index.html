@@ -913,7 +913,7 @@
             </div>
 
             <div class="learning-hint">
-                🔤 字母配单词 · 🖼️ 图片配单词 · 🧠 科学记忆法 · 🔊 童声发音
+                🔤 字母配单词 · 🖼️ 图片配单词 · 🧠 科学记忆法 · 🔊 微软语音
             </div>
 
             <button class="big-btn green" id="candyContinueBtn">
@@ -1095,7 +1095,7 @@
             }
 
             // ============================================================
-            // 语音引擎（童声 + 快速响应）
+            // 语音引擎（童声 + 微软语音优先 + 快速响应）
             // ============================================================
             let speechSynth = window.speechSynthesis || null;
             let voices = [];
@@ -1108,55 +1108,87 @@
                 if (!speechSynth) return;
                 voices = speechSynth.getVoices();
 
-                // 优先选择"女声/童声感"英语语音
-                const preferredKeywords = [
-                    'Google US English', 'Samantha', 'Zira', 'Female',
-                    'Google UK English Female', 'Karen', 'Moira', 'Aria', 'Jenny'
+                // 优先级列表（越靠前越优先）
+                // 微软语音放最前面（华为平板上音质最好）
+                const voicePriority = [
+                    'Microsoft Aria Online',
+                    'Microsoft Jenny Online',
+                    'Microsoft Guy Online',
+                    'Microsoft Zira',
+                    'Microsoft Aria',
+                    'Microsoft Jenny',
+                    'Microsoft Guy',
+                    'Microsoft',
+                    'Google US English',
+                    'Samantha',
+                    'Karen',
+                    'Moira',
+                    'Female',
+                    'Natural'
                 ];
 
-                // 1) 关键词 + en-US
-                americanVoice = voices.find(v =>
-                    v.lang === 'en-US' && preferredKeywords.some(k => v.name.includes(k))
-                );
-                // 2) 任意 en-US
-                if (!americanVoice) americanVoice = voices.find(v => v.lang === 'en-US');
-                // 3) 任意 en
-                if (!americanVoice) americanVoice = voices.find(v => v.lang.startsWith('en'));
-                // 4) 兜底
-                if (!americanVoice) americanVoice = voices[0] || null;
+                // 从高优先级开始找
+                americanVoice = null;
+                for (const keyword of voicePriority) {
+                    const found = voices.find(v =>
+                        v.lang.startsWith('en') && v.name.includes(keyword)
+                    );
+                    if (found) {
+                        americanVoice = found;
+                        break;
+                    }
+                }
 
-                // 中文语音
-                chineseVoice = voices.find(v => v.lang === 'zh-CN') ||
-                               voices.find(v => v.lang.startsWith('zh')) || null;
+                // 没找到就用任意 en-US
+                if (!americanVoice) {
+                    americanVoice = voices.find(v => v.lang === 'en-US');
+                }
+                if (!americanVoice) {
+                    americanVoice = voices.find(v => v.lang.startsWith('en'));
+                }
+                if (!americanVoice) {
+                    americanVoice = voices[0] || null;
+                }
+
+                // 中文也优先微软
+                chineseVoice = voices.find(v =>
+                    v.lang.startsWith('zh') && v.name.includes('Microsoft')
+                ) || voices.find(v => v.lang === 'zh-CN') ||
+                  voices.find(v => v.lang.startsWith('zh')) || null;
 
                 voiceReady = voices.length > 0;
+
                 console.log('🎤 语音列表已加载：', voices.length, '个');
-                console.log('🎯 英语语音：', americanVoice ? americanVoice.name : '未找到');
-                console.log('🎯 中文语音：', chineseVoice ? chineseVoice.name : '未找到');
+                console.log('🎯 选中的英语语音：', americanVoice ? americanVoice.name : '未找到');
+                console.log('🎯 选中的中文语音：', chineseVoice ? chineseVoice.name : '未找到');
+
+                const enVoices = voices.filter(v => v.lang.startsWith('en'));
+                if (enVoices.length > 0) {
+                    console.log('📋 所有可用英语语音：');
+                    enVoices.forEach(v => console.log('  -', v.name, '(' + v.lang + ')'));
+                }
             }
 
             // 页面加载时立即初始化
             if (speechSynth) {
                 loadVoices();
                 speechSynth.onvoiceschanged = loadVoices;
-                // 尝试主动触发多次，保证语音列表就绪
                 setTimeout(loadVoices, 100);
                 setTimeout(loadVoices, 500);
                 setTimeout(loadVoices, 1500);
             }
 
-            // 童声朗读单词（音调高、语速快、响应快）
+            // 童声朗读单词
             function speakWord(word, rate = 1.0) {
                 if (!soundEnabled || !speechSynth) return false;
                 try {
-                    // 只在必要时取消（避免打断时反而慢）
                     if (speechSynth.speaking || speechSynth.pending) {
                         speechSynth.cancel();
                     }
                     const u = new SpeechSynthesisUtterance(word);
                     u.lang = 'en-US';
-                    u.rate = rate;         // 语速稍快
-                    u.pitch = 1.7;         // 高音调 → 童声
+                    u.rate = rate;
+                    u.pitch = 1.6;         // 童声高音调
                     u.volume = 1.0;
                     if (americanVoice) u.voice = americanVoice;
                     speechSynth.speak(u);
@@ -1173,8 +1205,8 @@
                     }
                     const u = new SpeechSynthesisUtterance(letter);
                     u.lang = 'en-US';
-                    u.rate = 1.05;         // 字母读快一点
-                    u.pitch = 1.8;         // 更高音调 → 童声
+                    u.rate = 1.0;
+                    u.pitch = 1.7;
                     u.volume = 1.0;
                     if (americanVoice) u.voice = americanVoice;
                     speechSynth.speak(u);
@@ -1183,7 +1215,7 @@
             }
 
             // ============================================================
-            // 语音鼓励语库（童声）
+            // 语音鼓励语库
             // ============================================================
             const VOICE_ENCOURAGE = {
                 3: [
@@ -1220,15 +1252,15 @@
                     const enUtter = new SpeechSynthesisUtterance(chosen.en);
                     enUtter.lang = 'en-US';
                     enUtter.rate = 1.0;
-                    enUtter.pitch = 1.65;   // 童声
+                    enUtter.pitch = 1.55;
                     enUtter.volume = 1.0;
                     if (americanVoice) enUtter.voice = americanVoice;
                     enUtter.onend = () => {
                         setTimeout(() => {
                             const zhUtter = new SpeechSynthesisUtterance(chosen.zh);
                             zhUtter.lang = 'zh-CN';
-                            zhUtter.rate = 1.05;
-                            zhUtter.pitch = 1.4;   // 中文也提高音调
+                            zhUtter.rate = 1.0;
+                            zhUtter.pitch = 1.35;
                             zhUtter.volume = 1.0;
                             if (chineseVoice) zhUtter.voice = chineseVoice;
                             speechSynth.speak(zhUtter);
@@ -1646,7 +1678,6 @@
 
                     cardDiv.addEventListener('click', (e) => {
                         if (card.matched) return;
-                        // 立即发声（优化响应速度）
                         if (card.type === 'word') speakWord(card.content);
                         else if (card.type === 'letter') speakLetter(card.content);
                         else if (card.type === 'image' && !card.isDecoy) {
@@ -2340,7 +2371,6 @@
                 const cardEl = document.querySelector(`.card-memory[data-index="${index}"]`);
                 if (!cardEl) return;
 
-                // 立即发声
                 if (card.type === 'word') speakWord(card.content);
                 if (card.type === 'emoji' && card.word) speakWord(card.word);
 
