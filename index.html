@@ -913,7 +913,7 @@
             </div>
 
             <div class="learning-hint">
-                🔤 字母配单词 · 🖼️ 图片配单词 · 🧠 科学记忆法 · 🔊 美式发音
+                🔤 字母配单词 · 🖼️ 图片配单词 · 🧠 科学记忆法 · 🔊 童声发音
             </div>
 
             <button class="big-btn green" id="candyContinueBtn">
@@ -1029,7 +1029,7 @@
                     <span>⭐ <span id="memoryAttempts">0</span></span>
                     <button class="sound-toggle" id="memorySoundToggle">
                         <span id="memorySoundIcon">🔊</span>
-                        <span id="memorySoundText">有声</span>
+                        <span id="memorySoundText">童声</span>
                     </button>
                 </div>
                 <div class="timer-box" id="memoryTimerBox" style="display: none;">
@@ -1055,7 +1055,7 @@
     <script>
         (function() {
             // ============================================================
-            // 音效 + 语音 + 特效（共用）
+            // 音效引擎
             // ============================================================
             let audioCtx = null;
             function initAudio() {
@@ -1094,48 +1094,153 @@
                 setTimeout(() => playTone(1046, 0.3, 'sine', 0.25), 380);
             }
 
+            // ============================================================
+            // 语音引擎（童声 + 快速响应）
+            // ============================================================
             let speechSynth = window.speechSynthesis || null;
             let voices = [];
             let americanVoice = null;
+            let chineseVoice = null;
             let soundEnabled = true;
+            let voiceReady = false;
+
             function loadVoices() {
                 if (!speechSynth) return;
                 voices = speechSynth.getVoices();
-                americanVoice = voices.find(v => v.lang === 'en-US' && v.name.includes('Google')) ||
-                               voices.find(v => v.lang === 'en-US') ||
-                               voices.find(v => v.lang === 'en') || voices[0] || null;
+
+                // 优先选择"女声/童声感"英语语音
+                const preferredKeywords = [
+                    'Google US English', 'Samantha', 'Zira', 'Female',
+                    'Google UK English Female', 'Karen', 'Moira', 'Aria', 'Jenny'
+                ];
+
+                // 1) 关键词 + en-US
+                americanVoice = voices.find(v =>
+                    v.lang === 'en-US' && preferredKeywords.some(k => v.name.includes(k))
+                );
+                // 2) 任意 en-US
+                if (!americanVoice) americanVoice = voices.find(v => v.lang === 'en-US');
+                // 3) 任意 en
+                if (!americanVoice) americanVoice = voices.find(v => v.lang.startsWith('en'));
+                // 4) 兜底
+                if (!americanVoice) americanVoice = voices[0] || null;
+
+                // 中文语音
+                chineseVoice = voices.find(v => v.lang === 'zh-CN') ||
+                               voices.find(v => v.lang.startsWith('zh')) || null;
+
+                voiceReady = voices.length > 0;
+                console.log('🎤 语音列表已加载：', voices.length, '个');
+                console.log('🎯 英语语音：', americanVoice ? americanVoice.name : '未找到');
+                console.log('🎯 中文语音：', chineseVoice ? chineseVoice.name : '未找到');
             }
+
+            // 页面加载时立即初始化
             if (speechSynth) {
                 loadVoices();
                 speechSynth.onvoiceschanged = loadVoices;
+                // 尝试主动触发多次，保证语音列表就绪
+                setTimeout(loadVoices, 100);
+                setTimeout(loadVoices, 500);
+                setTimeout(loadVoices, 1500);
             }
-            function speakWord(word, rate = 0.85) {
+
+            // 童声朗读单词（音调高、语速快、响应快）
+            function speakWord(word, rate = 1.0) {
                 if (!soundEnabled || !speechSynth) return false;
                 try {
-                    speechSynth.cancel();
+                    // 只在必要时取消（避免打断时反而慢）
+                    if (speechSynth.speaking || speechSynth.pending) {
+                        speechSynth.cancel();
+                    }
                     const u = new SpeechSynthesisUtterance(word);
                     u.lang = 'en-US';
-                    u.rate = rate;
-                    u.pitch = 1.1;
-                    if (americanVoice) u.voice = americanVoice;
-                    speechSynth.speak(u);
-                    return true;
-                } catch (e) { return false; }
-            }
-            function speakLetter(letter) {
-                if (!soundEnabled || !speechSynth) return false;
-                try {
-                    speechSynth.cancel();
-                    const u = new SpeechSynthesisUtterance(letter);
-                    u.lang = 'en-US';
-                    u.rate = 0.9;
-                    u.pitch = 1.2;
+                    u.rate = rate;         // 语速稍快
+                    u.pitch = 1.7;         // 高音调 → 童声
+                    u.volume = 1.0;
                     if (americanVoice) u.voice = americanVoice;
                     speechSynth.speak(u);
                     return true;
                 } catch (e) { return false; }
             }
 
+            // 童声朗读字母
+            function speakLetter(letter) {
+                if (!soundEnabled || !speechSynth) return false;
+                try {
+                    if (speechSynth.speaking || speechSynth.pending) {
+                        speechSynth.cancel();
+                    }
+                    const u = new SpeechSynthesisUtterance(letter);
+                    u.lang = 'en-US';
+                    u.rate = 1.05;         // 字母读快一点
+                    u.pitch = 1.8;         // 更高音调 → 童声
+                    u.volume = 1.0;
+                    if (americanVoice) u.voice = americanVoice;
+                    speechSynth.speak(u);
+                    return true;
+                } catch (e) { return false; }
+            }
+
+            // ============================================================
+            // 语音鼓励语库（童声）
+            // ============================================================
+            const VOICE_ENCOURAGE = {
+                3: [
+                    { en: 'Excellent! You are amazing!', zh: '太棒了！你真了不起！' },
+                    { en: 'Perfect! You did it!', zh: '完美！你做到了！' },
+                    { en: 'Wonderful! You are a superstar!', zh: '精彩！你是超级明星！' },
+                    { en: 'Fantastic! You are so smart!', zh: '太棒了！你真聪明！' },
+                    { en: 'Amazing! Keep it up!', zh: '惊人！继续保持！' }
+                ],
+                2: [
+                    { en: 'Great job! Almost perfect!', zh: '做得好！几乎完美！' },
+                    { en: 'Well done! You are getting better!', zh: '干得好！你越来越棒了！' },
+                    { en: 'Good work! Keep trying!', zh: '做得好！继续努力！' },
+                    { en: 'Nice! You can do even better!', zh: '不错！你可以做得更好！' },
+                    { en: 'Very good! Try again for a perfect score!', zh: '非常好！再试一次争取满分！' }
+                ],
+                1: [
+                    { en: 'Good try! Practice makes perfect!', zh: '很好的尝试！熟能生巧！' },
+                    { en: 'You did it! Keep going!', zh: '你做到了！继续加油！' },
+                    { en: 'Nice effort! You will improve!', zh: '很努力！你会进步的！' },
+                    { en: 'Well done! Try again for a better score!', zh: '做得好！再试一次拿更高分！' },
+                    { en: 'Great start! Practice more!', zh: '好的开始！多练习！' }
+                ]
+            };
+
+            // 童声鼓励语
+            function speakEncouragement(starCount) {
+                if (!soundEnabled || !speechSynth) return;
+                playLevelCompleteSound();
+                const pool = VOICE_ENCOURAGE[starCount] || VOICE_ENCOURAGE[2];
+                const chosen = pool[Math.floor(Math.random() * pool.length)];
+                setTimeout(() => {
+                    speechSynth.cancel();
+                    const enUtter = new SpeechSynthesisUtterance(chosen.en);
+                    enUtter.lang = 'en-US';
+                    enUtter.rate = 1.0;
+                    enUtter.pitch = 1.65;   // 童声
+                    enUtter.volume = 1.0;
+                    if (americanVoice) enUtter.voice = americanVoice;
+                    enUtter.onend = () => {
+                        setTimeout(() => {
+                            const zhUtter = new SpeechSynthesisUtterance(chosen.zh);
+                            zhUtter.lang = 'zh-CN';
+                            zhUtter.rate = 1.05;
+                            zhUtter.pitch = 1.4;   // 中文也提高音调
+                            zhUtter.volume = 1.0;
+                            if (chineseVoice) zhUtter.voice = chineseVoice;
+                            speechSynth.speak(zhUtter);
+                        }, 150);
+                    };
+                    speechSynth.speak(enUtter);
+                }, 400);
+            }
+
+            // ============================================================
+            // 特效
+            // ============================================================
             function createStars(x, y, count = 5) {
                 for (let i = 0; i < count; i++) {
                     const star = document.createElement('div');
@@ -1215,7 +1320,7 @@
             modeCandy.addEventListener('click', () => switchMode('candy'));
             modeMemory.addEventListener('click', () => switchMode('memory'));
 
-            // 鼓励语
+            // 鼓励语文本库（弹窗用）
             const ENCOURAGE_3STAR = [
                 '🏆 完美通关！你就是英语小天才！',
                 '🌟 太厉害了！全对！继续保持！',
@@ -1297,7 +1402,6 @@
             const CANDY_TOTAL_LEVELS = 1000;
 
             function candyGetLevelConfig(level) {
-                // 卡片对数：6 → 10
                 let pairCount;
                 if (level <= 100) pairCount = 6;
                 else if (level <= 300) pairCount = 7;
@@ -1305,7 +1409,6 @@
                 else if (level <= 900) pairCount = 9;
                 else pairCount = 10;
 
-                // 复习 vs 新词
                 let newWordCount, reviewWordCount;
                 if (level <= 100) { newWordCount = 4; reviewWordCount = pairCount - newWordCount; }
                 else if (level <= 300) { newWordCount = 4; reviewWordCount = pairCount - newWordCount; }
@@ -1313,12 +1416,10 @@
                 else { newWordCount = 3; reviewWordCount = pairCount - newWordCount; }
                 if (reviewWordCount < 0) reviewWordCount = 0;
 
-                // 时间限制：400 关后
                 let timeLimit = null;
                 if (level > 400) timeLimit = Math.max(40, 100 - Math.floor((level - 400) / 25));
                 if (level > 800) timeLimit = Math.max(35, 80 - Math.floor((level - 800) / 30));
 
-                // 干扰卡：600 关后
                 let decoys = 0;
                 if (level > 600) decoys = 1;
                 if (level > 850) decoys = 2;
@@ -1355,7 +1456,6 @@
             function candySelectWordsForLevel(level) {
                 const config = candyGetLevelConfig(level);
                 const selected = [];
-                // 复习
                 const reviewCandidates = [];
                 Object.keys(candyProgress.wordStats).forEach(word => {
                     const stat = candyProgress.wordStats[word];
@@ -1369,12 +1469,10 @@
                     const wd = WORD_BANK.find(w => w.word === r.word);
                     if (wd) selected.push(wd);
                 }
-                // 新词
                 const unseen = WORD_BANK.filter(w => !candyProgress.wordStats[w.word]);
                 for (let i = 0; i < config.newWordCount && i < unseen.length; i++) {
                     selected.push(unseen[i]);
                 }
-                // 已掌握补位
                 if (selected.length < config.pairCount) {
                     const mastered = Object.keys(candyProgress.wordStats)
                         .filter(w => candyProgress.wordStats[w].mastered)
@@ -1506,7 +1604,6 @@
                         pairId: idx, pairKey: wd.word, matched: false, isDecoy: false
                     });
                 });
-                // 干扰卡
                 if (candyConfig && candyConfig.decoys > 0) {
                     const decoyEmojis = ['👻', '🎃', '🦄', '🐉', '🍀', '💎', '🔮', '🎈'];
                     for (let i = 0; i < candyConfig.decoys; i++) {
@@ -1534,6 +1631,7 @@
                     const cardDiv = document.createElement('div');
                     cardDiv.className = 'card-candy';
                     cardDiv.dataset.type = card.type;
+                    cardDiv.dataset.id = card.id;
                     if (card.matched) cardDiv.classList.add('eliminated');
                     if (card.isDecoy) cardDiv.classList.add('decoy');
                     if (candySelectedId === card.id && !card.matched) cardDiv.classList.add('selected');
@@ -1548,6 +1646,7 @@
 
                     cardDiv.addEventListener('click', (e) => {
                         if (card.matched) return;
+                        // 立即发声（优化响应速度）
                         if (card.type === 'word') speakWord(card.content);
                         else if (card.type === 'letter') speakLetter(card.content);
                         else if (card.type === 'image' && !card.isDecoy) {
@@ -1566,7 +1665,6 @@
                 const card = candyCards.find(c => c.id === cardId);
                 if (!card || card.matched) return;
 
-                // 干扰卡：直接消失
                 if (card.isDecoy) {
                     card.matched = true;
                     const el = document.querySelector(`.card-candy[data-id="${card.id}"]`);
@@ -1639,7 +1737,7 @@
                     playMatchSound();
                     createStars(clickX, clickY, 6);
                     showAnimalBubble(clickX, clickY, ['dog', 'cat', 'bird', 'duck'][Math.floor(Math.random() * 4)]);
-                    setTimeout(() => speakWord(matchedWord, 0.8), 250);
+                    setTimeout(() => speakWord(matchedWord, 1.0), 200);
                     candyMessage.textContent = `✔️ 正确！${matchedWord} 配对成功！`;
                     candyRecordWord(matchedWord, candyCurrentLevel);
                     candyCheckComplete();
@@ -1675,8 +1773,8 @@
 
                     candyMessage.textContent = '🎉 太棒了！本关完成！';
                     candyNextBtn.disabled = false;
-                    playLevelCompleteSound();
                     createConfetti(30);
+                    speakEncouragement(stars);
                     setTimeout(() => showCandyCompleteModal(stars), 600);
                 } else {
                     candyNextBtn.disabled = true;
@@ -2242,6 +2340,7 @@
                 const cardEl = document.querySelector(`.card-memory[data-index="${index}"]`);
                 if (!cardEl) return;
 
+                // 立即发声
                 if (card.type === 'word') speakWord(card.content);
                 if (card.type === 'emoji' && card.word) speakWord(card.word);
 
@@ -2317,6 +2416,7 @@
                         memoryProgress.currentLevel = Math.min(MEMORY_TOTAL_LEVELS, memoryCurrentLevel + 1);
                     }
                     memorySaveProgress();
+                    speakEncouragement(stars);
                     setTimeout(() => memoryShowCompleteModal(stars), 500);
                 }
             }
@@ -2382,7 +2482,7 @@
                     memorySoundToggle.classList.add('muted');
                 } else {
                     memorySoundIcon.textContent = '🔊';
-                    memorySoundText.textContent = '有声';
+                    memorySoundText.textContent = '童声';
                     memorySoundToggle.classList.remove('muted');
                 }
             });
