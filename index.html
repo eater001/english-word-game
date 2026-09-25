@@ -170,7 +170,7 @@ body {
     aspect-ratio:1/1; border-radius:18px;
     display:flex; align-items:center; justify-content:center;
     font-weight:600; cursor:pointer;
-    transition:transform 0.4s, box-shadow 0.2s;
+    transition:transform 0.4s, box-shadow 0.3s;
     position:relative; transform-style:preserve-3d;
 }
 .card-memory .face {
@@ -206,7 +206,7 @@ body {
     cursor:pointer; box-shadow:0 2px 0 #c9a53a; z-index:5; padding:0;
 }
 
-/* ========== 侦探寻宝场景 ========== */
+/* 侦探寻宝场景 */
 .board-detective {
     position:relative; width:100%; aspect-ratio:4/3;
     background:linear-gradient(180deg,#87CEEB 0%,#E0F6FF 100%);
@@ -273,8 +273,6 @@ body {
     0%,100% { box-shadow:0 6px 0 #C44, 0 0 0 0 rgba(255,107,107,0.5); }
     50% { box-shadow:0 6px 0 #C44, 0 0 0 20px rgba(255,107,107,0); }
 }
-
-/* 徽章 */
 .badge-display {
     display:flex; gap:6px; justify-content:center;
     flex-wrap:wrap; margin:10px 0; min-height:40px;
@@ -286,10 +284,6 @@ body {
     font-size:22px; box-shadow:0 4px 0 #C77800, inset 0 2px 4px rgba(255,255,255,0.5);
     animation:badgePop 0.6s ease;
     border:3px solid #fff;
-}
-.detective-badge.locked {
-    background:linear-gradient(145deg,#ccc,#aaa);
-    box-shadow:0 4px 0 #777; opacity:0.5;
 }
 @keyframes badgePop {
     0% { transform:scale(0) rotate(-180deg); }
@@ -471,7 +465,7 @@ body {
         <div class="progress-bar-wrapper">
             <div class="progress-bar-fill" id="memoryProgressFill" style="width:1%;">1 / 1000</div>
         </div>
-        <div class="learning-hint">🧠 翻牌记忆 · 单词按 1/3/7/15/30 关间隔复习 · 🕵️ 每5关解锁寻宝</div>
+        <div class="learning-hint">🧠 翻牌记忆 · 3对起步 · 连错2次自动提示 · 🕵️ 每5关解锁寻宝</div>
         <button class="big-btn green" id="memoryContinueBtn"><span>▶️</span> 继续第 <span id="memoryContinueLevel">1</span> 关</button>
         <div class="level-picker">
             <div class="level-picker-label">🔍 跳转到指定关卡（1-1000）</div>
@@ -511,7 +505,6 @@ body {
         </div>
     </div>
 
-    <!-- 侦探寻宝隐藏关卡 -->
     <div id="detective-game" class="screen hidden">
         <div class="level-bar">
             <div class="level-badge" id="detectiveLevelBadge">🕵️ 隐藏关卡</div>
@@ -856,17 +849,14 @@ function recordWord(progress, saveFn, word, level) {
 // ============================================================
 // 侦探寻宝模块（隐藏关卡，每5关触发）
 // ============================================================
-const DETECTIVE_TRIGGER_INTERVAL = 5; // 每5关触发一次
-
-// 侦探徽章 emoji 池
+const DETECTIVE_TRIGGER_INTERVAL = 5;
 const BADGE_POOL = ['🔍','🕵️','🎖️','🏅','🥇','💎','👑','🌟','🔮','🧭'];
 
-// 当前寻宝状态
 let detectiveState = {
     active: false,
-    mode: null,          // 'candy' 或 'memory'
-    returnLevel: 1,      // 完成后回到第几关
-    words: [],           // 要找的词
+    mode: null,
+    returnLevel: 1,
+    words: [],
     currentIndex: 0,
     found: [],
     tryCount: 0,
@@ -875,7 +865,6 @@ let detectiveState = {
     badge: null
 };
 
-// 生成寻宝场景
 function detectiveStart(mode, returnLevel) {
     detectiveState.active = true;
     detectiveState.mode = mode;
@@ -885,24 +874,19 @@ function detectiveStart(mode, returnLevel) {
     detectiveState.tryCount = 0;
     detectiveState.starsEarned = 0;
 
-    // 本关寻宝单词：从词库随机取 4 个
     const shuffled = shuffleArray([...WORD_BANK]);
     detectiveState.words = shuffled.slice(0, 4);
 
-    // 徽章
     const badgeIdx = (returnLevel / DETECTIVE_TRIGGER_INTERVAL - 1) % BADGE_POOL.length;
     detectiveState.badge = BADGE_POOL[badgeIdx];
 
-    // 切换画面
     hideAllScreens();
     document.getElementById('detective-game').classList.remove('hidden');
 
-    // 更新 HUD
     document.getElementById('detectiveLevelBadge').textContent = `🕵️ 隐藏关卡 · 第 ${returnLevel} 关奖励`;
     document.getElementById('detectiveFoundCount').textContent = '0';
     document.getElementById('detectiveTryCount').textContent = '0';
     document.getElementById('detectiveCompleteBtn').disabled = true;
-    document.getElementById('detectiveCompleteBtn').textContent = '✅ 完成寻宝';
     document.getElementById('detectiveStarsDisplay').querySelectorAll('.star').forEach(s => {
         s.textContent = '☆';
         s.classList.remove('earned');
@@ -931,7 +915,6 @@ function detectiveRenderScene() {
     const board = document.getElementById('detectiveBoard');
     board.innerHTML = '';
 
-    // 屏幕上放：4 个目标词 + 4 个干扰词 = 8 个
     const targetWords = detectiveState.words;
     const others = WORD_BANK.filter(w => !targetWords.some(t => t.word === w.word));
     const distractors = shuffleArray([...others]).slice(0, 4);
@@ -942,7 +925,6 @@ function detectiveRenderScene() {
         el.className = 'detective-item';
         el.textContent = item.emoji;
         el.dataset.word = item.word;
-        // 随机位置（避开边缘）
         const leftPct = 5 + Math.random() * 78;
         const topPct = 8 + Math.random() * 72;
         el.style.left = leftPct + '%';
@@ -976,13 +958,11 @@ function detectiveOnItemClick(item, el) {
     const target = detectiveState.words[detectiveState.currentIndex];
 
     if (item.word === target.word) {
-        // 正确
         el.classList.add('correct');
         speakWord(target.word, 1.0);
         detectiveState.found.push(target);
         detectiveRenderBackpack();
 
-        // 星星特效
         const rect = el.getBoundingClientRect();
         createStars(rect.left + rect.width / 2, rect.top + rect.height / 2, 5);
 
@@ -995,7 +975,6 @@ function detectiveOnItemClick(item, el) {
             detectiveRenderHint();
 
             if (detectiveState.currentIndex >= detectiveState.words.length) {
-                // 全部找到
                 document.getElementById('detectiveCompleteBtn').disabled = false;
                 document.getElementById('detectiveCompleteBtn').textContent = '✅ 完成寻宝';
                 document.getElementById('detectiveMessage').textContent = '🎉 全部找到了！点击「完成寻宝」领徽章！';
@@ -1006,7 +985,6 @@ function detectiveOnItemClick(item, el) {
             }
         }, 700);
     } else {
-        // 错误
         detectiveState.tryCount++;
         document.getElementById('detectiveTryCount').textContent = detectiveState.tryCount;
         el.classList.add('wrong');
@@ -1025,14 +1003,12 @@ function detectiveOnItemClick(item, el) {
 function detectiveComplete() {
     detectiveState.active = false;
 
-    // 保存徽章到当前模式进度
     const progress = detectiveState.mode === 'candy' ? candyProgress : memoryProgress;
     const saveFn = detectiveState.mode === 'candy' ? candySaveProgress : memorySaveProgress;
     if (!progress.badges) progress.badges = [];
     if (!progress.badges.includes(detectiveState.badge)) {
         progress.badges.push(detectiveState.badge);
     }
-    // 额外奖励 1 星
     if (!progress.bonusStars) progress.bonusStars = 0;
     progress.bonusStars += 1;
     saveFn();
@@ -1040,7 +1016,6 @@ function detectiveComplete() {
     playBadgeSound();
     speakChinese(`太棒了！你获得了侦探徽章！`);
 
-    // 弹窗
     const overlay = document.createElement('div');
     overlay.className = 'overlay';
     overlay.innerHTML = `
@@ -1055,9 +1030,7 @@ function detectiveComplete() {
     document.body.appendChild(overlay);
     document.getElementById('detectiveOkBtn').onclick = () => {
         overlay.remove();
-        // 回到原来的模式
         switchMode(detectiveState.mode);
-        // 自动开始下一关
         if (detectiveState.mode === 'candy') {
             candyStart(detectiveState.returnLevel + 1);
         } else {
@@ -1082,9 +1055,7 @@ document.getElementById('detectiveSpeakBtn').addEventListener('click', () => {
 document.getElementById('detectiveCompleteBtn').addEventListener('click', detectiveComplete);
 document.getElementById('detectiveSkipBtn').addEventListener('click', detectiveSkip);
 
-// 检查是否应该触发隐藏关卡
 function shouldTriggerDetective(level, progress) {
-    // 每5关触发一次，且未触发过
     if (level % DETECTIVE_TRIGGER_INTERVAL !== 0) return false;
     if (!progress.detectiveTriggered) progress.detectiveTriggered = [];
     if (progress.detectiveTriggered.includes(level)) return false;
@@ -1369,7 +1340,6 @@ function candyCheckComplete() {
         createConfetti(30);
         speakEncouragement(stars);
 
-        // 检查是否触发隐藏关卡
         const shouldTrigger = shouldTriggerDetective(candyCurrentLevel, candyProgress);
 
         setTimeout(() => {
@@ -1542,34 +1512,33 @@ candyResetBtn.addEventListener('click', () => {
 });
 
 // ============================================================
-// 翻牌记忆模式
+// 翻牌记忆模式（6岁友好版）
 // ============================================================
 const MEMORY_TOTAL_LEVELS = 1000;
 
 function memoryGetLevelConfig(level) {
     let pairCount;
-    if (level <= 100) pairCount = 6;
-    else if (level <= 300) pairCount = 7;
-    else if (level <= 600) pairCount = 8;
-    else if (level <= 900) pairCount = 9;
-    else pairCount = 10;
+    if (level <= 20) pairCount = 3;
+    else if (level <= 60) pairCount = 4;
+    else if (level <= 120) pairCount = 5;
+    else pairCount = 6;
 
     let newWordCount, reviewWordCount;
-    if (level <= 100) { newWordCount = 3; reviewWordCount = pairCount - newWordCount; }
-    else if (level <= 300) { newWordCount = 3; reviewWordCount = pairCount - newWordCount; }
-    else if (level <= 600) { newWordCount = 4; reviewWordCount = pairCount - newWordCount; }
-    else { newWordCount = 4; reviewWordCount = pairCount - newWordCount; }
+    if (level <= 60) { newWordCount = 2; reviewWordCount = pairCount - newWordCount; }
+    else if (level <= 200) { newWordCount = 2; reviewWordCount = pairCount - newWordCount; }
+    else { newWordCount = 3; reviewWordCount = pairCount - newWordCount; }
     if (reviewWordCount < 0) reviewWordCount = 0;
 
     let timeLimit = null;
-    if (level > 300) timeLimit = Math.max(40, 100 - Math.floor((level - 300) / 20));
-    if (level > 800) timeLimit = Math.max(30, 70 - Math.floor((level - 800) / 30));
+    if (level > 500) timeLimit = 90;
+    if (level > 600) timeLimit = 75;
+    if (level > 800) timeLimit = 60;
 
     let phase;
-    if (level <= 100) phase = '入门';
-    else if (level <= 300) phase = '基础';
-    else if (level <= 600) phase = '进阶';
-    else if (level <= 800) phase = '强化';
+    if (level <= 20) phase = '入门';
+    else if (level <= 60) phase = '基础';
+    else if (level <= 200) phase = '进阶';
+    else if (level <= 500) phase = '强化';
     else phase = '大师';
 
     return { pairCount, newWordCount, reviewWordCount, timeLimit, phase };
@@ -1578,7 +1547,7 @@ function memoryGetLevelConfig(level) {
 let memoryProgress = memoryLoadProgress();
 function memoryLoadProgress() {
     try {
-        const saved = localStorage.getItem('memoryProgressV3');
+        const saved = localStorage.getItem('memoryProgressV4');
         if (saved) {
             const d = JSON.parse(saved);
             return {
@@ -1594,7 +1563,7 @@ function memoryLoadProgress() {
     return { currentLevel:1, wordStats:{}, levelStars:{}, badges:[], bonusStars:0, detectiveTriggered:[] };
 }
 function memorySaveProgress() {
-    try { localStorage.setItem('memoryProgressV3', JSON.stringify(memoryProgress)); } catch(e) {}
+    try { localStorage.setItem('memoryProgressV4', JSON.stringify(memoryProgress)); } catch(e) {}
 }
 
 let memoryCurrentLevel = 1;
@@ -1608,6 +1577,8 @@ let memoryTimeLeft = 0;
 let memoryGameActive = false;
 let memoryConfig = null;
 let memoryCurrentWords = [];
+let memoryConsecutiveWrong = 0;
+let memoryHintTimeout = null;
 
 const memoryBoard = document.getElementById('memoryBoard');
 const memoryLevelBadge = document.getElementById('memoryLevelBadge');
@@ -1692,8 +1663,8 @@ function memoryUpdateStars(starCount) {
     });
 }
 function memoryCalculateStars(pairCount, attempts) {
-    if (attempts <= pairCount + 2) return 3;
-    if (attempts <= Math.ceil(pairCount * 1.8)) return 2;
+    if (attempts <= pairCount + 3) return 3;
+    if (attempts <= Math.ceil(pairCount * 2.2)) return 2;
     return 1;
 }
 function memoryRenderLevelInfo() {
@@ -1729,7 +1700,7 @@ function memoryStartTimer() {
         if (!memoryGameActive) return;
         memoryTimeLeft--;
         memoryTimerValue.textContent = memoryTimeLeft;
-        if (memoryTimeLeft <= 10) memoryTimerBox.classList.add('warning');
+        if (memoryTimeLeft <= 15) memoryTimerBox.classList.add('warning');
         if (memoryTimeLeft <= 0) {
             memoryStopTimer();
             memorySetMessage('⏰ 时间到！', false);
@@ -1873,6 +1844,7 @@ function memoryHandleClick(index) {
     const isMatch = (firstCard.pairId === card.pairId) && (firstCard.type !== card.type);
 
     if (isMatch) {
+        memoryConsecutiveWrong = 0;
         setTimeout(() => {
             memoryMatched++;
             memoryCards[firstIdx].matched = true;
@@ -1881,18 +1853,58 @@ function memoryHandleClick(index) {
             memoryRenderBoard();
             memorySetMessage(`✅ ${card.word} 配对成功！`, true);
             recordWord(memoryProgress, memorySaveProgress, card.word, memoryCurrentLevel);
+            setTimeout(() => speakWord(card.word, 1.0), 200);
             memoryLock = false;
             memoryCheckWin();
-        }, 500);
+        }, 600);
     } else {
-        memorySetMessage(`❌ 不一样，再试试`, false);
+        memoryConsecutiveWrong++;
+        memorySetMessage(`❌ 不一样，仔细看看哦～`, false);
         setTimeout(() => {
             memoryFlippedIdx = [];
             memoryRenderBoard();
             memoryLock = false;
             memorySetMessage('💪 继续加油！', true);
-        }, 900);
+
+            if (memoryConsecutiveWrong >= 2) {
+                memoryConsecutiveWrong = 0;
+                memoryShowHint();
+            }
+        }, 1200);
     }
+}
+
+function memoryShowHint() {
+    const unmatched = [];
+    memoryCards.forEach((c, idx) => {
+        if (!c.matched) unmatched.push({ card: c, idx });
+    });
+    if (unmatched.length < 2) return;
+
+    const byPair = {};
+    unmatched.forEach(item => {
+        if (!byPair[item.card.pairId]) byPair[item.card.pairId] = [];
+        byPair[item.card.pairId].push(item);
+    });
+    const pairs = Object.values(byPair).filter(arr => arr.length === 2);
+    if (pairs.length === 0) return;
+
+    const chosen = pairs[Math.floor(Math.random() * pairs.length)];
+    memorySetMessage('💡 看这里！这对是正确的～', true);
+
+    chosen.forEach(item => {
+        const el = document.querySelector(`.card-memory[data-index="${item.idx}"]`);
+        if (el) {
+            el.style.boxShadow = '0 0 0 5px #ffd54f, 0 7px 0 #9b7e5e';
+            el.style.transform = 'scale(1.08)';
+            setTimeout(() => {
+                el.style.boxShadow = '';
+                el.style.transform = '';
+            }, 1500);
+        }
+    });
+
+    setTimeout(() => speakWord(chosen[0].card.word, 0.9), 300);
 }
 
 function memoryCheckWin() {
@@ -1924,6 +1936,7 @@ function memoryCheckWin() {
 
 function memoryLoadLevel(level) {
     memoryStopTimer();
+    if (memoryHintTimeout) { clearTimeout(memoryHintTimeout); memoryHintTimeout = null; }
     if (speechSynth) speechSynth.cancel();
 
     memoryCurrentLevel = level;
@@ -1931,6 +1944,7 @@ function memoryLoadLevel(level) {
     memoryLock = false;
     memoryMatched = 0;
     memoryAttempts = 0;
+    memoryConsecutiveWrong = 0;
     memoryGameActive = true;
 
     memoryConfig = memoryGetLevelConfig(level);
@@ -1953,6 +1967,7 @@ memoryResetLevel.addEventListener('click', () => memoryLoadLevel(memoryCurrentLe
 memoryBackHome.addEventListener('click', () => {
     if (speechSynth) speechSynth.cancel();
     memoryStopTimer();
+    if (memoryHintTimeout) { clearTimeout(memoryHintTimeout); memoryHintTimeout = null; }
     memoryRenderHome();
     hideAllScreens();
     document.getElementById('memory-home').classList.remove('hidden');
