@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>趣味英语 · 主题单词闯关</title>
+    <title>趣味英语 · 单词配对与情景对话</title>
     <style>
         * {
             margin: 0;
@@ -42,7 +42,7 @@
             border: 1px solid #f0e0c0;
         }
 
-        /* ===== 主题选择界面 ===== */
+        /* ===== 屏幕切换 ===== */
         .screen {
             animation: fadeIn 0.4s ease;
         }
@@ -56,6 +56,7 @@
             display: none !important;
         }
 
+        /* ===== 主题选择界面 ===== */
         .main-title {
             text-align: center;
             margin-bottom: 8px;
@@ -191,6 +192,7 @@
             justify-content: center;
             transition: all 0.1s;
             transform: translateY(0);
+            flex-shrink: 0;
         }
 
         .back-btn:active {
@@ -286,7 +288,57 @@
             opacity: 0.6;
         }
 
-        /* ===== 游戏界面 (复用之前的样式) ===== */
+        /* ===== 对话场景卡片 ===== */
+        .dialogue-scenes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .scene-card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px 16px;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #c9b89a, 0 10px 16px rgba(0,0,0,0.18);
+            transition: all 0.12s;
+            border: 3px solid transparent;
+            text-align: center;
+            transform: translateY(0);
+        }
+
+        .scene-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 0 #c9b89a, 0 12px 20px rgba(0,0,0,0.22);
+        }
+
+        .scene-card:active {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #c9b89a;
+        }
+
+        .scene-card .scene-emoji {
+            font-size: 2.8rem;
+            display: block;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+        }
+
+        .scene-card .scene-name {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #2d3e2f;
+            margin-bottom: 4px;
+        }
+
+        .scene-card .scene-desc {
+            font-size: 0.85rem;
+            color: #8a7a5a;
+            font-weight: 600;
+        }
+
+        /* ===== 游戏界面 ===== */
         .level-bar {
             display: flex;
             justify-content: space-between;
@@ -297,6 +349,8 @@
             margin-bottom: 14px;
             box-shadow: 0 6px 0 #0f2c40, 0 8px 14px rgba(0,0,0,0.3);
             color: white;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .level-info {
@@ -381,6 +435,8 @@
             border-radius: 60px;
             box-shadow: inset 0 2px 5px rgba(110, 70, 30, 0.2), 0 5px 0 #ab8e6a;
             border-bottom: 3px solid #b89b78;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
         .stat-item {
@@ -609,7 +665,282 @@
             font-size: 1.5rem;
         }
 
-        /* 弹窗 */
+        /* ===== 对话气泡 ===== */
+        .dialogue-container {
+            background: #fffdf5;
+            border-radius: 28px;
+            padding: 20px 16px;
+            min-height: 320px;
+            max-height: 55vh;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.08);
+            border: 2px solid #f0e0c0;
+            margin-bottom: 16px;
+        }
+
+        .dialogue-line {
+            display: flex;
+            margin-bottom: 16px;
+            animation: slideIn 0.4s ease;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dialogue-line.role-A {
+            flex-direction: row;
+        }
+
+        .dialogue-line.role-B {
+            flex-direction: row-reverse;
+        }
+
+        .dialogue-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            flex-shrink: 0;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            border: 2px solid white;
+        }
+
+        .role-A .dialogue-avatar {
+            background: linear-gradient(135deg, #7bbd8f, #4c7a5e);
+        }
+
+        .role-B .dialogue-avatar {
+            background: linear-gradient(135deg, #ffb3ba, #e88a92);
+        }
+
+        .dialogue-bubble-wrapper {
+            max-width: 75%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .role-A .dialogue-bubble-wrapper {
+            align-items: flex-start;
+        }
+
+        .role-B .dialogue-bubble-wrapper {
+            align-items: flex-end;
+        }
+
+        .dialogue-bubble {
+            background: white;
+            border-radius: 20px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 2px solid #f0e0c0;
+            position: relative;
+        }
+
+        .dialogue-bubble:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+            border-color: #ffd966;
+        }
+
+        .role-A .dialogue-bubble {
+            border-top-left-radius: 4px;
+            background: #e8f5e9;
+            border-color: #a5d6a7;
+        }
+
+        .role-B .dialogue-bubble {
+            border-top-right-radius: 4px;
+            background: #fce4ec;
+            border-color: #f8bbd0;
+        }
+
+        .dialogue-bubble.speaking {
+            animation: bubblePulse 0.6s infinite;
+            border-color: #ffb347;
+            box-shadow: 0 0 0 4px rgba(255, 179, 71, 0.3), 0 6px 14px rgba(0,0,0,0.15);
+        }
+
+        @keyframes bubblePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .dialogue-english {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1f3b4a;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .dialogue-chinese {
+            font-size: 0.85rem;
+            color: #8a7a5a;
+            font-weight: 600;
+        }
+
+        .dialogue-role-tag {
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-top: 6px;
+            display: inline-block;
+        }
+
+        .role-A .dialogue-role-tag {
+            background: #a5d6a7;
+            color: #2e4a3a;
+        }
+
+        .role-B .dialogue-role-tag {
+            background: #f8bbd0;
+            color: #7a3a4a;
+        }
+
+        .dialogue-controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .dialogue-ctrl-btn {
+            background: #ffd966;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 16px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: #4a3a1a;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #c9a53a;
+            transition: all 0.1s;
+            transform: translateY(0);
+            white-space: nowrap;
+        }
+
+        .dialogue-ctrl-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #c9a53a;
+        }
+
+        .dialogue-ctrl-btn.active {
+            background: #7bbd8f;
+            color: white;
+            box-shadow: 0 4px 0 #4c7a5e;
+        }
+
+        .dialogue-ctrl-btn.stop-mode {
+            background: #ff8a80;
+            color: white;
+            box-shadow: 0 4px 0 #c62828;
+        }
+
+        /* ===== 小测验 ===== */
+        .quiz-container {
+            background: #fffdf5;
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.08);
+            border: 2px solid #f0e0c0;
+            margin-bottom: 16px;
+        }
+
+        .quiz-question {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #1f4e6f;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            background: white;
+            border: 3px solid #e0d0b0;
+            border-radius: 18px;
+            padding: 14px 18px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #2d3e2f;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-align: left;
+            box-shadow: 0 4px 0 #c9b89a;
+            transform: translateY(0);
+        }
+
+        .quiz-option:hover {
+            background: #fff8e7;
+            border-color: #ffd966;
+        }
+
+        .quiz-option:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #c9b89a;
+        }
+
+        .quiz-option.correct {
+            background: #c8e6c9;
+            border-color: #4caf50;
+            box-shadow: 0 4px 0 #2e7d32;
+        }
+
+        .quiz-option.wrong {
+            background: #ffcdd2;
+            border-color: #e53935;
+            box-shadow: 0 4px 0 #b71c1c;
+        }
+
+        .quiz-option.disabled {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .quiz-progress {
+            text-align: center;
+            font-weight: 700;
+            color: #8a7a5a;
+            margin-bottom: 12px;
+        }
+
+        .quiz-result {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .quiz-result .result-emoji {
+            font-size: 4rem;
+            margin-bottom: 12px;
+        }
+
+        .quiz-result h3 {
+            font-size: 1.6rem;
+            color: #1f4e6f;
+            margin-bottom: 8px;
+        }
+
+        .quiz-result p {
+            font-size: 1.1rem;
+            color: #6a5a3a;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* ===== 弹窗 ===== */
         .overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -721,7 +1052,7 @@
             box-shadow: 0 3px 0 #ab8e6a;
         }
 
-        /* 小屏幕适配 */
+        /* ===== 小屏幕适配 ===== */
         @media (max-width: 650px) {
             .game-panel { padding: 16px; }
             .board { gap: 9px; }
@@ -743,6 +1074,16 @@
             .theme-card { padding: 16px 12px; }
             .theme-card .theme-emoji { font-size: 2.4rem; }
             .theme-card .theme-name { font-size: 1.05rem; }
+            .dialogue-scenes { gap: 10px; }
+            .scene-card { padding: 14px 10px; }
+            .scene-card .scene-emoji { font-size: 2.2rem; }
+            .scene-card .scene-name { font-size: 1rem; }
+            .scene-card .scene-desc { font-size: 0.75rem; }
+            .dialogue-english { font-size: 1rem; }
+            .dialogue-avatar { width: 36px; height: 36px; font-size: 1.3rem; }
+            .dialogue-controls { gap: 6px; }
+            .dialogue-ctrl-btn { padding: 6px 12px; font-size: 0.8rem; }
+            .level-select-title h2 { font-size: 1.3rem; }
         }
 
         @media (max-width: 450px) {
@@ -779,7 +1120,7 @@
                     <span class="star-icon">⭐</span>
                     <span>总星数</span>
                     <span id="totalStarsCount">0</span>
-                    <span>/ 36</span>
+                    <span>/ 48</span>
                 </div>
 
                 <div class="themes-grid" id="themesGrid"></div>
@@ -797,7 +1138,45 @@
                 <div class="levels-grid" id="levelsGrid"></div>
             </div>
 
-            <!-- ========== 3. 游戏界面 ========== -->
+            <!-- ========== 3. 对话场景选择界面 ========== -->
+            <div id="screen-dialogue" class="screen hidden">
+                <div class="level-select-header">
+                    <button class="back-btn" id="backFromDialogue">←</button>
+                    <div class="level-select-title">
+                        <h2>💬 情景对话</h2>
+                        <p>选择场景，练习日常英语对话</p>
+                    </div>
+                </div>
+                <div class="dialogue-scenes" id="dialogueScenes"></div>
+            </div>
+
+            <!-- ========== 4. 对话学习界面 ========== -->
+            <div id="screen-dialogue-learn" class="screen hidden">
+                <div class="level-bar">
+                    <div class="level-info">
+                        <button class="back-btn" id="backToScenes" style="width:36px;height:36px;font-size:1rem;">←</button>
+                        <span class="level-title" id="dialogueTitle">场景名称</span>
+                    </div>
+                    <div class="dialogue-controls">
+                        <button class="dialogue-ctrl-btn" id="playAllBtn" title="播放全部">▶️ 播放</button>
+                        <button class="dialogue-ctrl-btn" id="roleABtn" title="扮演A">👦 我是A</button>
+                        <button class="dialogue-ctrl-btn" id="roleBBtn" title="扮演B">👧 我是B</button>
+                    </div>
+                </div>
+
+                <div class="dialogue-container" id="dialogueContainer"></div>
+
+                <div class="bottom-area">
+                    <button class="reset-btn" id="quizBtn" style="flex:1;">
+                        <span class="btn-icon">📝</span> 做个小测验
+                    </button>
+                    <button class="reset-btn" id="backToSceneList" style="background:#e6d8c0;color:#3e3e2e;box-shadow:0 9px 0 #ab8e6a;">
+                        <span class="btn-icon">📋</span> 返回场景
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========== 5. 单词游戏界面 ========== -->
             <div id="screen-game" class="screen hidden">
                 <div class="level-bar">
                     <div class="level-info">
@@ -852,7 +1231,7 @@
     <script>
         (function() {
             // ============================================================
-            // 1. 主题词库定义
+            // 1. 单词主题数据
             // ============================================================
             const THEMES = {
                 animals: {
@@ -860,7 +1239,6 @@
                     name: '动物乐园',
                     emoji: '🐾',
                     desc: '认识可爱的动物朋友',
-                    color: '#ffd966',
                     words: [
                         { word: 'cat', emoji: '🐱' },
                         { word: 'dog', emoji: '🐶' },
@@ -881,7 +1259,6 @@
                     name: '美食广场',
                     emoji: '🍎',
                     desc: '美味食物大集合',
-                    color: '#ffb3ba',
                     words: [
                         { word: 'apple', emoji: '🍎' },
                         { word: 'banana', emoji: '🍌' },
@@ -902,7 +1279,6 @@
                     name: '颜色形状',
                     emoji: '🎨',
                     desc: '色彩与形状的世界',
-                    color: '#bae1ff',
                     words: [
                         { word: 'red', emoji: '🔴' },
                         { word: 'blue', emoji: '🔵' },
@@ -923,7 +1299,6 @@
                     name: '日常生活',
                     emoji: '🏠',
                     desc: '身边常用物品',
-                    color: '#c7f0d8',
                     words: [
                         { word: 'house', emoji: '🏠' },
                         { word: 'book', emoji: '📖' },
@@ -942,7 +1317,7 @@
             };
 
             // ============================================================
-            // 2. 每个主题的关卡配置 (4关, 递进难度)
+            // 2. 单词关卡配置 (每个主题 4 关)
             // ============================================================
             const THEME_LEVELS = [
                 { level: 1, name: '轻松入门', pairs: 3, timeLimit: null, decoys: 0 },
@@ -952,10 +1327,97 @@
             ];
 
             // ============================================================
-            // 3. 全局状态
+            // 3. 对话场景数据
             // ============================================================
-            let currentTheme = null;        // 当前主题对象
-            let currentLevelIndex = 0;      // 当前关卡索引
+            const DIALOGUE_SCENES = [
+                {
+                    id: 'greeting',
+                    name: '打招呼',
+                    emoji: '👋',
+                    desc: '第一次见面怎么说',
+                    lines: [
+                        { role: 'A', en: 'Hello! How are you?', zh: '你好！你好吗？', avatar: '👦' },
+                        { role: 'B', en: "I'm fine, thank you. And you?", zh: '我很好，谢谢。你呢？', avatar: '👧' },
+                        { role: 'A', en: "I'm fine, too. What's your name?", zh: '我也很好。你叫什么名字？', avatar: '👦' },
+                        { role: 'B', en: 'My name is Lily. Nice to meet you.', zh: '我叫莉莉。很高兴认识你。', avatar: '👧' },
+                        { role: 'A', en: 'Nice to meet you, too. I am Tom.', zh: '我也很高兴认识你。我是汤姆。', avatar: '👦' }
+                    ]
+                },
+                {
+                    id: 'school',
+                    name: '在学校',
+                    emoji: '🏫',
+                    desc: '同学之间的日常',
+                    lines: [
+                        { role: 'A', en: 'Good morning, Lily!', zh: '早上好，莉莉！', avatar: '👦' },
+                        { role: 'B', en: 'Good morning, Tom! How was your weekend?', zh: '早上好，汤姆！周末过得怎么样？', avatar: '👧' },
+                        { role: 'A', en: 'It was great! I went to the park.', zh: '很棒！我去了公园。', avatar: '👦' },
+                        { role: 'B', en: 'That sounds fun. What did you do there?', zh: '听起来很有趣。你在那里做了什么？', avatar: '👧' },
+                        { role: 'A', en: 'I played football with my friends.', zh: '我和朋友们踢了足球。', avatar: '👦' },
+                        { role: 'B', en: 'Cool! I love football, too.', zh: '酷！我也喜欢足球。', avatar: '👧' }
+                    ]
+                },
+                {
+                    id: 'restaurant',
+                    name: '在餐厅',
+                    emoji: '🍽️',
+                    desc: '点餐和结账',
+                    lines: [
+                        { role: 'A', en: 'Welcome! What would you like to eat?', zh: '欢迎光临！您想吃点什么？', avatar: '🧑‍🍳' },
+                        { role: 'B', en: 'I would like a hamburger, please.', zh: '我想要一个汉堡，谢谢。', avatar: '👧' },
+                        { role: 'A', en: 'Would you like something to drink?', zh: '您想喝点什么吗？', avatar: '🧑‍🍳' },
+                        { role: 'B', en: 'Yes, a glass of orange juice, please.', zh: '是的，请来一杯橙汁。', avatar: '👧' },
+                        { role: 'A', en: 'OK. That will be ten dollars.', zh: '好的。一共十美元。', avatar: '🧑‍🍳' },
+                        { role: 'B', en: 'Here you are.', zh: '给你。', avatar: '👧' }
+                    ]
+                },
+                {
+                    id: 'shopping',
+                    name: '购物',
+                    emoji: '🛍️',
+                    desc: '买衣服和问价格',
+                    lines: [
+                        { role: 'A', en: 'Can I help you?', zh: '需要帮忙吗？', avatar: '🧑‍💼' },
+                        { role: 'B', en: 'Yes, how much is this T-shirt?', zh: '是的，这件T恤多少钱？', avatar: '👧' },
+                        { role: 'A', en: 'It is twenty dollars.', zh: '二十美元。', avatar: '🧑‍💼' },
+                        { role: 'B', en: 'Do you have it in blue?', zh: '有蓝色的吗？', avatar: '👧' },
+                        { role: 'A', en: 'Yes, here you are.', zh: '有的，给你。', avatar: '🧑‍💼' },
+                        { role: 'B', en: "I'll take it. Thank you!", zh: '我买了。谢谢！', avatar: '👧' }
+                    ]
+                },
+                {
+                    id: 'weather',
+                    name: '聊天气',
+                    emoji: '🌤️',
+                    desc: '谈论今天的天气',
+                    lines: [
+                        { role: 'A', en: "What's the weather like today?", zh: '今天天气怎么样？', avatar: '👦' },
+                        { role: 'B', en: "It's sunny and warm.", zh: '晴朗又温暖。', avatar: '👧' },
+                        { role: 'A', en: 'Great! Let\'s go to the park.', zh: '太好了！我们去公园吧。', avatar: '👦' },
+                        { role: 'B', en: 'Good idea! I like sunny days.', zh: '好主意！我喜欢晴天。', avatar: '👧' },
+                        { role: 'A', en: 'Me too. The sky is so blue.', zh: '我也是。天空真蓝。', avatar: '👦' }
+                    ]
+                },
+                {
+                    id: 'family',
+                    name: '我的家庭',
+                    emoji: '👨‍👩‍👧',
+                    desc: '介绍家庭成员',
+                    lines: [
+                        { role: 'A', en: 'How many people are there in your family?', zh: '你家有几口人？', avatar: '👦' },
+                        { role: 'B', en: 'There are four people in my family.', zh: '我家有四口人。', avatar: '👧' },
+                        { role: 'A', en: 'Who are they?', zh: '他们是谁？', avatar: '👦' },
+                        { role: 'B', en: 'My father, my mother, my brother and me.', zh: '我爸爸、妈妈、哥哥和我。', avatar: '👧' },
+                        { role: 'A', en: 'That is a happy family!', zh: '真是个幸福的家庭！', avatar: '👦' }
+                    ]
+                }
+            ];
+
+            // ============================================================
+            // 4. 全局状态
+            // ============================================================
+            let currentTheme = null;
+            let currentLevelIndex = 0;
             let cards = [];
             let selectedCardIndex = null;
             let matchedPairs = 0;
@@ -967,19 +1429,33 @@
             let gameActive = false;
             let soundEnabled = true;
 
-            // 进度保存: { themeId: { levelIndex: starCount } }
+            // 对话模块状态
+            let currentScene = null;
+            let currentDialogueMode = 'normal';
+            let isPlayingAll = false;
+            let playAllIndex = 0;
+            let playAllTimer = null;
+
+            // 进度保存
             let progress = loadProgress();
 
-            // DOM 元素
+            // ============================================================
+            // 5. DOM 元素
+            // ============================================================
             const screenTheme = document.getElementById('screen-theme');
             const screenLevel = document.getElementById('screen-level');
+            const screenDialogue = document.getElementById('screen-dialogue');
+            const screenDialogueLearn = document.getElementById('screen-dialogue-learn');
             const screenGame = document.getElementById('screen-game');
+
             const themesGrid = document.getElementById('themesGrid');
             const levelsGrid = document.getElementById('levelsGrid');
+            const dialogueScenes = document.getElementById('dialogueScenes');
+            const dialogueContainer = document.getElementById('dialogueContainer');
+            const dialogueTitle = document.getElementById('dialogueTitle');
             const totalStarsCount = document.getElementById('totalStarsCount');
             const levelSelectTitle = document.getElementById('levelSelectTitle');
             const levelSelectDesc = document.getElementById('levelSelectDesc');
-            const backToTheme = document.getElementById('backToTheme');
 
             const boardEl = document.getElementById('board');
             const pairsMatchedSpan = document.getElementById('pairsMatched');
@@ -997,16 +1473,23 @@
             const gameThemeEmoji = document.getElementById('gameThemeEmoji');
             const gameTitle = document.getElementById('gameTitle');
 
+            const playAllBtn = document.getElementById('playAllBtn');
+            const roleABtn = document.getElementById('roleABtn');
+            const roleBBtn = document.getElementById('roleBBtn');
+            const quizBtn = document.getElementById('quizBtn');
+            const backToSceneList = document.getElementById('backToSceneList');
+            const backToScenes = document.getElementById('backToScenes');
+            const backFromDialogue = document.getElementById('backFromDialogue');
+            const backToTheme = document.getElementById('backToTheme');
+
             // ============================================================
-            // 4. 进度存取
+            // 6. 进度存取
             // ============================================================
             function loadProgress() {
                 try {
                     const saved = localStorage.getItem('wordGameProgress');
                     return saved ? JSON.parse(saved) : {};
-                } catch (e) {
-                    return {};
-                }
+                } catch (e) { return {}; }
             }
 
             function saveProgress() {
@@ -1022,20 +1505,13 @@
 
             function getTotalStars() {
                 let total = 0;
-                Object.keys(THEMES).forEach(id => {
-                    total += getThemeStarCount(id);
-                });
+                Object.keys(THEMES).forEach(id => { total += getThemeStarCount(id); });
                 return total;
-            }
-
-            function getMaxStars() {
-                return Object.keys(THEMES).length * THEME_LEVELS.length * 3;
             }
 
             function isLevelUnlocked(themeId, levelIndex) {
                 if (levelIndex === 0) return true;
                 const themeProgress = progress[themeId] || {};
-                // 上一关至少获得 1 星才解锁下一关
                 return (themeProgress[levelIndex - 1] || 0) >= 1;
             }
 
@@ -1049,24 +1525,25 @@
             }
 
             // ============================================================
-            // 5. 界面切换
+            // 7. 界面切换
             // ============================================================
             function showScreen(screen) {
                 screenTheme.classList.add('hidden');
                 screenLevel.classList.add('hidden');
+                screenDialogue.classList.add('hidden');
+                screenDialogueLearn.classList.add('hidden');
                 screenGame.classList.add('hidden');
                 screen.classList.remove('hidden');
             }
 
-            // 渲染主题选择界面
+            // ============================================================
+            // 8. 主题选择界面
+            // ============================================================
             function renderThemeScreen() {
                 totalStarsCount.textContent = getTotalStars();
                 themesGrid.innerHTML = '';
 
                 Object.values(THEMES).forEach(theme => {
-                    const stars = getThemeStarCount(theme.id);
-                    const maxStars = THEME_LEVELS.length * 3;
-
                     const card = document.createElement('div');
                     card.className = 'theme-card';
                     card.innerHTML = `
@@ -1088,9 +1565,28 @@
                     });
                     themesGrid.appendChild(card);
                 });
+
+                // 添加对话练习卡片
+                const dialogueCard = document.createElement('div');
+                dialogueCard.className = 'theme-card';
+                dialogueCard.style.gridColumn = '1 / -1';
+                dialogueCard.style.background = 'linear-gradient(135deg, #fff9c4, #ffe082)';
+                dialogueCard.innerHTML = `
+                    <span class="theme-emoji">💬</span>
+                    <div class="theme-name">情景对话</div>
+                    <div class="theme-desc">练习日常英语对话，学会开口说</div>
+                    <div class="theme-progress" style="color:#ff9800;font-weight:800;">6 个生活场景</div>
+                `;
+                dialogueCard.addEventListener('click', () => {
+                    renderDialogueScenes();
+                    showScreen(screenDialogue);
+                });
+                themesGrid.appendChild(dialogueCard);
             }
 
-            // 渲染关卡选择界面
+            // ============================================================
+            // 9. 关卡选择界面
+            // ============================================================
             function renderLevelScreen() {
                 if (!currentTheme) return;
                 levelSelectTitle.textContent = `${currentTheme.emoji} ${currentTheme.name}`;
@@ -1124,9 +1620,9 @@
             }
 
             // ============================================================
-            // 6. 语音朗读
+            // 10. 语音朗读
             // ============================================================
-            function speakWord(word) {
+            function speakWord(word, pitch = 1.05) {
                 if (!soundEnabled) return;
                 if (!window.speechSynthesis) return;
 
@@ -1134,7 +1630,7 @@
                 const utterance = new SpeechSynthesisUtterance(word);
                 utterance.lang = 'en-US';
                 utterance.rate = 0.85;
-                utterance.pitch = 1.05;
+                utterance.pitch = pitch;
 
                 const voices = window.speechSynthesis.getVoices();
                 const englishVoice = voices.find(v => v.lang.startsWith('en-US')) ||
@@ -1159,7 +1655,7 @@
             }
 
             // ============================================================
-            // 7. 游戏逻辑
+            // 11. 单词配对游戏逻辑
             // ============================================================
             function shuffleArray(arr) {
                 for (let i = arr.length - 1; i > 0; i--) {
@@ -1178,20 +1674,12 @@
                 const newCards = [];
                 pairs.forEach((pair, pairId) => {
                     newCards.push({
-                        pairId: pairId,
-                        type: 'word',
-                        content: pair.word,
-                        word: pair.word,
-                        matched: false,
-                        isDecoy: false,
+                        pairId: pairId, type: 'word', content: pair.word, word: pair.word,
+                        matched: false, isDecoy: false,
                     });
                     newCards.push({
-                        pairId: pairId,
-                        type: 'emoji',
-                        content: pair.emoji,
-                        word: pair.word,
-                        matched: false,
-                        isDecoy: false,
+                        pairId: pairId, type: 'emoji', content: pair.emoji, word: pair.word,
+                        matched: false, isDecoy: false,
                     });
                 });
 
@@ -1199,15 +1687,11 @@
                     const decoyEmojis = ['👻', '🎃', '🦄', '🐉', '🍀', '💎', '🔮', '🎈'];
                     for (let i = 0; i < decoyCount; i++) {
                         newCards.push({
-                            pairId: -1,
-                            type: 'emoji',
-                            content: decoyEmojis[i % decoyEmojis.length],
-                            matched: false,
-                            isDecoy: true,
+                            pairId: -1, type: 'emoji', content: decoyEmojis[i % decoyEmojis.length],
+                            matched: false, isDecoy: true,
                         });
                     }
                 }
-
                 return shuffleArray(newCards);
             }
 
@@ -1318,20 +1802,15 @@
                 `;
                 document.body.appendChild(overlay);
                 document.getElementById('retryLevelBtn').addEventListener('click', () => {
-                    overlay.remove();
-                    resetLevel();
+                    overlay.remove(); resetLevel();
                 });
                 document.getElementById('backToLevelsBtn').addEventListener('click', () => {
-                    overlay.remove();
-                    renderLevelScreen();
-                    showScreen(screenLevel);
+                    overlay.remove(); renderLevelScreen(); showScreen(screenLevel);
                 });
             }
 
             function showLevelCompleteModal(starCount) {
-                const config = THEME_LEVELS[currentLevelIndex];
                 const isLastLevel = currentLevelIndex === THEME_LEVELS.length - 1;
-
                 const overlay = document.createElement('div');
                 overlay.className = 'overlay';
                 overlay.innerHTML = `
@@ -1355,19 +1834,14 @@
                 const nextBtn = document.getElementById('nextLevelBtn');
                 if (nextBtn) {
                     nextBtn.addEventListener('click', () => {
-                        overlay.remove();
-                        currentLevelIndex++;
-                        resetLevel();
+                        overlay.remove(); currentLevelIndex++; resetLevel();
                     });
                 }
                 document.getElementById('retryBtn').addEventListener('click', () => {
-                    overlay.remove();
-                    resetLevel();
+                    overlay.remove(); resetLevel();
                 });
                 document.getElementById('backToLevelsBtn').addEventListener('click', () => {
-                    overlay.remove();
-                    renderLevelScreen();
-                    showScreen(screenLevel);
+                    overlay.remove(); renderLevelScreen(); showScreen(screenLevel);
                 });
             }
 
@@ -1378,21 +1852,13 @@
                     gameActive = false;
                     const starCount = calculateStars(config.pairs, attemptsCount);
                     updateStarsDisplay(starCount);
-
-                    // 保存进度
                     setLevelStars(currentTheme.id, currentLevelIndex, starCount);
-
-                    setTimeout(() => {
-                        showLevelCompleteModal(starCount);
-                    }, 500);
+                    setTimeout(() => { showLevelCompleteModal(starCount); }, 500);
                 }
             }
 
             function renderBoard() {
-                if (timeoutId) {
-                    clearTimeout(timeoutId);
-                    timeoutId = null;
-                }
+                if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
                 boardEl.innerHTML = '';
                 cards.forEach((card, index) => {
                     const cardEl = document.createElement('div');
@@ -1433,7 +1899,6 @@
                 const card = cards[index];
                 if (card.matched) return;
 
-                // 干扰卡
                 if (card.isDecoy) {
                     cards[index].matched = true;
                     const decoyEl = document.querySelector(`.card[data-index="${index}"]`);
@@ -1454,11 +1919,9 @@
                 const cardEl = document.querySelector(`.card[data-index="${index}"]`);
                 if (!cardEl) return;
 
-                // 点击朗读
                 if (card.type === 'word') speakWord(card.content);
                 if (card.type === 'emoji' && card.word) speakWord(card.word);
 
-                // 未选中任何卡片
                 if (selectedCardIndex === null) {
                     selectedCardIndex = index;
                     cardEl.classList.add('selected');
@@ -1470,7 +1933,6 @@
                 const firstCard = cards[firstIndex];
                 const firstEl = document.querySelector(`.card[data-index="${firstIndex}"]`);
 
-                // 点击同一张卡片
                 if (firstIndex === index) {
                     clearSelected();
                     setMessage('✨ 已取消选择', true);
@@ -1528,10 +1990,7 @@
 
             function resetLevel() {
                 stopTimer();
-                if (timeoutId) {
-                    clearTimeout(timeoutId);
-                    timeoutId = null;
-                }
+                if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
                 if (window.speechSynthesis) window.speechSynthesis.cancel();
 
                 selectedCardIndex = null;
@@ -1548,34 +2007,262 @@
 
                 renderBoard();
 
-                if (config.timeLimit) {
-                    startTimer();
-                } else {
-                    gameActive = true;
-                }
+                if (config.timeLimit) startTimer();
+                else gameActive = true;
                 setMessage('✨ 点击卡片，配对单词和图片吧！', true);
                 updateStats();
             }
 
-            // 开始游戏 (从关卡选择进入)
             function startGame() {
                 showScreen(screenGame);
                 resetLevel();
             }
 
             // ============================================================
-            // 8. 事件绑定
+            // 12. 对话练习逻辑
+            // ============================================================
+            function renderDialogueScenes() {
+                dialogueScenes.innerHTML = '';
+                DIALOGUE_SCENES.forEach(scene => {
+                    const card = document.createElement('div');
+                    card.className = 'scene-card';
+                    card.innerHTML = `
+                        <span class="scene-emoji">${scene.emoji}</span>
+                        <div class="scene-name">${scene.name}</div>
+                        <div class="scene-desc">${scene.desc}</div>
+                    `;
+                    card.addEventListener('click', () => {
+                        currentScene = scene;
+                        currentDialogueMode = 'normal';
+                        isPlayingAll = false;
+                        renderDialogueLearning();
+                        showScreen(screenDialogueLearn);
+                    });
+                    dialogueScenes.appendChild(card);
+                });
+            }
+
+            function renderDialogueLearning() {
+                if (!currentScene) return;
+                dialogueTitle.textContent = `${currentScene.emoji} ${currentScene.name}`;
+                renderDialogueLines();
+                updateDialogueControls();
+            }
+
+            function renderDialogueLines() {
+                dialogueContainer.innerHTML = '';
+                currentScene.lines.forEach((line, index) => {
+                    const lineEl = document.createElement('div');
+                    lineEl.className = `dialogue-line role-${line.role}`;
+                    lineEl.innerHTML = `
+                        <div class="dialogue-avatar">${line.avatar}</div>
+                        <div class="dialogue-bubble-wrapper">
+                            <div class="dialogue-bubble" data-index="${index}">
+                                <div class="dialogue-english">${line.en}</div>
+                                <div class="dialogue-chinese">${line.zh}</div>
+                            </div>
+                            <span class="dialogue-role-tag">${line.role === 'A' ? '角色 A' : '角色 B'}</span>
+                        </div>
+                    `;
+                    const bubble = lineEl.querySelector('.dialogue-bubble');
+                    bubble.addEventListener('click', () => speakDialogueLine(index));
+                    dialogueContainer.appendChild(lineEl);
+                });
+            }
+
+            function speakDialogueLine(index) {
+                if (!soundEnabled) return;
+                if (!window.speechSynthesis) return;
+
+                const line = currentScene.lines[index];
+                if (currentDialogueMode === 'roleA' && line.role !== 'A') return;
+                if (currentDialogueMode === 'roleB' && line.role !== 'B') return;
+
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(line.en);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.85;
+                utterance.pitch = line.role === 'A' ? 1.05 : 1.15;
+
+                const voices = window.speechSynthesis.getVoices();
+                const englishVoice = voices.find(v => v.lang.startsWith('en-US')) ||
+                                     voices.find(v => v.lang.startsWith('en'));
+                if (englishVoice) utterance.voice = englishVoice;
+
+                const bubble = document.querySelector(`.dialogue-bubble[data-index="${index}"]`);
+                if (bubble) {
+                    bubble.classList.add('speaking');
+                    utterance.onend = () => bubble.classList.remove('speaking');
+                    utterance.onerror = () => bubble.classList.remove('speaking');
+                }
+                window.speechSynthesis.speak(utterance);
+            }
+
+            function playAllDialogue() {
+                if (isPlayingAll) { stopPlayAll(); return; }
+                if (!soundEnabled) return;
+
+                isPlayingAll = true;
+                playAllIndex = 0;
+                playAllBtn.textContent = '⏹️ 停止';
+                playAllBtn.classList.add('stop-mode');
+
+                function playNext() {
+                    if (!isPlayingAll || playAllIndex >= currentScene.lines.length) {
+                        stopPlayAll();
+                        return;
+                    }
+                    const line = currentScene.lines[playAllIndex];
+                    const shouldPlay = currentDialogueMode === 'normal' ||
+                                      (currentDialogueMode === 'roleA' && line.role === 'A') ||
+                                      (currentDialogueMode === 'roleB' && line.role === 'B');
+                    if (!shouldPlay) {
+                        playAllIndex++;
+                        playNext();
+                        return;
+                    }
+                    speakDialogueLine(playAllIndex);
+                    playAllIndex++;
+                    const duration = Math.max(2000, line.en.length * 90);
+                    playAllTimer = setTimeout(playNext, duration);
+                }
+                playNext();
+            }
+
+            function stopPlayAll() {
+                isPlayingAll = false;
+                if (playAllTimer) { clearTimeout(playAllTimer); playAllTimer = null; }
+                if (window.speechSynthesis) window.speechSynthesis.cancel();
+                playAllBtn.textContent = '▶️ 播放';
+                playAllBtn.classList.remove('stop-mode');
+                document.querySelectorAll('.dialogue-bubble.speaking').forEach(b => b.classList.remove('speaking'));
+            }
+
+            function updateDialogueControls() {
+                roleABtn.classList.toggle('active', currentDialogueMode === 'roleA');
+                roleBBtn.classList.toggle('active', currentDialogueMode === 'roleB');
+            }
+
+            function setDialogueMode(mode) {
+                currentDialogueMode = (currentDialogueMode === mode) ? 'normal' : mode;
+                stopPlayAll();
+                updateDialogueControls();
+            }
+
+            function startQuiz() {
+                stopPlayAll();
+                const questions = [];
+                const shuffled = [...currentScene.lines].sort(() => Math.random() - 0.5);
+                const questionCount = Math.min(4, shuffled.length);
+
+                for (let i = 0; i < questionCount; i++) {
+                    const correctLine = shuffled[i];
+                    const otherLines = DIALOGUE_SCENES
+                        .filter(s => s.id !== currentScene.id)
+                        .flatMap(s => s.lines);
+                    const wrongOptions = otherLines
+                        .filter(l => l.zh !== correctLine.zh)
+                        .sort(() => Math.random() - 0.5)
+                        .slice(0, 3);
+                    const options = [
+                        { text: correctLine.zh, correct: true },
+                        ...wrongOptions.map(l => ({ text: l.zh, correct: false }))
+                    ].sort(() => Math.random() - 0.5);
+                    questions.push({
+                        question: `"${correctLine.en}" 是什么意思？`,
+                        options: options
+                    });
+                }
+                renderQuiz(questions, 0, 0);
+            }
+
+            function renderQuiz(questions, currentIndex, score) {
+                if (currentIndex >= questions.length) {
+                    renderQuizResult(score, questions.length);
+                    return;
+                }
+                const q = questions[currentIndex];
+                dialogueContainer.innerHTML = `
+                    <div class="quiz-container">
+                        <div class="quiz-progress">第 ${currentIndex + 1} / ${questions.length} 题</div>
+                        <div class="quiz-question">${q.question}</div>
+                        <div class="quiz-options" id="quizOptions"></div>
+                    </div>
+                `;
+                const optionsEl = document.getElementById('quizOptions');
+                q.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'quiz-option';
+                    btn.textContent = opt.text;
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.quiz-option').forEach(b => b.classList.add('disabled'));
+                        if (opt.correct) {
+                            btn.classList.add('correct');
+                            score++;
+                        } else {
+                            btn.classList.add('wrong');
+                            q.options.forEach((o, idx) => {
+                                if (o.correct) {
+                                    document.querySelectorAll('.quiz-option')[idx].classList.add('correct');
+                                }
+                            });
+                        }
+                        setTimeout(() => { renderQuiz(questions, currentIndex + 1, score); }, 1200);
+                    });
+                    optionsEl.appendChild(btn);
+                });
+            }
+
+            function renderQuizResult(score, total) {
+                const percentage = (score / total) * 100;
+                let emoji, title;
+                if (percentage >= 80) { emoji = '🏆'; title = '太棒了！'; }
+                else if (percentage >= 60) { emoji = '😊'; title = '不错哦！'; }
+                else { emoji = '💪'; title = '继续加油！'; }
+
+                dialogueContainer.innerHTML = `
+                    <div class="quiz-result">
+                        <div class="result-emoji">${emoji}</div>
+                        <h3>${title}</h3>
+                        <p>答对 ${score} / ${total} 题</p>
+                        <div class="modal-buttons" style="justify-content:center;">
+                            <button class="modal-btn primary" id="quizAgainBtn">🔄 再做一次</button>
+                            <button class="modal-btn secondary" id="quizBackBtn">📖 回到对话</button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('quizAgainBtn').addEventListener('click', startQuiz);
+                document.getElementById('quizBackBtn').addEventListener('click', () => { renderDialogueLines(); });
+            }
+
+            // ============================================================
+            // 13. 事件绑定
             // ============================================================
             backToTheme.addEventListener('click', () => {
                 renderThemeScreen();
                 showScreen(screenTheme);
             });
-
-            resetBtn.addEventListener('click', () => {
-                resetLevel();
+            backFromDialogue.addEventListener('click', () => {
+                renderThemeScreen();
+                showScreen(screenTheme);
+            });
+            backToScenes.addEventListener('click', () => {
+                stopPlayAll();
+                renderDialogueScenes();
+                showScreen(screenDialogue);
+            });
+            backToSceneList.addEventListener('click', () => {
+                stopPlayAll();
+                renderDialogueScenes();
+                showScreen(screenDialogue);
             });
 
+            resetBtn.addEventListener('click', resetLevel);
             soundToggle.addEventListener('click', toggleSound);
+            playAllBtn.addEventListener('click', playAllDialogue);
+            roleABtn.addEventListener('click', () => setDialogueMode('roleA'));
+            roleBBtn.addEventListener('click', () => setDialogueMode('roleB'));
+            quizBtn.addEventListener('click', startQuiz);
 
             if (window.speechSynthesis) {
                 window.speechSynthesis.getVoices();
@@ -1583,7 +2270,7 @@
             }
 
             // ============================================================
-            // 9. 启动
+            // 14. 启动
             // ============================================================
             window.addEventListener('DOMContentLoaded', () => {
                 renderThemeScreen();
