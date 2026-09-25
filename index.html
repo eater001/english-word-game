@@ -1,2539 +1,2005 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>趣味英语 · 消消乐 + 记忆闯关</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(160deg, #6ec6ff 0%, #ffd3e0 50%, #c8e6c9 100%);
-            padding: 16px;
-            overflow-x: hidden;
-        }
-
-        .bg-float {
-            position: fixed;
-            font-size: 2.5rem;
-            opacity: 0.25;
-            pointer-events: none;
-            animation: floatUp 12s linear infinite;
-            z-index: 0;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) rotate(0deg); }
-            100% { transform: translateY(-20vh) rotate(360deg); }
-        }
-
-        .game-wrapper {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            max-width: 720px;
-            background: rgba(255, 255, 255, 0.88);
-            backdrop-filter: blur(10px);
-            border-radius: 50px 50px 40px 40px;
-            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2), inset 0 3px 8px rgba(255, 255, 255, 0.8);
-            padding: 18px 18px 24px;
-            border: 4px solid #fff;
-        }
-
-        .hidden { display: none !important; }
-        .screen { animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
-        }
-
-        .main-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .main-title h1 {
-            font-size: 1.6rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #1f4e6f, #2b6c8f);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            letter-spacing: -0.5px;
-        }
-
-        .main-title .title-emoji {
-            font-size: 1.8rem;
-            filter: drop-shadow(0 3px 3px rgba(0,0,0,0.15));
-        }
-
-        .mode-switch {
-            display: flex;
-            background: #e0d5c0;
-            border-radius: 40px;
-            padding: 4px;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-            gap: 4px;
-        }
-
-        .mode-btn {
-            border: none;
-            background: transparent;
-            border-radius: 40px;
-            padding: 8px 16px;
-            font-weight: 800;
-            font-size: 0.9rem;
-            color: #7a6a4a;
-            cursor: pointer;
-            transition: all 0.15s;
-            white-space: nowrap;
-        }
-
-        .mode-btn.active {
-            background: white;
-            color: #1f4e6f;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-        }
-
-        .home-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin: 16px 0;
-        }
-
-        .home-stat {
-            background: white;
-            border-radius: 20px;
-            padding: 14px 8px;
-            text-align: center;
-            box-shadow: 0 6px 0 #c9b89a, 0 8px 14px rgba(0,0,0,0.15);
-        }
-
-        .home-stat .stat-num {
-            font-size: 1.7rem;
-            font-weight: 800;
-            color: #1f4e6f;
-            line-height: 1;
-        }
-
-        .home-stat .stat-label {
-            font-size: 0.75rem;
-            color: #8a7a5a;
-            font-weight: 700;
-            margin-top: 6px;
-        }
-
-        .progress-bar-wrapper {
-            background: #e0d5c0;
-            border-radius: 40px;
-            padding: 6px;
-            margin: 14px 0;
-            box-shadow: inset 0 3px 6px rgba(0,0,0,0.1);
-        }
-
-        .progress-bar-fill {
-            background: linear-gradient(90deg, #7bbd8f, #4caf50);
-            border-radius: 40px;
-            height: 22px;
-            transition: width 0.5s;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 10px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            color: white;
-            min-width: 50px;
-            box-shadow: 0 2px 0 #2e7d32;
-        }
-
-        .big-btn {
-            background: #ffb347;
-            border: none;
-            border-radius: 60px;
-            padding: 16px 30px;
-            font-weight: 800;
-            font-size: 1.2rem;
-            color: #2d3e2f;
-            box-shadow: 0 10px 0 #b16f2c, 0 12px 22px rgba(0, 0, 0, 0.25);
-            cursor: pointer;
-            transition: all 0.08s linear;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transform: translateY(0);
-            width: 100%;
-            margin-top: 12px;
-        }
-
-        .big-btn:active {
-            transform: translateY(6px);
-            box-shadow: 0 3px 0 #b16f2c, 0 8px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .big-btn.green {
-            background: #7bbd8f;
-            color: #1e3c2a;
-            box-shadow: 0 10px 0 #4c7a5e, 0 12px 22px rgba(0,0,0,0.25);
-        }
-
-        .big-btn.green:active {
-            box-shadow: 0 3px 0 #4c7a5e, 0 8px 12px rgba(0,0,0,0.2);
-        }
-
-        .big-btn.secondary {
-            background: #e6d8c0;
-            color: #3e3e2e;
-            box-shadow: 0 10px 0 #ab8e6a, 0 12px 22px rgba(0,0,0,0.25);
-            font-size: 1rem;
-            padding: 13px 24px;
-        }
-
-        .big-btn.secondary:active {
-            box-shadow: 0 3px 0 #ab8e6a, 0 8px 12px rgba(0,0,0,0.2);
-        }
-
-        .button-row {
-            display: flex;
-            gap: 10px;
-        }
-
-        .level-picker {
-            background: white;
-            border-radius: 24px;
-            padding: 16px;
-            box-shadow: 0 6px 0 #c9b89a;
-            margin: 12px 0;
-        }
-
-        .level-picker-label {
-            font-size: 0.85rem;
-            color: #8a7a5a;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .level-input-row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .level-input {
-            flex: 1;
-            border: 3px solid #e0d0b0;
-            border-radius: 16px;
-            padding: 10px 14px;
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: #1f4e6f;
-            text-align: center;
-            outline: none;
-            background: #fffdf5;
-            transition: all 0.15s;
-        }
-
-        .level-input:focus {
-            border-color: #ffd966;
-            box-shadow: 0 0 0 3px rgba(255,217,102,0.3);
-        }
-
-        .level-go-btn {
-            background: #7bbd8f;
-            border: none;
-            border-radius: 16px;
-            padding: 10px 20px;
-            font-weight: 800;
-            font-size: 0.95rem;
-            color: white;
-            cursor: pointer;
-            box-shadow: 0 5px 0 #4c7a5e;
-            transition: all 0.1s;
-            transform: translateY(0);
-            white-space: nowrap;
-        }
-
-        .level-go-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 1px 0 #4c7a5e;
-        }
-
-        .learning-hint {
-            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-            border-radius: 16px;
-            padding: 10px 16px;
-            margin: 10px 0;
-            font-size: 0.85rem;
-            color: #1565c0;
-            font-weight: 700;
-            text-align: center;
-            border-left: 5px solid #2196f3;
-        }
-
-        .level-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(135deg, #fff9c4, #ffe082);
-            border-radius: 60px;
-            padding: 10px 18px;
-            margin-bottom: 12px;
-            box-shadow: 0 6px 0 #e6a817;
-            border: 3px solid #ffb300;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .level-badge {
-            background: #ff7043;
-            border-radius: 40px;
-            padding: 6px 16px;
-            font-weight: 800;
-            color: #fff;
-            font-size: 1.1rem;
-            box-shadow: inset 0 -3px 0 #bf360c;
-            text-shadow: 1px 1px 0 #bf360c;
-        }
-
-        .stars-display {
-            display: flex;
-            gap: 4px;
-            font-size: 1.4rem;
-        }
-
-        .star.earned { animation: pop 0.4s ease; }
-
-        @keyframes pop {
-            0% { transform: scale(0.5) rotate(-20deg); }
-            70% { transform: scale(1.3) rotate(10deg); }
-            100% { transform: scale(1) rotate(0); }
-        }
-
-        .stats {
-            display: flex;
-            gap: 10px;
-            font-weight: bold;
-            color: #5d4037;
-            font-size: 1rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .stats span {
-            background: #fff;
-            padding: 5px 12px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            box-shadow: 0 3px 0 #d7ccc8;
-            border: 2px solid #ffb300;
-            font-weight: 700;
-        }
-
-        .timer-box {
-            background: #ffecd2;
-            border-radius: 40px;
-            padding: 5px 14px;
-            font-weight: 800;
-            color: #b34a1a;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: inset 0 -3px 0 #d4a373;
-        }
-
-        .timer-box.warning {
-            background: #ffb3b3;
-            color: #8b0000;
-            animation: pulse 0.8s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .sound-toggle {
-            background: #e6d8c0;
-            border: none;
-            border-radius: 40px;
-            padding: 6px 14px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: #2e4a3a;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #ab8e6a;
-            transition: all 0.1s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transform: translateY(0);
-        }
-
-        .sound-toggle:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #ab8e6a;
-        }
-
-        .sound-toggle.muted {
-            background: #d4c4b0;
-            color: #8a7a6a;
-        }
-
-        .board-candy {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin: 12px 0 8px;
-        }
-
-        .card-candy {
-            aspect-ratio: 1 / 1;
-            border-radius: 22px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.08s linear;
-            position: relative;
-            overflow: hidden;
-            transform: translateY(-2px);
-            text-transform: uppercase;
-            padding: 4px;
-        }
-
-        .card-candy[data-type="letter"] {
-            background: linear-gradient(145deg, #fff8e1, #ffe0b2);
-            color: #e65100;
-            font-size: 3rem;
-            border: 4px solid #ffb300;
-            box-shadow: 0 8px 0 #e6a817, 0 10px 15px rgba(0, 0, 0, 0.15),
-                        inset 0 -4px 0 #ffcc80, inset 0 4px 0 #fff8e1;
-            text-shadow: 2px 2px 0 #ffcc80;
-            letter-spacing: -1px;
-            font-weight: 900;
-        }
-
-        .card-candy[data-type="word"] {
-            background: linear-gradient(145deg, #e3f2fd, #bbdefb);
-            color: #1565c0;
-            border: 4px solid #64b5f6;
-            box-shadow: 0 8px 0 #42a5f5, 0 10px 15px rgba(0, 0, 0, 0.15),
-                        inset 0 -4px 0 #90caf9, inset 0 4px 0 #e3f2fd;
-            padding: 6px 4px;
-            justify-content: center;
-            gap: 2px;
-        }
-
-        .card-candy[data-type="image"] {
-            background: linear-gradient(145deg, #f3e5f5, #e1bee7);
-            border: 4px solid #ba68c8;
-            box-shadow: 0 8px 0 #8e24aa, 0 10px 15px rgba(0, 0, 0, 0.15),
-                        inset 0 -4px 0 #ce93d8, inset 0 4px 0 #f3e5f5;
-            font-size: 3rem;
-        }
-
-        .card-candy.decoy {
-            background: linear-gradient(145deg, #f0e0f8, #e1bee7);
-            border: 4px dashed #b39ddb;
-            box-shadow: 0 8px 0 #9575cd, 0 10px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .card-candy .word-text {
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: #0d47a1;
-            text-shadow: 1px 1px 0 #bbdefb;
-            line-height: 1.1;
-            word-break: break-all;
-            text-align: center;
-            letter-spacing: 0.3px;
-        }
-
-        .card-candy[data-type="word"]::after {
-            content: "🔊";
-            position: absolute;
-            bottom: 4px;
-            right: 6px;
-            font-size: 0.75rem;
-            opacity: 0.7;
-        }
-
-        .card-candy.selected {
-            box-shadow: 0 0 0 6px #ffd54f, 0 8px 0 #bcaaa4 !important;
-            transform: scale(1.05) translateY(-2px) !important;
-            filter: brightness(1.05);
-            z-index: 3;
-        }
-
-        .card-candy.eliminated {
-            background: #a5d6a7;
-            box-shadow: 0 4px 0 #4caf50;
-            transform: translateY(4px) scale(0.98);
-            border-color: #66bb6a;
-            cursor: default;
-            opacity: 0.85;
-            pointer-events: none;
-        }
-
-        .card-candy.eliminated .word-text {
-            display: none;
-        }
-
-        .card-candy.eliminated::after {
-            content: "🌟" !important;
-            font-size: 2rem !important;
-            animation: pop 0.4s ease;
-            position: static !important;
-            opacity: 1 !important;
-            right: auto !important;
-            bottom: auto !important;
-        }
-
-        .board-memory {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin: 12px 0 8px;
-        }
-
-        .card-memory {
-            aspect-ratio: 1 / 1;
-            background: white;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            box-shadow: 0 8px 0 #9b7e5e, 0 10px 14px rgba(0, 0, 0, 0.25);
-            cursor: pointer;
-            transition: all 0.1s ease;
-            border: 2px solid #f3e1c2;
-            padding: 6px;
-            position: relative;
-            transform: translateY(0);
-        }
-
-        .card-memory:active:not(.matched) {
-            transform: translateY(5px);
-            box-shadow: 0 3px 0 #9b7e5e, 0 6px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .card-memory.matched {
-            box-shadow: 0 4px 0 #4c7a5e, 0 6px 10px rgba(0, 0, 0, 0.15);
-            transform: translateY(4px);
-            background: #e2f0e6;
-            border: 2px solid #7bbd8f;
-            cursor: default;
-            opacity: 0.85;
-            pointer-events: none;
-        }
-
-        .card-memory.selected {
-            box-shadow: 0 0 0 5px #ffd966, 0 8px 0 #9b7e5e, 0 10px 14px rgba(0, 0, 0, 0.25);
-            border: 2px solid #ffb347;
-            transform: scale(1.02);
-        }
-
-        .card-memory.decoy {
-            background: #f0e0f8;
-            border: 2px dashed #b39ddb;
-        }
-
-        .card-memory .word-text {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: #1f3b4a;
-            text-align: center;
-            line-height: 1.2;
-            word-break: break-word;
-        }
-
-        .card-memory .emoji {
-            font-size: 2.5rem;
-            line-height: 1;
-            filter: drop-shadow(2px 6px 8px rgba(0, 0, 0, 0.2));
-        }
-
-        .speaker-btn {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            background: #ffd966;
-            border: none;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 0 #c9a53a;
-            transition: all 0.1s;
-            padding: 0;
-            z-index: 5;
-        }
-
-        .speaker-btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 0 0 #c9a53a;
-        }
-
-        .message-area {
-            min-height: 58px;
-            text-align: center;
-            font-size: 1.05rem;
-            font-weight: bold;
-            color: #5d4037;
-            padding: 12px;
-            background: linear-gradient(135deg, #fff8e1, #ffecb3);
-            border-radius: 40px;
-            margin: 10px 0;
-            border: 3px dashed #ffb300;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 0 #ffe082;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .ctrl-btn {
-            background: linear-gradient(135deg, #ffb74d, #ff9800);
-            border: none;
-            border-radius: 40px;
-            padding: 12px 18px;
-            font-size: 1rem;
-            font-weight: bold;
-            color: #fff;
-            cursor: pointer;
-            box-shadow: 0 6px 0 #e65100, 0 5px 10px rgba(0,0,0,0.2);
-            transition: 0.06s linear;
-            flex: 1;
-            border: 2px solid #fff;
-            text-shadow: 1px 1px 0 #e65100;
-            min-width: 110px;
-        }
-
-        .ctrl-btn:active {
-            transform: translateY(5px);
-            box-shadow: 0 1px 0 #e65100;
-        }
-
-        .ctrl-btn:disabled {
-            opacity: 0.45;
-            transform: translateY(3px);
-            box-shadow: 0 3px 0 #bf360c;
-            pointer-events: none;
-            filter: grayscale(0.5);
-        }
-
-        .ctrl-btn.green {
-            background: linear-gradient(135deg, #81c784, #4caf50);
-            box-shadow: 0 6px 0 #2e7d32;
-            text-shadow: 1px 1px 0 #2e7d32;
-        }
-
-        .ctrl-btn.green:active {
-            box-shadow: 0 1px 0 #2e7d32;
-        }
-
-        .ctrl-btn.gray {
-            background: linear-gradient(135deg, #bcaaa4, #8d6e63);
-            box-shadow: 0 6px 0 #4e342e;
-            text-shadow: 1px 1px 0 #4e342e;
-        }
-
-        .overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 16px;
-        }
-
-        .modal {
-            background: #fef9e8;
-            border-radius: 40px;
-            padding: 30px 36px;
-            text-align: center;
-            box-shadow: 0 30px 50px rgba(0,0,0,0.5), inset 0 0 0 3px #ffd966;
-            animation: bounceIn 0.5s;
-            max-width: 90vw;
-            width: 100%;
-            max-width: 440px;
-        }
-
-        @keyframes bounceIn {
-            0% { transform: scale(0.6); opacity: 0; }
-            70% { transform: scale(1.05); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .modal h2 {
-            font-size: 1.7rem;
-            color: #1f4e6f;
-            margin-bottom: 12px;
-        }
-
-        .modal .big-stars {
-            font-size: 2.8rem;
-            margin: 14px 0;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .modal .big-star {
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
-            animation: starPop 0.5s backwards;
-        }
-
-        .modal .big-star:nth-child(1) { animation-delay: 0.1s; }
-        .modal .big-star:nth-child(2) { animation-delay: 0.3s; }
-        .modal .big-star:nth-child(3) { animation-delay: 0.5s; }
-
-        @keyframes starPop {
-            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
-            80% { transform: scale(1.3) rotate(10deg); }
-            100% { transform: scale(1) rotate(0); opacity: 1; }
-        }
-
-        .modal .encourage-text {
-            font-size: 1.15rem;
-            color: #4a5e4a;
-            margin-bottom: 20px;
-            font-weight: 700;
-            line-height: 1.5;
-        }
-
-        .modal .encourage-sub {
-            font-size: 0.9rem;
-            color: #8a7a5a;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .modal-btn {
-            border: none;
-            border-radius: 50px;
-            padding: 12px 22px;
-            font-weight: 800;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.1s;
-            transform: translateY(0);
-        }
-
-        .modal-btn.primary {
-            background: #7bbd8f;
-            color: #1e3c2a;
-            box-shadow: 0 8px 0 #4c7a5e, 0 10px 16px rgba(0,0,0,0.25);
-        }
-
-        .modal-btn.primary:active {
-            transform: translateY(5px);
-            box-shadow: 0 3px 0 #4c7a5e;
-        }
-
-        .modal-btn.secondary {
-            background: #e6d8c0;
-            color: #3e3e2e;
-            box-shadow: 0 8px 0 #ab8e6a, 0 10px 16px rgba(0,0,0,0.25);
-        }
-
-        .modal-btn.secondary:active {
-            transform: translateY(5px);
-            box-shadow: 0 3px 0 #ab8e6a;
-        }
-
-        .star-fall {
-            position: fixed;
-            font-size: 1.8rem;
-            pointer-events: none;
-            z-index: 999;
-            animation: starFall 1.2s ease-out forwards;
-        }
-
-        @keyframes starFall {
-            0% { transform: translateY(0) rotate(0deg) scale(0); opacity: 1; }
-            30% { transform: translateY(-30px) rotate(60deg) scale(1.2); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(360deg) scale(0.8); opacity: 0; }
-        }
-
-        .animal-bubble {
-            position: fixed;
-            background: #fff;
-            border-radius: 50%;
-            padding: 12px 14px;
-            font-size: 1.8rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.25);
-            border: 3px solid #ffb300;
-            z-index: 1000;
-            animation: bubblePop 0.8s ease-out forwards;
-            pointer-events: none;
-        }
-
-        @keyframes bubblePop {
-            0% { transform: scale(0) rotate(-20deg); opacity: 0; }
-            50% { transform: scale(1.2) rotate(5deg); opacity: 1; }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-
-        .confetti {
-            position: fixed;
-            width: 12px;
-            height: 12px;
-            pointer-events: none;
-            z-index: 998;
-            animation: confettiFall 1.5s ease-out forwards;
-        }
-
-        @keyframes confettiFall {
-            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-        }
-
-        @media (max-width: 650px) {
-            .game-wrapper { padding: 14px; }
-            .main-title h1 { font-size: 1.3rem; }
-            .mode-btn { padding: 6px 10px; font-size: 0.8rem; }
-            .home-stat .stat-num { font-size: 1.4rem; }
-            .home-stat .stat-label { font-size: 0.7rem; }
-            .big-btn { font-size: 1rem; padding: 14px 20px; }
-            .board-candy { gap: 8px; }
-            .card-candy[data-type="letter"] { font-size: 2.2rem; border-width: 3px; border-radius: 18px; }
-            .card-candy[data-type="word"] { border-width: 3px; border-radius: 18px; padding: 4px 2px; }
-            .card-candy[data-type="image"] { font-size: 2.2rem; border-width: 3px; border-radius: 18px; }
-            .card-candy .word-text { font-size: 1rem; }
-            .board-memory { gap: 8px; }
-            .card-memory .word-text { font-size: 0.95rem; }
-            .card-memory .emoji { font-size: 2rem; }
-            .level-badge { font-size: 0.95rem; padding: 5px 12px; }
-            .stats { font-size: 0.85rem; }
-            .stats span { padding: 4px 8px; }
-            .message-area { font-size: 0.95rem; }
-        }
-
-        @media (max-width: 450px) {
-            .board-candy { grid-template-columns: repeat(3, 1fr); gap: 7px; }
-            .board-memory { grid-template-columns: repeat(3, 1fr); gap: 7px; }
-            .controls { flex-direction: column; }
-            .ctrl-btn { width: 100%; }
-            .mode-switch { width: 100%; justify-content: center; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>趣味英语 · 三消 + 翻牌记忆 + 侦探寻宝</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Poppins',system-ui,sans-serif;
+    user-select:none; -webkit-tap-highlight-color:transparent; }
+body {
+    min-height:100vh; display:flex; justify-content:center; align-items:center;
+    background:linear-gradient(160deg,#6ec6ff 0%,#ffd3e0 50%,#c8e6c9 100%);
+    padding:12px; overflow-x:hidden;
+}
+.bg-float { position:fixed; font-size:2.5rem; opacity:0.22; pointer-events:none;
+    animation:floatUp 14s linear infinite; z-index:0; }
+@keyframes floatUp {
+    0% { transform:translateY(100vh) rotate(0deg); }
+    100% { transform:translateY(-20vh) rotate(360deg); }
+}
+.game-wrapper {
+    position:relative; z-index:2; width:100%; max-width:720px;
+    background:rgba(255,255,255,0.9); backdrop-filter:blur(10px);
+    border-radius:44px; box-shadow:0 20px 35px rgba(0,0,0,0.2), inset 0 3px 8px rgba(255,255,255,0.8);
+    padding:16px 16px 22px; border:4px solid #fff;
+}
+.hidden { display:none !important; }
+.screen { animation:fadeIn 0.35s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+.top-bar { display:flex; justify-content:space-between; align-items:center;
+    gap:10px; margin-bottom:12px; flex-wrap:wrap; }
+.main-title { display:flex; align-items:center; gap:8px; }
+.main-title h1 {
+    font-size:1.5rem; font-weight:800;
+    background:linear-gradient(135deg,#1f4e6f,#2b6c8f);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.main-title .title-emoji { font-size:1.7rem; filter:drop-shadow(0 3px 3px rgba(0,0,0,0.15)); }
+.mode-switch { display:flex; background:#e0d5c0; border-radius:40px;
+    padding:4px; box-shadow:inset 0 2px 5px rgba(0,0,0,0.1); gap:4px; }
+.mode-btn { border:none; background:transparent; border-radius:40px;
+    padding:8px 14px; font-weight:800; font-size:0.85rem; color:#7a6a4a;
+    cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+.mode-btn.active { background:#fff; color:#1f4e6f; box-shadow:0 3px 8px rgba(0,0,0,0.15); }
+.home-stats { display:grid; grid-template-columns:repeat(4,1fr);
+    gap:8px; margin:14px 0; }
+.home-stat { background:#fff; border-radius:20px; padding:10px 4px;
+    text-align:center; box-shadow:0 6px 0 #c9b89a, 0 8px 14px rgba(0,0,0,0.15); }
+.home-stat .stat-num { font-size:1.4rem; font-weight:800; color:#1f4e6f; line-height:1; }
+.home-stat .stat-label { font-size:0.68rem; color:#8a7a5a; font-weight:700; margin-top:5px; }
+.progress-bar-wrapper { background:#e0d5c0; border-radius:40px;
+    padding:5px; margin:12px 0; box-shadow:inset 0 3px 6px rgba(0,0,0,0.1); }
+.progress-bar-fill { background:linear-gradient(90deg,#7bbd8f,#4caf50);
+    border-radius:40px; height:20px; transition:width 0.5s;
+    display:flex; align-items:center; justify-content:flex-end;
+    padding-right:8px; font-size:0.72rem; font-weight:800; color:#fff;
+    min-width:50px; box-shadow:0 2px 0 #2e7d32; }
+.big-btn {
+    background:#ffb347; border:none; border-radius:60px;
+    padding:15px 26px; font-weight:800; font-size:1.15rem; color:#2d3e2f;
+    box-shadow:0 10px 0 #b16f2c, 0 12px 22px rgba(0,0,0,0.25);
+    cursor:pointer; transition:all 0.08s linear;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    width:100%; margin-top:10px;
+}
+.big-btn:active { transform:translateY(6px); box-shadow:0 3px 0 #b16f2c, 0 8px 12px rgba(0,0,0,0.2); }
+.big-btn.green { background:#7bbd8f; color:#1e3c2a; box-shadow:0 10px 0 #4c7a5e, 0 12px 22px rgba(0,0,0,0.25); }
+.big-btn.green:active { box-shadow:0 3px 0 #4c7a5e, 0 8px 12px rgba(0,0,0,0.2); }
+.big-btn.secondary { background:#e6d8c0; color:#3e3e2e; box-shadow:0 10px 0 #ab8e6a, 0 12px 22px rgba(0,0,0,0.25);
+    font-size:0.95rem; padding:12px 20px; }
+.big-btn.secondary:active { box-shadow:0 3px 0 #ab8e6a, 0 8px 12px rgba(0,0,0,0.2); }
+.button-row { display:flex; gap:10px; }
+.level-picker { background:#fff; border-radius:22px; padding:14px;
+    box-shadow:0 6px 0 #c9b89a; margin:10px 0; }
+.level-picker-label { font-size:0.8rem; color:#8a7a5a; font-weight:700; margin-bottom:6px; }
+.level-input-row { display:flex; gap:8px; align-items:center; }
+.level-input { flex:1; border:3px solid #e0d0b0; border-radius:14px;
+    padding:9px 12px; font-size:1rem; font-weight:800; color:#1f4e6f;
+    text-align:center; outline:none; background:#fffdf5; }
+.level-input:focus { border-color:#ffd966; box-shadow:0 0 0 3px rgba(255,217,102,0.3); }
+.level-go-btn { background:#7bbd8f; border:none; border-radius:14px;
+    padding:9px 18px; font-weight:800; font-size:0.9rem; color:#fff;
+    cursor:pointer; box-shadow:0 5px 0 #4c7a5e; transition:all 0.1s; white-space:nowrap; }
+.level-go-btn:active { transform:translateY(4px); box-shadow:0 1px 0 #4c7a5e; }
+.learning-hint { background:linear-gradient(135deg,#e3f2fd,#bbdefb);
+    border-radius:14px; padding:9px 14px; margin:9px 0;
+    font-size:0.82rem; color:#1565c0; font-weight:700; text-align:center;
+    border-left:5px solid #2196f3; }
+.level-bar {
+    display:flex; justify-content:space-between; align-items:center;
+    background:linear-gradient(135deg,#fff9c4,#ffe082);
+    border-radius:60px; padding:9px 16px; margin-bottom:10px;
+    box-shadow:0 6px 0 #e6a817; border:3px solid #ffb300;
+    gap:8px; flex-wrap:wrap;
+}
+.level-badge { background:#ff7043; border-radius:40px; padding:5px 14px;
+    font-weight:800; color:#fff; font-size:1rem;
+    box-shadow:inset 0 -3px 0 #bf360c; text-shadow:1px 1px 0 #bf360c; }
+.stars-display { display:flex; gap:3px; font-size:1.3rem; }
+.star.earned { animation:pop 0.4s ease; }
+@keyframes pop {
+    0%{transform:scale(0.5) rotate(-20deg);} 70%{transform:scale(1.3) rotate(10deg);} 100%{transform:scale(1) rotate(0);}
+}
+.stats { display:flex; gap:8px; font-weight:bold; color:#5d4037; font-size:0.9rem;
+    align-items:center; flex-wrap:wrap; }
+.stats span { background:#fff; padding:4px 10px; border-radius:30px;
+    display:flex; align-items:center; gap:4px;
+    box-shadow:0 3px 0 #d7ccc8; border:2px solid #ffb300; font-weight:700; }
+.timer-box { background:#ffecd2; border-radius:40px; padding:4px 12px;
+    font-weight:800; color:#b34a1a; font-size:0.9rem;
+    display:flex; align-items:center; gap:5px; box-shadow:inset 0 -3px 0 #d4a373; }
+.timer-box.warning { background:#ffb3b3; color:#8b0000; animation:pulse 0.8s infinite; }
+@keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
+.sound-toggle { background:#e6d8c0; border:none; border-radius:40px;
+    padding:5px 12px; font-weight:700; font-size:0.85rem; color:#2e4a3a;
+    cursor:pointer; box-shadow:0 4px 0 #ab8e6a; transition:all 0.1s;
+    display:flex; align-items:center; gap:4px; }
+.sound-toggle:active { transform:translateY(3px); box-shadow:0 1px 0 #ab8e6a; }
+.sound-toggle.muted { background:#d4c4b0; color:#8a7a6a; }
+
+/* 三消棋盘 */
+.board-candy { display:grid; grid-template-columns:repeat(4,1fr);
+    gap:8px; margin:10px 0; }
+.card-candy {
+    aspect-ratio:1/1; border-radius:20px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-weight:bold; cursor:pointer; transition:0.08s linear;
+    position:relative; overflow:hidden; text-transform:uppercase; padding:3px;
+}
+.card-candy[data-type="letter"] {
+    background:linear-gradient(145deg,#fff8e1,#ffe0b2); color:#e65100;
+    font-size:2.6rem; border:3px solid #ffb300;
+    box-shadow:0 7px 0 #e6a817, 0 9px 13px rgba(0,0,0,0.15), inset 0 -4px 0 #ffcc80;
+    text-shadow:2px 2px 0 #ffcc80; font-weight:900;
+}
+.card-candy[data-type="word"] {
+    background:linear-gradient(145deg,#e3f2fd,#bbdefb); color:#1565c0;
+    border:3px solid #64b5f6;
+    box-shadow:0 7px 0 #42a5f5, 0 9px 13px rgba(0,0,0,0.15), inset 0 -4px 0 #90caf9;
+    padding:4px 3px; justify-content:center;
+}
+.card-candy[data-type="image"] {
+    background:linear-gradient(145deg,#f3e5f5,#e1bee7);
+    border:3px solid #ba68c8;
+    box-shadow:0 7px 0 #8e24aa, 0 9px 13px rgba(0,0,0,0.15), inset 0 -4px 0 #ce93d8;
+    font-size:2.6rem;
+}
+.card-candy.selected {
+    box-shadow:0 0 0 6px #ffd54f, 0 7px 0 #bcaaa4 !important;
+    transform:scale(1.05) !important; z-index:3;
+}
+.card-candy.eliminated {
+    background:#a5d6a7 !important; box-shadow:0 4px 0 #4caf50 !important;
+    transform:translateY(4px) scale(0.96); border-color:#66bb6a !important;
+    cursor:default; opacity:0.9; pointer-events:none;
+}
+.card-candy.eliminated .word-text { display:none; }
+.card-candy.eliminated::after {
+    content:"🌟" !important; font-size:2rem !important;
+    animation:pop 0.4s ease; opacity:1 !important;
+}
+.card-candy .word-text { font-size:1.15rem; font-weight:800; color:#0d47a1;
+    text-shadow:1px 1px 0 #bbdefb; line-height:1.1; word-break:break-all;
+    text-align:center; letter-spacing:0.3px; }
+
+/* 翻牌记忆棋盘 */
+.board-memory { display:grid; grid-template-columns:repeat(4,1fr);
+    gap:10px; margin:10px 0; perspective:1000px; }
+.card-memory {
+    aspect-ratio:1/1; border-radius:18px;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:600; cursor:pointer;
+    transition:transform 0.4s, box-shadow 0.2s;
+    position:relative; transform-style:preserve-3d;
+}
+.card-memory .face {
+    position:absolute; inset:0; border-radius:18px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    backface-visibility:hidden; padding:4px;
+}
+.card-memory .back {
+    background:linear-gradient(145deg,#ffb347,#ff9800);
+    border:3px solid #fff;
+    box-shadow:0 7px 0 #b16f2c, inset 0 -4px 0 #e65100;
+    font-size:1.8rem; color:#fff;
+}
+.card-memory .front {
+    background:#fff; border:3px solid #f3e1c2;
+    box-shadow:0 7px 0 #9b7e5e, inset 0 -4px 0 #e8d7b8;
+    transform:rotateY(180deg);
+}
+.card-memory.flipped { transform:rotateY(180deg); }
+.card-memory.matched .front {
+    background:#e2f0e6; border-color:#7bbd8f;
+    box-shadow:0 5px 0 #4c7a5e;
+}
+.card-memory.matched { pointer-events:none; }
+.card-memory .front .word-text { font-size:1.1rem; font-weight:800;
+    color:#1f3b4a; text-align:center; line-height:1.1; word-break:break-word; }
+.card-memory .front .emoji { font-size:2.3rem; line-height:1;
+    filter:drop-shadow(2px 5px 6px rgba(0,0,0,0.18)); }
+.card-memory .speaker-btn {
+    position:absolute; top:3px; right:3px; width:22px; height:22px;
+    border-radius:50%; background:#ffd966; border:none; font-size:0.7rem;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; box-shadow:0 2px 0 #c9a53a; z-index:5; padding:0;
+}
+
+/* ========== 侦探寻宝场景 ========== */
+.board-detective {
+    position:relative; width:100%; aspect-ratio:4/3;
+    background:linear-gradient(180deg,#87CEEB 0%,#E0F6FF 100%);
+    border-radius:20px; overflow:hidden; margin:10px 0;
+    box-shadow:inset 0 0 30px rgba(0,0,0,0.08);
+}
+.detective-item {
+    position:absolute; font-size:3rem; cursor:pointer;
+    transition:transform 0.2s, filter 0.2s;
+    user-select:none; animation:float 3s ease-in-out infinite;
+    display:flex; align-items:center; justify-content:center;
+    width:60px; height:60px;
+}
+.detective-item:active { transform:scale(0.9); }
+.detective-item.correct {
+    animation:detectivePop 0.6s forwards;
+    filter:drop-shadow(0 0 20px #FFD93D);
+}
+.detective-item.wrong { animation:shake 0.5s; }
+.detective-item.hidden { opacity:0; pointer-events:none; }
+@keyframes float {
+    0%,100% { transform:translateY(0); }
+    50% { transform:translateY(-8px); }
+}
+@keyframes detectivePop {
+    0% { transform:scale(1); }
+    50% { transform:scale(1.6); }
+    100% { transform:scale(1.3); opacity:1; }
+}
+@keyframes shake {
+    0%,100% { transform:translateX(0); }
+    25% { transform:translateX(-8px); }
+    75% { transform:translateX(8px); }
+}
+.detective-backpack {
+    display:flex; gap:6px; justify-content:center;
+    background:rgba(255,255,255,0.7); padding:6px 10px;
+    border-radius:20px; margin:8px auto; width:fit-content;
+    box-shadow:0 4px 0 #c9b89a;
+}
+.detective-slot {
+    width:36px; height:36px; border-radius:9px;
+    background:rgba(255,255,255,0.6);
+    display:flex; align-items:center; justify-content:center;
+    font-size:22px; transition:all 0.3s;
+    border:2px solid #e0d0b0;
+}
+.detective-slot.filled {
+    background:#FFD93D; transform:scale(1.1);
+    border-color:#D4B800; box-shadow:0 3px 0 #D4B800;
+}
+.detective-speak-btn {
+    width:70px; height:70px; border-radius:50%;
+    background:linear-gradient(145deg,#FF6B6B,#EE5A5A);
+    border:none; cursor:pointer;
+    box-shadow:0 6px 0 #C44;
+    font-size:32px; color:white;
+    display:flex; align-items:center; justify-content:center;
+    transition:all 0.1s; margin:8px auto;
+}
+.detective-speak-btn:active { transform:translateY(4px); box-shadow:0 2px 0 #C44; }
+.detective-speak-btn.playing { animation:detPulse 1s infinite; }
+@keyframes detPulse {
+    0%,100% { box-shadow:0 6px 0 #C44, 0 0 0 0 rgba(255,107,107,0.5); }
+    50% { box-shadow:0 6px 0 #C44, 0 0 0 20px rgba(255,107,107,0); }
+}
+
+/* 徽章 */
+.badge-display {
+    display:flex; gap:6px; justify-content:center;
+    flex-wrap:wrap; margin:10px 0; min-height:40px;
+}
+.detective-badge {
+    width:42px; height:42px; border-radius:50%;
+    background:linear-gradient(145deg,#FFD93D,#FFA726);
+    display:flex; align-items:center; justify-content:center;
+    font-size:22px; box-shadow:0 4px 0 #C77800, inset 0 2px 4px rgba(255,255,255,0.5);
+    animation:badgePop 0.6s ease;
+    border:3px solid #fff;
+}
+.detective-badge.locked {
+    background:linear-gradient(145deg,#ccc,#aaa);
+    box-shadow:0 4px 0 #777; opacity:0.5;
+}
+@keyframes badgePop {
+    0% { transform:scale(0) rotate(-180deg); }
+    70% { transform:scale(1.3) rotate(10deg); }
+    100% { transform:scale(1) rotate(0); }
+}
+
+.message-area { min-height:52px; text-align:center; font-size:1rem;
+    font-weight:bold; color:#5d4037; padding:11px;
+    background:linear-gradient(135deg,#fff8e1,#ffecb3);
+    border-radius:40px; margin:9px 0; border:3px dashed #ffb300;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 0 #ffe082; }
+.controls { display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+.ctrl-btn { background:linear-gradient(135deg,#ffb74d,#ff9800);
+    border:none; border-radius:40px; padding:11px 16px;
+    font-size:0.95rem; font-weight:bold; color:#fff; cursor:pointer;
+    box-shadow:0 6px 0 #e65100, 0 5px 10px rgba(0,0,0,0.2);
+    transition:0.06s linear; flex:1; border:2px solid #fff;
+    text-shadow:1px 1px 0 #e65100; min-width:100px; }
+.ctrl-btn:active { transform:translateY(5px); box-shadow:0 1px 0 #e65100; }
+.ctrl-btn:disabled { opacity:0.45; pointer-events:none; filter:grayscale(0.5); }
+.ctrl-btn.green { background:linear-gradient(135deg,#81c784,#4caf50);
+    box-shadow:0 6px 0 #2e7d32; text-shadow:1px 1px 0 #2e7d32; }
+.ctrl-btn.green:active { box-shadow:0 1px 0 #2e7d32; }
+.ctrl-btn.gray { background:linear-gradient(135deg,#bcaaa4,#8d6e63);
+    box-shadow:0 6px 0 #4e342e; text-shadow:1px 1px 0 #4e342e; }
+
+.overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6);
+    backdrop-filter:blur(5px); display:flex; justify-content:center;
+    align-items:center; z-index:1000; padding:16px; }
+.modal { background:#fef9e8; border-radius:36px; padding:26px 30px;
+    text-align:center; box-shadow:0 30px 50px rgba(0,0,0,0.5), inset 0 0 0 3px #ffd966;
+    animation:bounceIn 0.5s; width:100%; max-width:420px; }
+@keyframes bounceIn { 0%{transform:scale(0.6);opacity:0;} 70%{transform:scale(1.05);} 100%{transform:scale(1);opacity:1;} }
+.modal h2 { font-size:1.6rem; color:#1f4e6f; margin-bottom:10px; }
+.modal .big-stars { font-size:2.6rem; margin:12px 0; display:flex;
+    justify-content:center; gap:8px; }
+.modal .big-star { filter:drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+    animation:starPop 0.5s backwards; }
+.modal .big-star:nth-child(1){animation-delay:0.1s;}
+.modal .big-star:nth-child(2){animation-delay:0.3s;}
+.modal .big-star:nth-child(3){animation-delay:0.5s;}
+@keyframes starPop { 0%{transform:scale(0) rotate(-180deg);opacity:0;} 80%{transform:scale(1.3) rotate(10deg);} 100%{transform:scale(1) rotate(0);opacity:1;} }
+.modal .encourage-text { font-size:1.05rem; color:#4a5e4a; margin-bottom:18px;
+    font-weight:700; line-height:1.5; }
+.modal-buttons { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+.modal-btn { border:none; border-radius:50px; padding:11px 20px;
+    font-weight:800; font-size:0.95rem; cursor:pointer; transition:all 0.1s; }
+.modal-btn.primary { background:#7bbd8f; color:#1e3c2a;
+    box-shadow:0 8px 0 #4c7a5e, 0 10px 16px rgba(0,0,0,0.25); }
+.modal-btn.primary:active { transform:translateY(5px); box-shadow:0 3px 0 #4c7a5e; }
+.modal-btn.secondary { background:#e6d8c0; color:#3e3e2e;
+    box-shadow:0 8px 0 #ab8e6a, 0 10px 16px rgba(0,0,0,0.25); }
+.modal-btn.secondary:active { transform:translateY(5px); box-shadow:0 3px 0 #ab8e6a; }
+
+.star-fall { position:fixed; font-size:1.7rem; pointer-events:none;
+    z-index:999; animation:starFall 1.2s ease-out forwards; }
+@keyframes starFall {
+    0%{transform:translateY(0) rotate(0) scale(0);opacity:1;}
+    30%{transform:translateY(-30px) rotate(60deg) scale(1.2);opacity:1;}
+    100%{transform:translateY(100vh) rotate(360deg) scale(0.8);opacity:0;}
+}
+.confetti { position:fixed; width:11px; height:11px; pointer-events:none;
+    z-index:998; animation:confettiFall 1.5s ease-out forwards; }
+@keyframes confettiFall {
+    0%{transform:translateY(-20px) rotate(0);opacity:1;}
+    100%{transform:translateY(100vh) rotate(720deg);opacity:0;}
+}
+@media (max-width:650px) {
+    .game-wrapper { padding:12px; }
+    .main-title h1 { font-size:1.25rem; }
+    .mode-btn { padding:6px 9px; font-size:0.78rem; }
+    .home-stat .stat-num { font-size:1.2rem; }
+    .home-stat .stat-label { font-size:0.62rem; }
+    .big-btn { font-size:1rem; padding:13px 18px; }
+    .board-candy, .board-memory { gap:6px; }
+    .card-candy[data-type="letter"] { font-size:2rem; border-width:2px; border-radius:16px; }
+    .card-candy[data-type="image"] { font-size:2rem; border-width:2px; border-radius:16px; }
+    .card-candy .word-text { font-size:0.95rem; }
+    .card-memory .front .word-text { font-size:0.9rem; }
+    .card-memory .front .emoji { font-size:1.9rem; }
+    .level-badge { font-size:0.9rem; padding:4px 10px; }
+    .stats { font-size:0.8rem; }
+    .stats span { padding:3px 8px; }
+    .message-area { font-size:0.9rem; }
+    .detective-item { font-size:2.3rem; width:48px; height:48px; }
+    .detective-slot { width:30px; height:30px; font-size:18px; }
+    .detective-speak-btn { width:58px; height:58px; font-size:26px; }
+}
+@media (max-width:450px) {
+    .board-candy, .board-memory { grid-template-columns:repeat(3,1fr); gap:6px; }
+    .controls { flex-direction:column; }
+    .ctrl-btn { width:100%; }
+    .mode-switch { width:100%; justify-content:center; }
+}
+</style>
 </head>
 <body>
-    <div class="bg-float" style="left: 5%; animation-delay: 0s;">🐶</div>
-    <div class="bg-float" style="left: 20%; animation-delay: 3s;">🌈</div>
-    <div class="bg-float" style="left: 45%; animation-delay: 6s;">⭐</div>
-    <div class="bg-float" style="left: 70%; animation-delay: 2s;">🎈</div>
-    <div class="bg-float" style="left: 88%; animation-delay: 8s;">🐱</div>
-    <div class="bg-float" style="left: 35%; animation-delay: 10s;">🍎</div>
-    <div class="bg-float" style="left: 60%; animation-delay: 5s;">🐻</div>
 
-    <div class="game-wrapper">
+<div class="bg-float" style="left:5%;animation-delay:0s;">🐶</div>
+<div class="bg-float" style="left:20%;animation-delay:3s;">🌈</div>
+<div class="bg-float" style="left:45%;animation-delay:6s;">⭐</div>
+<div class="bg-float" style="left:70%;animation-delay:2s;">🎈</div>
+<div class="bg-float" style="left:88%;animation-delay:8s;">🐱</div>
+<div class="bg-float" style="left:35%;animation-delay:10s;">🍎</div>
+<div class="bg-float" style="left:60%;animation-delay:5s;">🐻</div>
 
-        <div class="top-bar">
-            <div class="main-title">
-                <span class="title-emoji" id="mainEmoji">🧩</span>
-                <h1 id="mainTitle">字母消消乐</h1>
-            </div>
-            <div class="mode-switch">
-                <button class="mode-btn active" id="modeCandy" data-mode="candy">🧩 消消乐</button>
-                <button class="mode-btn" id="modeMemory" data-mode="memory">🧠 记忆闯关</button>
-            </div>
+<div class="game-wrapper">
+    <div class="top-bar">
+        <div class="main-title">
+            <span class="title-emoji" id="mainEmoji">🧩</span>
+            <h1 id="mainTitle">三消英语</h1>
         </div>
-
-        <!-- 消消乐首页 -->
-        <div id="candy-home" class="screen">
-            <div class="home-stats">
-                <div class="home-stat">
-                    <div class="stat-num" id="candyHomeLevel">1</div>
-                    <div class="stat-label">当前关卡</div>
-                </div>
-                <div class="home-stat">
-                    <div class="stat-num" id="candyHomeWords">0</div>
-                    <div class="stat-label">已掌握单词</div>
-                </div>
-                <div class="home-stat">
-                    <div class="stat-num" id="candyHomeStars">0</div>
-                    <div class="stat-label">获得星星</div>
-                </div>
-            </div>
-
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-fill" id="candyProgressFill" style="width: 1%;">1 / 1000</div>
-            </div>
-
-            <div class="learning-hint">
-                🔤 字母配单词 · 🖼️ 图片配单词 · 🧠 科学记忆法 · 🔊 微软语音
-            </div>
-
-            <button class="big-btn green" id="candyContinueBtn">
-                <span>▶️</span> 继续第 <span id="candyContinueLevel">1</span> 关
-            </button>
-
-            <div class="level-picker">
-                <div class="level-picker-label">🔍 跳转到指定关卡（1-1000）</div>
-                <div class="level-input-row">
-                    <input type="number" class="level-input" id="candyJumpInput" min="1" max="1000" value="1">
-                    <button class="level-go-btn" id="candyJumpBtn">前往</button>
-                </div>
-            </div>
-
-            <div class="button-row">
-                <button class="big-btn secondary" id="candyResetBtn" style="flex:1;">
-                    <span>🔄</span> 重置进度
-                </button>
-            </div>
+        <div class="mode-switch">
+            <button class="mode-btn active" id="modeCandy" data-mode="candy">🧩 三消</button>
+            <button class="mode-btn" id="modeMemory" data-mode="memory">🧠 翻牌记忆</button>
         </div>
-
-        <!-- 消消乐游戏 -->
-        <div id="candy-game" class="screen hidden">
-            <div class="level-bar">
-                <div class="level-badge" id="candyLevelDisplay">第 1 / 1000 关</div>
-                <div class="stars-display" id="candyStarsDisplay">
-                    <span class="star">☆</span>
-                    <span class="star">☆</span>
-                    <span class="star">☆</span>
-                </div>
-                <div class="stats">
-                    <span>⭐ <span id="candyPairsMatched">0</span></span>
-                    <span>🔤 <span id="candyMoves">0</span></span>
-                </div>
-                <div class="timer-box" id="candyTimerBox" style="display: none;">
-                    <span>⏱️</span>
-                    <span id="candyTimerValue">60</span>s
-                </div>
-            </div>
-
-            <div class="progress-bar-wrapper" style="margin: 8px 0;">
-                <div class="progress-bar-fill" id="candyProgressGame" style="width: 0%;"></div>
-            </div>
-
-            <div class="learning-hint" id="candyGameHint">🧠 科学记忆</div>
-
-            <div class="board-candy" id="candyBoard"></div>
-
-            <div class="message-area" id="candyMessage">👆 点一点卡片，配对它们吧！</div>
-
-            <div class="controls">
-                <button class="ctrl-btn gray" id="candyBackHome">🏠 返回首页</button>
-                <button class="ctrl-btn" id="candyResetLevel">🔄 重玩本关</button>
-                <button class="ctrl-btn green" id="candyNextBtn" disabled>➡️ 下一关</button>
-            </div>
-        </div>
-
-        <!-- 记忆闯关首页 -->
-        <div id="memory-home" class="screen hidden">
-            <div class="home-stats">
-                <div class="home-stat">
-                    <div class="stat-num" id="memoryHomeLevel">1</div>
-                    <div class="stat-label">当前关卡</div>
-                </div>
-                <div class="home-stat">
-                    <div class="stat-num" id="memoryHomeMastered">0</div>
-                    <div class="stat-label">已掌握</div>
-                </div>
-                <div class="home-stat">
-                    <div class="stat-num" id="memoryHomeStars">0</div>
-                    <div class="stat-label">获得星星</div>
-                </div>
-            </div>
-
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-fill" id="memoryProgressFill" style="width: 1%;">1 / 1000</div>
-            </div>
-
-            <div class="learning-hint">
-                🧠 科学记忆法 · 每关至少 6 对 · 单词按 1/3/7/15/30 关间隔复习
-            </div>
-
-            <button class="big-btn green" id="memoryContinueBtn">
-                <span>▶️</span> 继续第 <span id="memoryContinueLevel">1</span> 关
-            </button>
-
-            <div class="level-picker">
-                <div class="level-picker-label">🔍 跳转到指定关卡（1-1000）</div>
-                <div class="level-input-row">
-                    <input type="number" class="level-input" id="memoryJumpInput" min="1" max="1000" value="1">
-                    <button class="level-go-btn" id="memoryJumpBtn">前往</button>
-                </div>
-            </div>
-
-            <div class="button-row">
-                <button class="big-btn secondary" id="memoryResetBtn" style="flex:1;">
-                    <span>🔄</span> 重置进度
-                </button>
-            </div>
-        </div>
-
-        <!-- 记忆闯关游戏 -->
-        <div id="memory-game" class="screen hidden">
-            <div class="level-bar">
-                <div class="level-badge" id="memoryLevelBadge">第 1 关</div>
-                <div class="stars-display" id="memoryStarsDisplay">
-                    <span class="star">☆</span>
-                    <span class="star">☆</span>
-                    <span class="star">☆</span>
-                </div>
-                <div class="stats">
-                    <span>🎯 <span id="memoryPairsMatched">0</span></span>
-                    <span>⭐ <span id="memoryAttempts">0</span></span>
-                    <button class="sound-toggle" id="memorySoundToggle">
-                        <span id="memorySoundIcon">🔊</span>
-                        <span id="memorySoundText">童声</span>
-                    </button>
-                </div>
-                <div class="timer-box" id="memoryTimerBox" style="display: none;">
-                    <span>⏱️</span>
-                    <span id="memoryTimerValue">60</span>s
-                </div>
-            </div>
-
-            <div class="learning-hint" id="memoryGameHint">🧠 科学记忆</div>
-
-            <div class="board-memory" id="memoryBoard"></div>
-
-            <div class="message-area" id="memoryMessage">✨ 点击卡片配对</div>
-
-            <div class="controls">
-                <button class="ctrl-btn gray" id="memoryBackHome">🏠 返回首页</button>
-                <button class="ctrl-btn" id="memoryResetLevel">🔄 重玩</button>
-            </div>
-        </div>
-
     </div>
 
-    <script>
-        (function() {
-            // ============================================================
-            // 音效引擎
-            // ============================================================
-            let audioCtx = null;
-            function initAudio() {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if (audioCtx.state === 'suspended') audioCtx.resume();
+    <div id="candy-home" class="screen">
+        <div class="home-stats">
+            <div class="home-stat"><div class="stat-num" id="candyHomeLevel">1</div><div class="stat-label">当前关卡</div></div>
+            <div class="home-stat"><div class="stat-num" id="candyHomeWords">0</div><div class="stat-label">已掌握</div></div>
+            <div class="home-stat"><div class="stat-num" id="candyHomeStars">0</div><div class="stat-label">星星</div></div>
+            <div class="home-stat"><div class="stat-num" id="candyHomeBadges">0</div><div class="stat-label">徽章</div></div>
+        </div>
+        <div class="progress-bar-wrapper">
+            <div class="progress-bar-fill" id="candyProgressFill" style="width:1%;">1 / 1000</div>
+        </div>
+        <div class="learning-hint">🔤 三张同源卡消除 · 🔊 童声朗读 · 🕵️ 每5关解锁隐藏寻宝</div>
+        <button class="big-btn green" id="candyContinueBtn"><span>▶️</span> 继续第 <span id="candyContinueLevel">1</span> 关</button>
+        <div class="level-picker">
+            <div class="level-picker-label">🔍 跳转到指定关卡（1-1000）</div>
+            <div class="level-input-row">
+                <input type="number" class="level-input" id="candyJumpInput" min="1" max="1000" value="1">
+                <button class="level-go-btn" id="candyJumpBtn">前往</button>
+            </div>
+        </div>
+        <div class="button-row">
+            <button class="big-btn secondary" id="candyResetBtn" style="flex:1;"><span>🔄</span> 重置进度</button>
+        </div>
+    </div>
+
+    <div id="candy-game" class="screen hidden">
+        <div class="level-bar">
+            <div class="level-badge" id="candyLevelDisplay">第 1 / 1000 关</div>
+            <div class="stars-display" id="candyStarsDisplay">
+                <span class="star">☆</span><span class="star">☆</span><span class="star">☆</span>
+            </div>
+            <div class="stats">
+                <span>🎯 <span id="candyPairsMatched">0</span></span>
+                <span>👆 <span id="candyMoves">0</span></span>
+            </div>
+            <div class="timer-box" id="candyTimerBox" style="display:none;">
+                <span>⏱️</span><span id="candyTimerValue">60</span>s
+            </div>
+        </div>
+        <div class="progress-bar-wrapper" style="margin:6px 0;">
+            <div class="progress-bar-fill" id="candyProgressGame" style="width:0%;"></div>
+        </div>
+        <div class="learning-hint" id="candyGameHint">🧠 科学记忆</div>
+        <div class="board-candy" id="candyBoard"></div>
+        <div class="message-area" id="candyMessage">👆 找出同一单词的 3 张卡片，一起消除！</div>
+        <div class="controls">
+            <button class="ctrl-btn gray" id="candyBackHome">🏠 返回首页</button>
+            <button class="ctrl-btn" id="candyResetLevel">🔄 重玩本关</button>
+            <button class="ctrl-btn green" id="candyNextBtn" disabled>➡️ 下一关</button>
+        </div>
+    </div>
+
+    <div id="memory-home" class="screen hidden">
+        <div class="home-stats">
+            <div class="home-stat"><div class="stat-num" id="memoryHomeLevel">1</div><div class="stat-label">当前关卡</div></div>
+            <div class="home-stat"><div class="stat-num" id="memoryHomeMastered">0</div><div class="stat-label">已掌握</div></div>
+            <div class="home-stat"><div class="stat-num" id="memoryHomeStars">0</div><div class="stat-label">星星</div></div>
+            <div class="home-stat"><div class="stat-num" id="memoryHomeBadges">0</div><div class="stat-label">徽章</div></div>
+        </div>
+        <div class="progress-bar-wrapper">
+            <div class="progress-bar-fill" id="memoryProgressFill" style="width:1%;">1 / 1000</div>
+        </div>
+        <div class="learning-hint">🧠 翻牌记忆 · 单词按 1/3/7/15/30 关间隔复习 · 🕵️ 每5关解锁寻宝</div>
+        <button class="big-btn green" id="memoryContinueBtn"><span>▶️</span> 继续第 <span id="memoryContinueLevel">1</span> 关</button>
+        <div class="level-picker">
+            <div class="level-picker-label">🔍 跳转到指定关卡（1-1000）</div>
+            <div class="level-input-row">
+                <input type="number" class="level-input" id="memoryJumpInput" min="1" max="1000" value="1">
+                <button class="level-go-btn" id="memoryJumpBtn">前往</button>
+            </div>
+        </div>
+        <div class="button-row">
+            <button class="big-btn secondary" id="memoryResetBtn" style="flex:1;"><span>🔄</span> 重置进度</button>
+        </div>
+    </div>
+
+    <div id="memory-game" class="screen hidden">
+        <div class="level-bar">
+            <div class="level-badge" id="memoryLevelBadge">第 1 关</div>
+            <div class="stars-display" id="memoryStarsDisplay">
+                <span class="star">☆</span><span class="star">☆</span><span class="star">☆</span>
+            </div>
+            <div class="stats">
+                <span>🎯 <span id="memoryPairsMatched">0</span></span>
+                <span>👆 <span id="memoryAttempts">0</span></span>
+                <button class="sound-toggle" id="memorySoundToggle">
+                    <span id="memorySoundIcon">🔊</span><span id="memorySoundText">童声</span>
+                </button>
+            </div>
+            <div class="timer-box" id="memoryTimerBox" style="display:none;">
+                <span>⏱️</span><span id="memoryTimerValue">60</span>s
+            </div>
+        </div>
+        <div class="learning-hint" id="memoryGameHint">🧠 科学记忆</div>
+        <div class="board-memory" id="memoryBoard"></div>
+        <div class="message-area" id="memoryMessage">✨ 翻开卡片，配对单词和图片</div>
+        <div class="controls">
+            <button class="ctrl-btn gray" id="memoryBackHome">🏠 返回首页</button>
+            <button class="ctrl-btn" id="memoryResetLevel">🔄 重玩</button>
+        </div>
+    </div>
+
+    <!-- 侦探寻宝隐藏关卡 -->
+    <div id="detective-game" class="screen hidden">
+        <div class="level-bar">
+            <div class="level-badge" id="detectiveLevelBadge">🕵️ 隐藏关卡</div>
+            <div class="stars-display" id="detectiveStarsDisplay">
+                <span class="star">☆</span><span class="star">☆</span><span class="star">☆</span>
+            </div>
+            <div class="stats">
+                <span>🔍 <span id="detectiveFoundCount">0</span></span>
+                <span>👆 <span id="detectiveTryCount">0</span></span>
+            </div>
+        </div>
+        <div class="learning-hint" id="detectiveHint">🕵️ 听发音，找出正确的物品！</div>
+        <div class="detective-backpack" id="detectiveBackpack"></div>
+        <div class="board-detective" id="detectiveBoard"></div>
+        <button class="detective-speak-btn" id="detectiveSpeakBtn">🔊</button>
+        <div class="message-area" id="detectiveMessage">👆 点击 🔊 听发音，找出正确的物品！</div>
+        <div class="controls">
+            <button class="ctrl-btn gray" id="detectiveSkipBtn">⏭️ 跳过寻宝</button>
+            <button class="ctrl-btn green" id="detectiveCompleteBtn" disabled>✅ 完成寻宝</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+// ============================================================
+// 音效引擎
+// ============================================================
+let audioCtx = null;
+function initAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+function playTone(freq, duration=0.1, type='sine', volume=0.2) {
+    try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.type = type; osc.frequency.value = freq; gainNode.gain.value = volume;
+        osc.connect(gainNode); gainNode.connect(audioCtx.destination);
+        osc.start();
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.stop(audioCtx.currentTime + duration);
+    } catch(e) {}
+}
+const playSelectSound = () => playTone(880, 0.08, 'sine', 0.15);
+const playMatchSound = () => {
+    playTone(660, 0.1, 'triangle', 0.2);
+    setTimeout(() => playTone(880, 0.12, 'triangle', 0.2), 80);
+    setTimeout(() => playTone(1100, 0.15, 'triangle', 0.2), 160);
+};
+const playErrorSound = () => {
+    playTone(300, 0.2, 'sawtooth', 0.1);
+    setTimeout(() => playTone(220, 0.25, 'sawtooth', 0.1), 100);
+};
+const playLevelCompleteSound = () => {
+    playTone(523, 0.15, 'sine', 0.2);
+    setTimeout(() => playTone(659, 0.15, 'sine', 0.2), 120);
+    setTimeout(() => playTone(784, 0.15, 'sine', 0.25), 240);
+    setTimeout(() => playTone(1046, 0.3, 'sine', 0.25), 380);
+};
+const playBadgeSound = () => {
+    playTone(880, 0.12, 'sine', 0.25);
+    setTimeout(() => playTone(1174, 0.12, 'sine', 0.25), 100);
+    setTimeout(() => playTone(1568, 0.25, 'sine', 0.25), 220);
+};
+
+// ============================================================
+// 语音引擎
+// ============================================================
+let speechSynth = window.speechSynthesis || null;
+let voices = [];
+let americanVoice = null;
+let chineseVoice = null;
+let soundEnabled = true;
+
+function loadVoices() {
+    if (!speechSynth) return;
+    voices = speechSynth.getVoices();
+    const priority = [
+        'Microsoft Aria Online','Microsoft Jenny Online','Microsoft Guy Online',
+        'Microsoft Zira','Microsoft Aria','Microsoft Jenny','Microsoft Guy',
+        'Microsoft','Google US English','Samantha','Karen','Moira'
+    ];
+    americanVoice = null;
+    for (const kw of priority) {
+        const found = voices.find(v => v.lang.startsWith('en') && v.name.includes(kw));
+        if (found) { americanVoice = found; break; }
+    }
+    if (!americanVoice) americanVoice = voices.find(v => v.lang === 'en-US');
+    if (!americanVoice) americanVoice = voices.find(v => v.lang.startsWith('en'));
+    if (!americanVoice) americanVoice = voices[0] || null;
+
+    chineseVoice = voices.find(v => v.lang.startsWith('zh') && v.name.includes('Microsoft'))
+                || voices.find(v => v.lang === 'zh-CN')
+                || voices.find(v => v.lang.startsWith('zh')) || null;
+}
+if (speechSynth) {
+    loadVoices();
+    speechSynth.onvoiceschanged = loadVoices;
+    setTimeout(loadVoices, 100);
+    setTimeout(loadVoices, 500);
+    setTimeout(loadVoices, 1500);
+}
+
+function speakWord(word, rate=1.0) {
+    if (!soundEnabled || !speechSynth) return false;
+    try {
+        if (speechSynth.speaking || speechSynth.pending) speechSynth.cancel();
+        const u = new SpeechSynthesisUtterance(word);
+        u.lang = 'en-US'; u.rate = rate; u.pitch = 1.6; u.volume = 1.0;
+        if (americanVoice) u.voice = americanVoice;
+        speechSynth.speak(u);
+        return true;
+    } catch(e) { return false; }
+}
+function speakLetter(letter) {
+    if (!soundEnabled || !speechSynth) return false;
+    try {
+        if (speechSynth.speaking || speechSynth.pending) speechSynth.cancel();
+        const u = new SpeechSynthesisUtterance(letter);
+        u.lang = 'en-US'; u.rate = 1.0; u.pitch = 1.7; u.volume = 1.0;
+        if (americanVoice) u.voice = americanVoice;
+        speechSynth.speak(u);
+        return true;
+    } catch(e) { return false; }
+}
+function speakChinese(text) {
+    if (!soundEnabled || !speechSynth) return;
+    try {
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'zh-CN'; u.rate = 1.0; u.pitch = 1.3;
+        if (chineseVoice) u.voice = chineseVoice;
+        speechSynth.speak(u);
+    } catch(e) {}
+}
+
+const VOICE_ENCOURAGE = {
+    3: [
+        { en:'Excellent! You are amazing!', zh:'太棒了！你真了不起！' },
+        { en:'Perfect! You did it!', zh:'完美！你做到了！' },
+        { en:'Wonderful! You are a superstar!', zh:'精彩！你是超级明星！' }
+    ],
+    2: [
+        { en:'Great job! Almost perfect!', zh:'做得好！几乎完美！' },
+        { en:'Well done! You are getting better!', zh:'干得好！你越来越棒了！' }
+    ],
+    1: [
+        { en:'Good try! Practice makes perfect!', zh:'很好的尝试！熟能生巧！' },
+        { en:'You did it! Keep going!', zh:'你做到了！继续加油！' }
+    ]
+};
+function speakEncouragement(starCount) {
+    if (!soundEnabled || !speechSynth) return;
+    playLevelCompleteSound();
+    const pool = VOICE_ENCOURAGE[starCount] || VOICE_ENCOURAGE[2];
+    const chosen = pool[Math.floor(Math.random() * pool.length)];
+    setTimeout(() => {
+        speechSynth.cancel();
+        const enU = new SpeechSynthesisUtterance(chosen.en);
+        enU.lang = 'en-US'; enU.rate = 1.0; enU.pitch = 1.55;
+        if (americanVoice) enU.voice = americanVoice;
+        enU.onend = () => {
+            setTimeout(() => {
+                const zhU = new SpeechSynthesisUtterance(chosen.zh);
+                zhU.lang = 'zh-CN'; zhU.rate = 1.0; zhU.pitch = 1.35;
+                if (chineseVoice) zhU.voice = chineseVoice;
+                speechSynth.speak(zhU);
+            }, 150);
+        };
+        speechSynth.speak(enU);
+    }, 400);
+}
+
+// ============================================================
+// 特效
+// ============================================================
+function createStars(x, y, count=5) {
+    for (let i = 0; i < count; i++) {
+        const star = document.createElement('div');
+        star.className = 'star-fall';
+        star.textContent = ['⭐','🌟','✨','💫'][Math.floor(Math.random()*4)];
+        star.style.left = (x + (Math.random()-0.5)*100) + 'px';
+        star.style.top = y + 'px';
+        star.style.fontSize = (1.2 + Math.random()) + 'rem';
+        star.style.animationDelay = (i*0.1) + 's';
+        document.body.appendChild(star);
+        setTimeout(() => star.remove(), 1500);
+    }
+}
+function createConfetti(count=20) {
+    const colors = ['#ff6b6b','#feca57','#48dbfb','#1dd1a1','#f368e0','#ff9f43'];
+    for (let i = 0; i < count; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random()*100 + 'vw';
+        c.style.top = '-10px';
+        c.style.background = colors[Math.floor(Math.random()*colors.length)];
+        c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        c.style.width = (8+Math.random()*8) + 'px';
+        c.style.height = (8+Math.random()*8) + 'px';
+        c.style.animationDelay = (Math.random()*0.5) + 's';
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 2500);
+    }
+}
+function shuffleArray(arr) {
+    for (let i = arr.length-1; i > 0; i--) {
+        const j = Math.floor(Math.random()*(i+1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+function getEncourageText(starCount) {
+    const pool3 = ['🏆 完美通关！你就是英语小天才！','🌟 太厉害了！全对！继续保持！','🎉 满分！你的记忆力超棒！'];
+    const pool2 = ['😊 很不错！再细心一点就满分啦！','💪 做得很好！下次挑战零失误！','🎯 差一点点就完美！'];
+    const pool1 = ['🎈 完成啦！多练习就会越来越棒！','🌱 不错哦！每一次都是进步！','💡 加油！你已经迈出重要一步！'];
+    const pool = starCount >= 3 ? pool3 : starCount === 2 ? pool2 : pool1;
+    return pool[Math.floor(Math.random()*pool.length)];
+}
+
+// ============================================================
+// 词库
+// ============================================================
+const WORD_BANK = [
+    { word:'cat', emoji:'🐱' }, { word:'dog', emoji:'🐶' }, { word:'fish', emoji:'🐟' },
+    { word:'bird', emoji:'🐦' }, { word:'rabbit', emoji:'🐰' }, { word:'bear', emoji:'🐻' },
+    { word:'lion', emoji:'🦁' }, { word:'monkey', emoji:'🐵' }, { word:'elephant', emoji:'🐘' },
+    { word:'tiger', emoji:'🐯' }, { word:'panda', emoji:'🐼' }, { word:'penguin', emoji:'🐧' },
+    { word:'horse', emoji:'🐴' }, { word:'cow', emoji:'🐮' }, { word:'pig', emoji:'🐷' },
+    { word:'sheep', emoji:'🐑' }, { word:'duck', emoji:'🦆' }, { word:'frog', emoji:'🐸' },
+    { word:'whale', emoji:'🐳' }, { word:'dolphin', emoji:'🐬' }, { word:'butterfly', emoji:'🦋' },
+    { word:'bee', emoji:'🐝' }, { word:'mouse', emoji:'🐭' }, { word:'fox', emoji:'🦊' },
+    { word:'owl', emoji:'🦉' }, { word:'parrot', emoji:'🦜' }, { word:'apple', emoji:'🍎' },
+    { word:'banana', emoji:'🍌' }, { word:'orange', emoji:'🍊' }, { word:'grape', emoji:'🍇' },
+    { word:'watermelon', emoji:'🍉' }, { word:'strawberry', emoji:'🍓' }, { word:'cherry', emoji:'🍒' },
+    { word:'peach', emoji:'🍑' }, { word:'pear', emoji:'🍐' }, { word:'lemon', emoji:'🍋' },
+    { word:'bread', emoji:'🍞' }, { word:'cake', emoji:'🍰' }, { word:'pizza', emoji:'🍕' },
+    { word:'hamburger', emoji:'🍔' }, { word:'egg', emoji:'🥚' }, { word:'milk', emoji:'🥛' },
+    { word:'cheese', emoji:'🧀' }, { word:'cookie', emoji:'🍪' }, { word:'red', emoji:'🔴' },
+    { word:'blue', emoji:'🔵' }, { word:'green', emoji:'🟢' }, { word:'yellow', emoji:'🟡' },
+    { word:'purple', emoji:'🟣' }, { word:'black', emoji:'⚫' }, { word:'white', emoji:'⚪' },
+    { word:'brown', emoji:'🟤' }, { word:'house', emoji:'🏠' }, { word:'book', emoji:'📖' },
+    { word:'pen', emoji:'🖊️' }, { word:'pencil', emoji:'✏️' }, { word:'phone', emoji:'📱' },
+    { word:'clock', emoji:'⏰' }, { word:'key', emoji:'🔑' }, { word:'bag', emoji:'👜' },
+    { word:'cup', emoji:'☕' }, { word:'chair', emoji:'🪑' }, { word:'bed', emoji:'🛏️' },
+    { word:'lamp', emoji:'💡' }, { word:'shoe', emoji:'👟' }, { word:'hat', emoji:'🎩' },
+    { word:'car', emoji:'🚗' }, { word:'bus', emoji:'🚌' }, { word:'train', emoji:'🚂' },
+    { word:'plane', emoji:'✈️' }, { word:'ship', emoji:'🚢' }, { word:'bike', emoji:'🚲' },
+    { word:'rocket', emoji:'🚀' }, { word:'sun', emoji:'☀️' }, { word:'moon', emoji:'🌙' },
+    { word:'cloud', emoji:'☁️' }, { word:'rain', emoji:'🌧️' }, { word:'snow', emoji:'❄️' },
+    { word:'rainbow', emoji:'🌈' }, { word:'tree', emoji:'🌳' }, { word:'flower', emoji:'🌸' },
+    { word:'star', emoji:'⭐' }, { word:'heart', emoji:'❤️' }
+];
+
+// ============================================================
+// 模式切换
+// ============================================================
+const modeCandy = document.getElementById('modeCandy');
+const modeMemory = document.getElementById('modeMemory');
+const mainEmoji = document.getElementById('mainEmoji');
+const mainTitle = document.getElementById('mainTitle');
+
+function hideAllScreens() {
+    ['candy-home','candy-game','memory-home','memory-game','detective-game'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+    });
+}
+function switchMode(mode) {
+    modeCandy.classList.toggle('active', mode === 'candy');
+    modeMemory.classList.toggle('active', mode === 'memory');
+    mainEmoji.textContent = mode === 'candy' ? '🧩' : '🧠';
+    mainTitle.textContent = mode === 'candy' ? '三消英语' : '翻牌记忆';
+    hideAllScreens();
+    if (mode === 'candy') {
+        candyRenderHome();
+        document.getElementById('candy-home').classList.remove('hidden');
+    } else {
+        memoryRenderHome();
+        document.getElementById('memory-home').classList.remove('hidden');
+    }
+}
+modeCandy.addEventListener('click', () => switchMode('candy'));
+modeMemory.addEventListener('click', () => switchMode('memory'));
+
+// ============================================================
+// 通用：选词 + 记录
+// ============================================================
+function selectWordsForLevel(progress, level, config) {
+    const selected = [];
+    const reviewCandidates = [];
+    Object.keys(progress.wordStats).forEach(word => {
+        const stat = progress.wordStats[word];
+        if (!stat.mastered && stat.nextReview <= level) {
+            reviewCandidates.push({ word, ...stat });
+        }
+    });
+    reviewCandidates.sort((a, b) => a.nextReview - b.nextReview);
+    for (let i = 0; i < config.reviewWordCount && i < reviewCandidates.length; i++) {
+        const wd = WORD_BANK.find(w => w.word === reviewCandidates[i].word);
+        if (wd) selected.push(wd);
+    }
+    const unseen = WORD_BANK.filter(w => !progress.wordStats[w.word]);
+    for (let i = 0; i < config.newWordCount && i < unseen.length; i++) {
+        selected.push(unseen[i]);
+    }
+    if (selected.length < config.pairCount) {
+        const mastered = Object.keys(progress.wordStats)
+            .filter(w => progress.wordStats[w].mastered)
+            .sort((a,b) => progress.wordStats[a].lastSeen - progress.wordStats[b].lastSeen);
+        for (const w of mastered) {
+            if (selected.length >= config.pairCount) break;
+            if (selected.some(s => s.word === w)) continue;
+            const wd = WORD_BANK.find(x => x.word === w);
+            if (wd) selected.push(wd);
+        }
+    }
+    while (selected.length < config.pairCount) {
+        const rand = WORD_BANK[Math.floor(Math.random()*WORD_BANK.length)];
+        if (!selected.some(s => s.word === rand.word)) selected.push(rand);
+    }
+    return selected.slice(0, config.pairCount);
+}
+function recordWord(progress, saveFn, word, level) {
+    if (!progress.wordStats[word]) {
+        progress.wordStats[word] = { learned:0, lastSeen:level, nextReview:level+1, mastered:false };
+    }
+    const stat = progress.wordStats[word];
+    stat.learned++;
+    stat.lastSeen = level;
+    const intervals = [1,3,7,15,30];
+    if (stat.learned <= intervals.length) {
+        stat.nextReview = level + intervals[stat.learned-1];
+    } else {
+        stat.mastered = true;
+        stat.nextReview = Infinity;
+    }
+    saveFn();
+}
+
+// ============================================================
+// 侦探寻宝模块（隐藏关卡，每5关触发）
+// ============================================================
+const DETECTIVE_TRIGGER_INTERVAL = 5; // 每5关触发一次
+
+// 侦探徽章 emoji 池
+const BADGE_POOL = ['🔍','🕵️','🎖️','🏅','🥇','💎','👑','🌟','🔮','🧭'];
+
+// 当前寻宝状态
+let detectiveState = {
+    active: false,
+    mode: null,          // 'candy' 或 'memory'
+    returnLevel: 1,      // 完成后回到第几关
+    words: [],           // 要找的词
+    currentIndex: 0,
+    found: [],
+    tryCount: 0,
+    sceneItems: [],
+    starsEarned: 0,
+    badge: null
+};
+
+// 生成寻宝场景
+function detectiveStart(mode, returnLevel) {
+    detectiveState.active = true;
+    detectiveState.mode = mode;
+    detectiveState.returnLevel = returnLevel;
+    detectiveState.currentIndex = 0;
+    detectiveState.found = [];
+    detectiveState.tryCount = 0;
+    detectiveState.starsEarned = 0;
+
+    // 本关寻宝单词：从词库随机取 4 个
+    const shuffled = shuffleArray([...WORD_BANK]);
+    detectiveState.words = shuffled.slice(0, 4);
+
+    // 徽章
+    const badgeIdx = (returnLevel / DETECTIVE_TRIGGER_INTERVAL - 1) % BADGE_POOL.length;
+    detectiveState.badge = BADGE_POOL[badgeIdx];
+
+    // 切换画面
+    hideAllScreens();
+    document.getElementById('detective-game').classList.remove('hidden');
+
+    // 更新 HUD
+    document.getElementById('detectiveLevelBadge').textContent = `🕵️ 隐藏关卡 · 第 ${returnLevel} 关奖励`;
+    document.getElementById('detectiveFoundCount').textContent = '0';
+    document.getElementById('detectiveTryCount').textContent = '0';
+    document.getElementById('detectiveCompleteBtn').disabled = true;
+    document.getElementById('detectiveCompleteBtn').textContent = '✅ 完成寻宝';
+    document.getElementById('detectiveStarsDisplay').querySelectorAll('.star').forEach(s => {
+        s.textContent = '☆';
+        s.classList.remove('earned');
+        s.style.color = '#aaa';
+    });
+
+    detectiveRenderBackpack();
+    detectiveRenderScene();
+    detectiveRenderHint();
+
+    setTimeout(() => detectiveAskCurrent(), 500);
+}
+
+function detectiveRenderBackpack() {
+    const bp = document.getElementById('detectiveBackpack');
+    bp.innerHTML = '';
+    for (let i = 0; i < detectiveState.words.length; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'detective-slot' + (detectiveState.found[i] ? ' filled' : '');
+        slot.textContent = detectiveState.found[i] ? detectiveState.found[i].emoji : '';
+        bp.appendChild(slot);
+    }
+}
+
+function detectiveRenderScene() {
+    const board = document.getElementById('detectiveBoard');
+    board.innerHTML = '';
+
+    // 屏幕上放：4 个目标词 + 4 个干扰词 = 8 个
+    const targetWords = detectiveState.words;
+    const others = WORD_BANK.filter(w => !targetWords.some(t => t.word === w.word));
+    const distractors = shuffleArray([...others]).slice(0, 4);
+    const allItems = shuffleArray([...targetWords, ...distractors]);
+
+    allItems.forEach((item) => {
+        const el = document.createElement('div');
+        el.className = 'detective-item';
+        el.textContent = item.emoji;
+        el.dataset.word = item.word;
+        // 随机位置（避开边缘）
+        const leftPct = 5 + Math.random() * 78;
+        const topPct = 8 + Math.random() * 72;
+        el.style.left = leftPct + '%';
+        el.style.top = topPct + '%';
+        el.style.animationDelay = (Math.random() * 2) + 's';
+        el.addEventListener('click', () => detectiveOnItemClick(item, el));
+        board.appendChild(el);
+    });
+}
+
+function detectiveRenderHint() {
+    const hint = document.getElementById('detectiveHint');
+    if (detectiveState.currentIndex < detectiveState.words.length) {
+        hint.textContent = `🕵️ 第 ${detectiveState.currentIndex + 1} / ${detectiveState.words.length} 个物品 · 听发音找出来！`;
+    } else {
+        hint.textContent = `🎉 全部找到了！点击「完成寻宝」领取徽章！`;
+    }
+}
+
+function detectiveAskCurrent() {
+    if (detectiveState.currentIndex >= detectiveState.words.length) return;
+    const t = detectiveState.words[detectiveState.currentIndex];
+    speakWord(t.word, 0.85);
+    const btn = document.getElementById('detectiveSpeakBtn');
+    btn.classList.add('playing');
+    setTimeout(() => btn.classList.remove('playing'), 1200);
+}
+
+function detectiveOnItemClick(item, el) {
+    if (detectiveState.currentIndex >= detectiveState.words.length) return;
+    const target = detectiveState.words[detectiveState.currentIndex];
+
+    if (item.word === target.word) {
+        // 正确
+        el.classList.add('correct');
+        speakWord(target.word, 1.0);
+        detectiveState.found.push(target);
+        detectiveRenderBackpack();
+
+        // 星星特效
+        const rect = el.getBoundingClientRect();
+        createStars(rect.left + rect.width / 2, rect.top + rect.height / 2, 5);
+
+        document.getElementById('detectiveFoundCount').textContent = detectiveState.found.length;
+        document.getElementById('detectiveMessage').textContent = `✔️ 找到了！${target.word}！`;
+
+        setTimeout(() => {
+            el.classList.add('hidden');
+            detectiveState.currentIndex++;
+            detectiveRenderHint();
+
+            if (detectiveState.currentIndex >= detectiveState.words.length) {
+                // 全部找到
+                document.getElementById('detectiveCompleteBtn').disabled = false;
+                document.getElementById('detectiveCompleteBtn').textContent = '✅ 完成寻宝';
+                document.getElementById('detectiveMessage').textContent = '🎉 全部找到了！点击「完成寻宝」领徽章！';
+                playMatchSound();
+                createConfetti(20);
+            } else {
+                setTimeout(() => detectiveAskCurrent(), 400);
             }
-            function playTone(freq, duration = 0.1, type = 'sine', volume = 0.2) {
-                try {
-                    initAudio();
-                    const osc = audioCtx.createOscillator();
-                    const gainNode = audioCtx.createGain();
-                    osc.type = type;
-                    osc.frequency.value = freq;
-                    gainNode.gain.value = volume;
-                    osc.connect(gainNode);
-                    gainNode.connect(audioCtx.destination);
-                    osc.start();
-                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-                    osc.stop(audioCtx.currentTime + duration);
-                } catch (e) {}
+        }, 700);
+    } else {
+        // 错误
+        detectiveState.tryCount++;
+        document.getElementById('detectiveTryCount').textContent = detectiveState.tryCount;
+        el.classList.add('wrong');
+        playErrorSound();
+        speakWord(item.word, 0.9);
+        setTimeout(() => el.classList.remove('wrong'), 500);
+        document.getElementById('detectiveMessage').textContent = `❌ 这是 ${item.word}，再试试看！`;
+        setTimeout(() => {
+            if (detectiveState.currentIndex < detectiveState.words.length) {
+                detectiveAskCurrent();
             }
-            function playSelectSound() { playTone(880, 0.08, 'sine', 0.15); }
-            function playMatchSound() {
-                playTone(660, 0.1, 'triangle', 0.2);
-                setTimeout(() => playTone(880, 0.12, 'triangle', 0.2), 80);
-                setTimeout(() => playTone(1100, 0.15, 'triangle', 0.2), 160);
-            }
-            function playErrorSound() {
-                playTone(300, 0.2, 'sawtooth', 0.1);
-                setTimeout(() => playTone(220, 0.25, 'sawtooth', 0.1), 100);
-            }
-            function playLevelCompleteSound() {
-                playTone(523, 0.15, 'sine', 0.2);
-                setTimeout(() => playTone(659, 0.15, 'sine', 0.2), 120);
-                setTimeout(() => playTone(784, 0.15, 'sine', 0.25), 240);
-                setTimeout(() => playTone(1046, 0.3, 'sine', 0.25), 380);
-            }
+        }, 900);
+    }
+}
 
-            // ============================================================
-            // 语音引擎（童声 + 微软语音优先 + 快速响应）
-            // ============================================================
-            let speechSynth = window.speechSynthesis || null;
-            let voices = [];
-            let americanVoice = null;
-            let chineseVoice = null;
-            let soundEnabled = true;
-            let voiceReady = false;
+function detectiveComplete() {
+    detectiveState.active = false;
 
-            function loadVoices() {
-                if (!speechSynth) return;
-                voices = speechSynth.getVoices();
+    // 保存徽章到当前模式进度
+    const progress = detectiveState.mode === 'candy' ? candyProgress : memoryProgress;
+    const saveFn = detectiveState.mode === 'candy' ? candySaveProgress : memorySaveProgress;
+    if (!progress.badges) progress.badges = [];
+    if (!progress.badges.includes(detectiveState.badge)) {
+        progress.badges.push(detectiveState.badge);
+    }
+    // 额外奖励 1 星
+    if (!progress.bonusStars) progress.bonusStars = 0;
+    progress.bonusStars += 1;
+    saveFn();
 
-                // 优先级列表（越靠前越优先）
-                // 微软语音放最前面（华为平板上音质最好）
-                const voicePriority = [
-                    'Microsoft Aria Online',
-                    'Microsoft Jenny Online',
-                    'Microsoft Guy Online',
-                    'Microsoft Zira',
-                    'Microsoft Aria',
-                    'Microsoft Jenny',
-                    'Microsoft Guy',
-                    'Microsoft',
-                    'Google US English',
-                    'Samantha',
-                    'Karen',
-                    'Moira',
-                    'Female',
-                    'Natural'
-                ];
+    playBadgeSound();
+    speakChinese(`太棒了！你获得了侦探徽章！`);
 
-                // 从高优先级开始找
-                americanVoice = null;
-                for (const keyword of voicePriority) {
-                    const found = voices.find(v =>
-                        v.lang.startsWith('en') && v.name.includes(keyword)
-                    );
-                    if (found) {
-                        americanVoice = found;
-                        break;
-                    }
-                }
+    // 弹窗
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = `
+        <div class="modal">
+            <h2>🕵️ 寻宝完成！</h2>
+            <div style="font-size:4rem;margin:12px 0;">${detectiveState.badge}</div>
+            <div class="encourage-text">恭喜获得侦探徽章！<br>额外奖励 1 颗星 ⭐</div>
+            <div class="modal-buttons">
+                <button class="modal-btn primary" id="detectiveOkBtn">🎯 继续闯关</button>
+            </div>
+        </div>`;
+    document.body.appendChild(overlay);
+    document.getElementById('detectiveOkBtn').onclick = () => {
+        overlay.remove();
+        // 回到原来的模式
+        switchMode(detectiveState.mode);
+        // 自动开始下一关
+        if (detectiveState.mode === 'candy') {
+            candyStart(detectiveState.returnLevel + 1);
+        } else {
+            memoryStart(detectiveState.returnLevel + 1);
+        }
+    };
+}
 
-                // 没找到就用任意 en-US
-                if (!americanVoice) {
-                    americanVoice = voices.find(v => v.lang === 'en-US');
-                }
-                if (!americanVoice) {
-                    americanVoice = voices.find(v => v.lang.startsWith('en'));
-                }
-                if (!americanVoice) {
-                    americanVoice = voices[0] || null;
-                }
+function detectiveSkip() {
+    detectiveState.active = false;
+    switchMode(detectiveState.mode);
+    if (detectiveState.mode === 'candy') {
+        candyStart(detectiveState.returnLevel + 1);
+    } else {
+        memoryStart(detectiveState.returnLevel + 1);
+    }
+}
 
-                // 中文也优先微软
-                chineseVoice = voices.find(v =>
-                    v.lang.startsWith('zh') && v.name.includes('Microsoft')
-                ) || voices.find(v => v.lang === 'zh-CN') ||
-                  voices.find(v => v.lang.startsWith('zh')) || null;
+document.getElementById('detectiveSpeakBtn').addEventListener('click', () => {
+    detectiveAskCurrent();
+});
+document.getElementById('detectiveCompleteBtn').addEventListener('click', detectiveComplete);
+document.getElementById('detectiveSkipBtn').addEventListener('click', detectiveSkip);
 
-                voiceReady = voices.length > 0;
+// 检查是否应该触发隐藏关卡
+function shouldTriggerDetective(level, progress) {
+    // 每5关触发一次，且未触发过
+    if (level % DETECTIVE_TRIGGER_INTERVAL !== 0) return false;
+    if (!progress.detectiveTriggered) progress.detectiveTriggered = [];
+    if (progress.detectiveTriggered.includes(level)) return false;
+    return true;
+}
+function markDetectiveTriggered(level, progress, saveFn) {
+    if (!progress.detectiveTriggered) progress.detectiveTriggered = [];
+    if (!progress.detectiveTriggered.includes(level)) {
+        progress.detectiveTriggered.push(level);
+        saveFn();
+    }
+}
 
-                console.log('🎤 语音列表已加载：', voices.length, '个');
-                console.log('🎯 选中的英语语音：', americanVoice ? americanVoice.name : '未找到');
-                console.log('🎯 选中的中文语音：', chineseVoice ? chineseVoice.name : '未找到');
+// ============================================================
+// 三消模式
+// ============================================================
+const CANDY_TOTAL_LEVELS = 1000;
 
-                const enVoices = voices.filter(v => v.lang.startsWith('en'));
-                if (enVoices.length > 0) {
-                    console.log('📋 所有可用英语语音：');
-                    enVoices.forEach(v => console.log('  -', v.name, '(' + v.lang + ')'));
-                }
-            }
+function candyGetLevelConfig(level) {
+    let pairCount;
+    if (level <= 100) pairCount = 4;
+    else if (level <= 300) pairCount = 5;
+    else if (level <= 600) pairCount = 5;
+    else if (level <= 900) pairCount = 6;
+    else pairCount = 6;
 
-            // 页面加载时立即初始化
-            if (speechSynth) {
-                loadVoices();
-                speechSynth.onvoiceschanged = loadVoices;
-                setTimeout(loadVoices, 100);
-                setTimeout(loadVoices, 500);
-                setTimeout(loadVoices, 1500);
-            }
+    let newWordCount, reviewWordCount;
+    if (level <= 100) { newWordCount = 3; reviewWordCount = pairCount - newWordCount; }
+    else if (level <= 300) { newWordCount = 3; reviewWordCount = pairCount - newWordCount; }
+    else if (level <= 600) { newWordCount = 2; reviewWordCount = pairCount - newWordCount; }
+    else { newWordCount = 2; reviewWordCount = pairCount - newWordCount; }
+    if (reviewWordCount < 0) reviewWordCount = 0;
 
-            // 童声朗读单词
-            function speakWord(word, rate = 1.0) {
-                if (!soundEnabled || !speechSynth) return false;
-                try {
-                    if (speechSynth.speaking || speechSynth.pending) {
-                        speechSynth.cancel();
-                    }
-                    const u = new SpeechSynthesisUtterance(word);
-                    u.lang = 'en-US';
-                    u.rate = rate;
-                    u.pitch = 1.6;         // 童声高音调
-                    u.volume = 1.0;
-                    if (americanVoice) u.voice = americanVoice;
-                    speechSynth.speak(u);
-                    return true;
-                } catch (e) { return false; }
-            }
+    let timeLimit = null;
+    if (level > 400) timeLimit = Math.max(50, 110 - Math.floor((level - 400) / 25));
+    if (level > 800) timeLimit = Math.max(40, 90 - Math.floor((level - 800) / 30));
 
-            // 童声朗读字母
-            function speakLetter(letter) {
-                if (!soundEnabled || !speechSynth) return false;
-                try {
-                    if (speechSynth.speaking || speechSynth.pending) {
-                        speechSynth.cancel();
-                    }
-                    const u = new SpeechSynthesisUtterance(letter);
-                    u.lang = 'en-US';
-                    u.rate = 1.0;
-                    u.pitch = 1.7;
-                    u.volume = 1.0;
-                    if (americanVoice) u.voice = americanVoice;
-                    speechSynth.speak(u);
-                    return true;
-                } catch (e) { return false; }
-            }
+    let phase;
+    if (level <= 100) phase = '入门';
+    else if (level <= 300) phase = '基础';
+    else if (level <= 600) phase = '进阶';
+    else if (level <= 850) phase = '强化';
+    else phase = '大师';
 
-            // ============================================================
-            // 语音鼓励语库
-            // ============================================================
-            const VOICE_ENCOURAGE = {
-                3: [
-                    { en: 'Excellent! You are amazing!', zh: '太棒了！你真了不起！' },
-                    { en: 'Perfect! You did it!', zh: '完美！你做到了！' },
-                    { en: 'Wonderful! You are a superstar!', zh: '精彩！你是超级明星！' },
-                    { en: 'Fantastic! You are so smart!', zh: '太棒了！你真聪明！' },
-                    { en: 'Amazing! Keep it up!', zh: '惊人！继续保持！' }
-                ],
-                2: [
-                    { en: 'Great job! Almost perfect!', zh: '做得好！几乎完美！' },
-                    { en: 'Well done! You are getting better!', zh: '干得好！你越来越棒了！' },
-                    { en: 'Good work! Keep trying!', zh: '做得好！继续努力！' },
-                    { en: 'Nice! You can do even better!', zh: '不错！你可以做得更好！' },
-                    { en: 'Very good! Try again for a perfect score!', zh: '非常好！再试一次争取满分！' }
-                ],
-                1: [
-                    { en: 'Good try! Practice makes perfect!', zh: '很好的尝试！熟能生巧！' },
-                    { en: 'You did it! Keep going!', zh: '你做到了！继续加油！' },
-                    { en: 'Nice effort! You will improve!', zh: '很努力！你会进步的！' },
-                    { en: 'Well done! Try again for a better score!', zh: '做得好！再试一次拿更高分！' },
-                    { en: 'Great start! Practice more!', zh: '好的开始！多练习！' }
-                ]
+    return { pairCount, newWordCount, reviewWordCount, timeLimit, phase };
+}
+
+let candyProgress = candyLoadProgress();
+function candyLoadProgress() {
+    try {
+        const saved = localStorage.getItem('candyProgressV5');
+        if (saved) {
+            const d = JSON.parse(saved);
+            return {
+                currentLevel: d.currentLevel || 1,
+                levelStars: d.levelStars || {},
+                wordStats: d.wordStats || {},
+                badges: d.badges || [],
+                bonusStars: d.bonusStars || 0,
+                detectiveTriggered: d.detectiveTriggered || []
             };
+        }
+    } catch(e) {}
+    return { currentLevel:1, levelStars:{}, wordStats:{}, badges:[], bonusStars:0, detectiveTriggered:[] };
+}
+function candySaveProgress() {
+    try { localStorage.setItem('candyProgressV5', JSON.stringify(candyProgress)); } catch(e) {}
+}
 
-            // 童声鼓励语
-            function speakEncouragement(starCount) {
-                if (!soundEnabled || !speechSynth) return;
-                playLevelCompleteSound();
-                const pool = VOICE_ENCOURAGE[starCount] || VOICE_ENCOURAGE[2];
-                const chosen = pool[Math.floor(Math.random() * pool.length)];
-                setTimeout(() => {
-                    speechSynth.cancel();
-                    const enUtter = new SpeechSynthesisUtterance(chosen.en);
-                    enUtter.lang = 'en-US';
-                    enUtter.rate = 1.0;
-                    enUtter.pitch = 1.55;
-                    enUtter.volume = 1.0;
-                    if (americanVoice) enUtter.voice = americanVoice;
-                    enUtter.onend = () => {
-                        setTimeout(() => {
-                            const zhUtter = new SpeechSynthesisUtterance(chosen.zh);
-                            zhUtter.lang = 'zh-CN';
-                            zhUtter.rate = 1.0;
-                            zhUtter.pitch = 1.35;
-                            zhUtter.volume = 1.0;
-                            if (chineseVoice) zhUtter.voice = chineseVoice;
-                            speechSynth.speak(zhUtter);
-                        }, 150);
-                    };
-                    speechSynth.speak(enUtter);
-                }, 400);
-            }
+let candyCurrentLevel = 1;
+let candyCards = [];
+let candySelectedIds = [];
+let candyMatched = 0;
+let candyMoves = 0;
+let candyFinished = false;
+let candyCurrentWords = [];
+let candyLock = false;
+let candyTimerInterval = null;
+let candyTimeLeft = 0;
+let candyGameActive = false;
+let candyConfig = null;
+let candyTimeoutId = null;
 
-            // ============================================================
-            // 特效
-            // ============================================================
-            function createStars(x, y, count = 5) {
-                for (let i = 0; i < count; i++) {
-                    const star = document.createElement('div');
-                    star.className = 'star-fall';
-                    star.textContent = ['⭐', '🌟', '✨', '💫'][Math.floor(Math.random() * 4)];
-                    star.style.left = (x + (Math.random() - 0.5) * 100) + 'px';
-                    star.style.top = y + 'px';
-                    star.style.fontSize = (1.2 + Math.random() * 1) + 'rem';
-                    star.style.animationDelay = (i * 0.1) + 's';
-                    document.body.appendChild(star);
-                    setTimeout(() => star.remove(), 1500);
-                }
-            }
-            function createConfetti(count = 20) {
-                const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#1dd1a1', '#f368e0', '#ff9f43'];
-                for (let i = 0; i < count; i++) {
-                    const conf = document.createElement('div');
-                    conf.className = 'confetti';
-                    conf.style.left = Math.random() * 100 + 'vw';
-                    conf.style.top = '-10px';
-                    conf.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    conf.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-                    conf.style.width = (8 + Math.random() * 8) + 'px';
-                    conf.style.height = (8 + Math.random() * 8) + 'px';
-                    conf.style.animationDelay = (Math.random() * 0.5) + 's';
-                    conf.style.animationDuration = (1 + Math.random()) + 's';
-                    document.body.appendChild(conf);
-                    setTimeout(() => conf.remove(), 2500);
-                }
-            }
-            function showAnimalBubble(x, y, animalType = 'dog') {
-                const animals = { dog: '🐶', cat: '🐱', bird: '🐦', duck: '🦆',
-                                  bear: '🐻', rabbit: '🐰', panda: '🐼', lion: '🦁' };
-                const bubble = document.createElement('div');
-                bubble.className = 'animal-bubble';
-                bubble.textContent = animals[animalType] || '🐶';
-                bubble.style.left = (x - 25) + 'px';
-                bubble.style.top = (y - 50) + 'px';
-                document.body.appendChild(bubble);
-                setTimeout(() => bubble.remove(), 900);
-            }
-            function shuffleArray(arr) {
-                for (let i = arr.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [arr[i], arr[j]] = [arr[j], arr[i]];
-                }
-                return arr;
-            }
+const candyBoard = document.getElementById('candyBoard');
+const candyLevelDisplay = document.getElementById('candyLevelDisplay');
+const candyPairsMatchedSpan = document.getElementById('candyPairsMatched');
+const candyMovesSpan = document.getElementById('candyMoves');
+const candyProgressGame = document.getElementById('candyProgressGame');
+const candyMessage = document.getElementById('candyMessage');
+const candyResetLevel = document.getElementById('candyResetLevel');
+const candyNextBtn = document.getElementById('candyNextBtn');
+const candyBackHome = document.getElementById('candyBackHome');
+const candyHomeLevel = document.getElementById('candyHomeLevel');
+const candyHomeWords = document.getElementById('candyHomeWords');
+const candyHomeStars = document.getElementById('candyHomeStars');
+const candyHomeBadges = document.getElementById('candyHomeBadges');
+const candyProgressFill = document.getElementById('candyProgressFill');
+const candyContinueBtn = document.getElementById('candyContinueBtn');
+const candyContinueLevel = document.getElementById('candyContinueLevel');
+const candyJumpInput = document.getElementById('candyJumpInput');
+const candyJumpBtn = document.getElementById('candyJumpBtn');
+const candyResetBtn = document.getElementById('candyResetBtn');
+const candyStarsDisplay = document.getElementById('candyStarsDisplay');
+const candyTimerBox = document.getElementById('candyTimerBox');
+const candyTimerValue = document.getElementById('candyTimerValue');
+const candyGameHint = document.getElementById('candyGameHint');
 
-            // ============================================================
-            // 模式切换
-            // ============================================================
-            const modeCandy = document.getElementById('modeCandy');
-            const modeMemory = document.getElementById('modeMemory');
-            const mainEmoji = document.getElementById('mainEmoji');
-            const mainTitle = document.getElementById('mainTitle');
+function candyGetMasteredCount() {
+    return Object.values(candyProgress.wordStats).filter(w => w.mastered).length;
+}
+function candyTotalStars() {
+    return Object.values(candyProgress.levelStars).reduce((a,b) => a+b, 0) + (candyProgress.bonusStars || 0);
+}
+function candyUpdateStars(stars) {
+    const s = candyStarsDisplay.querySelectorAll('.star');
+    s.forEach((el, idx) => {
+        if (idx < stars) {
+            el.textContent = '★';
+            el.classList.add('earned');
+            el.style.color = '#ffb800';
+        } else {
+            el.textContent = '☆';
+            el.classList.remove('earned');
+            el.style.color = '#aaa';
+        }
+    });
+}
 
-            function switchMode(mode) {
-                modeCandy.classList.toggle('active', mode === 'candy');
-                modeMemory.classList.toggle('active', mode === 'memory');
-                mainEmoji.textContent = mode === 'candy' ? '🧩' : '🧠';
-                mainTitle.textContent = mode === 'candy' ? '字母消消乐' : '记忆闯关';
-                hideAllScreens();
-                if (mode === 'candy') {
-                    candyRenderHome();
-                    document.getElementById('candy-home').classList.remove('hidden');
-                } else {
-                    memoryRenderHome();
-                    document.getElementById('memory-home').classList.remove('hidden');
-                }
-            }
-            function hideAllScreens() {
-                ['candy-home', 'candy-game', 'memory-home', 'memory-game'].forEach(id => {
-                    document.getElementById(id).classList.add('hidden');
-                });
-            }
-            modeCandy.addEventListener('click', () => switchMode('candy'));
-            modeMemory.addEventListener('click', () => switchMode('memory'));
+function candyRenderHome() {
+    candyCurrentLevel = candyProgress.currentLevel || 1;
+    candyHomeLevel.textContent = candyCurrentLevel;
+    candyHomeWords.textContent = candyGetMasteredCount();
+    candyHomeStars.textContent = candyTotalStars();
+    candyHomeBadges.textContent = (candyProgress.badges || []).length;
+    const percent = Math.max(1, (candyCurrentLevel / CANDY_TOTAL_LEVELS) * 100);
+    candyProgressFill.style.width = percent + '%';
+    candyProgressFill.textContent = candyCurrentLevel + ' / ' + CANDY_TOTAL_LEVELS;
+    candyContinueLevel.textContent = candyCurrentLevel;
+    candyJumpInput.value = candyCurrentLevel;
+}
 
-            // 鼓励语文本库（弹窗用）
-            const ENCOURAGE_3STAR = [
-                '🏆 完美通关！你就是英语小天才！',
-                '🌟 太厉害了！全对！继续保持！',
-                '🎉 满分！你的记忆力超棒！',
-                '✨ 完美！这些单词你全记住了！',
-                '👑 你是单词小王子/小公主！'
-            ];
-            const ENCOURAGE_2STAR = [
-                '😊 很不错！再细心一点就满分啦！',
-                '💪 做得很好！下次挑战零失误！',
-                '🌟 很棒！你已经掌握大部分啦！',
-                '🎯 差一点点就完美！继续加油！',
-                '👍 表现不错！再来一次会更好！'
-            ];
-            const ENCOURAGE_1STAR = [
-                '🎈 完成啦！多练习就会越来越棒！',
-                '🌱 不错哦！每一次都是进步！',
-                '💡 加油！你已经迈出重要一步！',
-                '🤗 完成通关！下次试试更快？',
-                '🌈 做得好！继续努力会有惊喜！'
-            ];
-            function getEncourageText(starCount) {
-                const pool = starCount >= 3 ? ENCOURAGE_3STAR :
-                             starCount === 2 ? ENCOURAGE_2STAR : ENCOURAGE_1STAR;
-                return pool[Math.floor(Math.random() * pool.length)];
-            }
+function candyBuildCards(words) {
+    const cards = [];
+    words.forEach((wd, idx) => {
+        const firstLetter = wd.word[0].toUpperCase();
+        cards.push({
+            id: `cl-${idx}-${Date.now()}-${Math.random()}`,
+            type: 'letter', content: firstLetter,
+            word: wd.word, matched: false
+        });
+        cards.push({
+            id: `cw-${idx}-${Date.now()}-${Math.random()}`,
+            type: 'word', content: wd.word,
+            word: wd.word, matched: false
+        });
+        cards.push({
+            id: `ci-${idx}-${Date.now()}-${Math.random()}`,
+            type: 'image', content: wd.emoji,
+            word: wd.word, matched: false
+        });
+    });
+    return shuffleArray(cards);
+}
 
-            // ============================================================
-            // 共用词库
-            // ============================================================
-            const WORD_BANK = [
-                { word: 'cat', emoji: '🐱' }, { word: 'dog', emoji: '🐶' },
-                { word: 'fish', emoji: '🐟' }, { word: 'bird', emoji: '🐦' },
-                { word: 'rabbit', emoji: '🐰' }, { word: 'bear', emoji: '🐻' },
-                { word: 'lion', emoji: '🦁' }, { word: 'monkey', emoji: '🐵' },
-                { word: 'elephant', emoji: '🐘' }, { word: 'tiger', emoji: '🐯' },
-                { word: 'panda', emoji: '🐼' }, { word: 'penguin', emoji: '🐧' },
-                { word: 'horse', emoji: '🐴' }, { word: 'cow', emoji: '🐮' },
-                { word: 'pig', emoji: '🐷' }, { word: 'sheep', emoji: '🐑' },
-                { word: 'duck', emoji: '🦆' }, { word: 'frog', emoji: '🐸' },
-                { word: 'whale', emoji: '🐳' }, { word: 'dolphin', emoji: '🐬' },
-                { word: 'butterfly', emoji: '🦋' }, { word: 'bee', emoji: '🐝' },
-                { word: 'mouse', emoji: '🐭' }, { word: 'fox', emoji: '🦊' },
-                { word: 'owl', emoji: '🦉' }, { word: 'parrot', emoji: '🦜' },
-                { word: 'apple', emoji: '🍎' }, { word: 'banana', emoji: '🍌' },
-                { word: 'orange', emoji: '🍊' }, { word: 'grape', emoji: '🍇' },
-                { word: 'watermelon', emoji: '🍉' }, { word: 'strawberry', emoji: '🍓' },
-                { word: 'cherry', emoji: '🍒' }, { word: 'peach', emoji: '🍑' },
-                { word: 'pear', emoji: '🍐' }, { word: 'lemon', emoji: '🍋' },
-                { word: 'bread', emoji: '🍞' }, { word: 'cake', emoji: '🍰' },
-                { word: 'pizza', emoji: '🍕' }, { word: 'hamburger', emoji: '🍔' },
-                { word: 'egg', emoji: '🥚' }, { word: 'milk', emoji: '🥛' },
-                { word: 'cheese', emoji: '🧀' }, { word: 'cookie', emoji: '🍪' },
-                { word: 'red', emoji: '🔴' }, { word: 'blue', emoji: '🔵' },
-                { word: 'green', emoji: '🟢' }, { word: 'yellow', emoji: '🟡' },
-                { word: 'purple', emoji: '🟣' }, { word: 'black', emoji: '⚫' },
-                { word: 'white', emoji: '⚪' }, { word: 'brown', emoji: '🟤' },
-                { word: 'house', emoji: '🏠' }, { word: 'book', emoji: '📖' },
-                { word: 'pen', emoji: '🖊️' }, { word: 'pencil', emoji: '✏️' },
-                { word: 'phone', emoji: '📱' }, { word: 'clock', emoji: '⏰' },
-                { word: 'key', emoji: '🔑' }, { word: 'bag', emoji: '👜' },
-                { word: 'cup', emoji: '☕' }, { word: 'chair', emoji: '🪑' },
-                { word: 'bed', emoji: '🛏️' }, { word: 'lamp', emoji: '💡' },
-                { word: 'shoe', emoji: '👟' }, { word: 'hat', emoji: '🎩' },
-                { word: 'car', emoji: '🚗' }, { word: 'bus', emoji: '🚌' },
-                { word: 'train', emoji: '🚂' }, { word: 'plane', emoji: '✈️' },
-                { word: 'ship', emoji: '🚢' }, { word: 'bike', emoji: '🚲' },
-                { word: 'rocket', emoji: '🚀' },
-                { word: 'sun', emoji: '☀️' }, { word: 'moon', emoji: '🌙' },
-                { word: 'cloud', emoji: '☁️' }, { word: 'rain', emoji: '🌧️' },
-                { word: 'snow', emoji: '❄️' }, { word: 'rainbow', emoji: '🌈' },
-                { word: 'tree', emoji: '🌳' }, { word: 'flower', emoji: '🌸' },
-                { word: 'star', emoji: '⭐' }, { word: 'heart', emoji: '❤️' }
-            ];
+function candyUpdateStats() {
+    candyPairsMatchedSpan.textContent = candyMatched;
+    candyMovesSpan.textContent = candyMoves;
+    const percent = (candyMatched / candyConfig.pairCount) * 100;
+    candyProgressGame.style.width = percent + '%';
+    candyLevelDisplay.textContent = `第 ${candyCurrentLevel} / ${CANDY_TOTAL_LEVELS} 关`;
+}
 
-            // ============================================================
-            // 消消乐模式（1000 关）
-            // ============================================================
-            const CANDY_TOTAL_LEVELS = 1000;
+function candyRenderBoard() {
+    candyBoard.innerHTML = '';
+    candyCards.forEach(card => {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card-candy';
+        cardDiv.dataset.type = card.type;
+        cardDiv.dataset.id = card.id;
+        if (card.matched) cardDiv.classList.add('eliminated');
+        if (candySelectedIds.includes(card.id) && !card.matched) cardDiv.classList.add('selected');
 
-            function candyGetLevelConfig(level) {
-                let pairCount;
-                if (level <= 100) pairCount = 6;
-                else if (level <= 300) pairCount = 7;
-                else if (level <= 600) pairCount = 8;
-                else if (level <= 900) pairCount = 9;
-                else pairCount = 10;
+        if (card.type === 'letter') {
+            cardDiv.innerHTML = `<span style="font-size:inherit;">${card.content}</span>`;
+        } else if (card.type === 'image') {
+            cardDiv.innerHTML = `<span style="font-size:inherit;">${card.content}</span>`;
+        } else {
+            cardDiv.innerHTML = `<div class="word-text">${card.content}</div>`;
+        }
 
-                let newWordCount, reviewWordCount;
-                if (level <= 100) { newWordCount = 4; reviewWordCount = pairCount - newWordCount; }
-                else if (level <= 300) { newWordCount = 4; reviewWordCount = pairCount - newWordCount; }
-                else if (level <= 600) { newWordCount = 3; reviewWordCount = pairCount - newWordCount; }
-                else { newWordCount = 3; reviewWordCount = pairCount - newWordCount; }
-                if (reviewWordCount < 0) reviewWordCount = 0;
+        cardDiv.addEventListener('click', (e) => {
+            if (card.matched) return;
+            if (card.type === 'word') speakWord(card.content);
+            else if (card.type === 'letter') speakLetter(card.content);
+            else speakWord(card.word);
+            candyHandleClick(card.id, e);
+        });
+        candyBoard.appendChild(cardDiv);
+    });
+}
 
-                let timeLimit = null;
-                if (level > 400) timeLimit = Math.max(40, 100 - Math.floor((level - 400) / 25));
-                if (level > 800) timeLimit = Math.max(35, 80 - Math.floor((level - 800) / 30));
+function candyHandleClick(cardId, event) {
+    if (candyFinished || candyLock || !candyGameActive) return;
+    initAudio();
+    const card = candyCards.find(c => c.id === cardId);
+    if (!card || card.matched) return;
 
-                let decoys = 0;
-                if (level > 600) decoys = 1;
-                if (level > 850) decoys = 2;
+    if (candySelectedIds.includes(cardId)) {
+        candySelectedIds = candySelectedIds.filter(id => id !== cardId);
+        playSelectSound();
+        candyRenderBoard();
+        return;
+    }
 
-                let phase;
-                if (level <= 100) phase = '入门';
-                else if (level <= 300) phase = '基础';
-                else if (level <= 600) phase = '进阶';
-                else if (level <= 850) phase = '强化';
-                else phase = '大师';
+    candySelectedIds.push(cardId);
+    playSelectSound();
+    candyRenderBoard();
 
-                return { pairCount, newWordCount, reviewWordCount, timeLimit, decoys, phase };
-            }
+    if (candySelectedIds.length === 3) {
+        candyMoves++;
+        candyMovesSpan.textContent = candyMoves;
+        candyLock = true;
 
-            let candyProgress = candyLoadProgress();
-            function candyLoadProgress() {
-                try {
-                    const saved = localStorage.getItem('candyProgressV3');
-                    if (saved) {
-                        const d = JSON.parse(saved);
-                        return {
-                            currentLevel: d.currentLevel || 1,
-                            levelStars: d.levelStars || {},
-                            wordStats: d.wordStats || {}
-                        };
-                    }
-                } catch (e) {}
-                return { currentLevel: 1, levelStars: {}, wordStats: {} };
-            }
-            function candySaveProgress() {
-                try { localStorage.setItem('candyProgressV3', JSON.stringify(candyProgress)); } catch (e) {}
-            }
+        const selected = candySelectedIds.map(id => candyCards.find(c => c.id === id));
+        const words = selected.map(c => c.word);
+        const allSame = words.every(w => w === words[0]);
+        const types = selected.map(c => c.type).sort();
+        const hasAllTypes = types[0] === 'image' && types[1] === 'letter' && types[2] === 'word';
 
-            function candySelectWordsForLevel(level) {
-                const config = candyGetLevelConfig(level);
-                const selected = [];
-                const reviewCandidates = [];
-                Object.keys(candyProgress.wordStats).forEach(word => {
-                    const stat = candyProgress.wordStats[word];
-                    if (!stat.mastered && stat.nextReview <= level) {
-                        reviewCandidates.push({ word, ...stat });
-                    }
-                });
-                reviewCandidates.sort((a, b) => a.nextReview - b.nextReview);
-                for (let i = 0; i < config.reviewWordCount && i < reviewCandidates.length; i++) {
-                    const r = reviewCandidates[i];
-                    const wd = WORD_BANK.find(w => w.word === r.word);
-                    if (wd) selected.push(wd);
-                }
-                const unseen = WORD_BANK.filter(w => !candyProgress.wordStats[w.word]);
-                for (let i = 0; i < config.newWordCount && i < unseen.length; i++) {
-                    selected.push(unseen[i]);
-                }
-                if (selected.length < config.pairCount) {
-                    const mastered = Object.keys(candyProgress.wordStats)
-                        .filter(w => candyProgress.wordStats[w].mastered)
-                        .sort((a, b) => candyProgress.wordStats[a].lastSeen - candyProgress.wordStats[b].lastSeen);
-                    for (const w of mastered) {
-                        if (selected.length >= config.pairCount) break;
-                        if (selected.some(s => s.word === w)) continue;
-                        const wd = WORD_BANK.find(x => x.word === w);
-                        if (wd) selected.push(wd);
-                    }
-                }
-                while (selected.length < config.pairCount) {
-                    const rand = WORD_BANK[Math.floor(Math.random() * WORD_BANK.length)];
-                    if (!selected.some(s => s.word === rand.word)) selected.push(rand);
-                }
-                return selected.slice(0, config.pairCount);
-            }
+        const rect = event ? event.target.getBoundingClientRect() :
+            { left: window.innerWidth/2, top: window.innerHeight/2 };
+        const clickX = rect.left + rect.width/2;
+        const clickY = rect.top + rect.height/2;
 
-            function candyRecordWord(word, level) {
-                if (!candyProgress.wordStats[word]) {
-                    candyProgress.wordStats[word] = {
-                        learned: 0, lastSeen: level, nextReview: level + 1, mastered: false
-                    };
-                }
-                const stat = candyProgress.wordStats[word];
-                stat.learned++;
-                stat.lastSeen = level;
-                const intervals = [1, 3, 7, 15, 30];
-                if (stat.learned <= intervals.length) {
-                    stat.nextReview = level + intervals[stat.learned - 1];
-                } else {
-                    stat.mastered = true;
-                    stat.nextReview = Infinity;
-                }
-                candySaveProgress();
-            }
-
-            let candyCurrentLevel = 1;
-            let candyCards = [];
-            let candySelectedId = null;
-            let candyMatched = 0;
-            let candyMoves = 0;
-            let candyFinished = false;
-            let candyCurrentWords = [];
-            let candyLock = false;
-            let candyTimeoutId = null;
-            let candyTimerInterval = null;
-            let candyTimeLeft = 0;
-            let candyGameActive = false;
-            let candyConfig = null;
-
-            const candyBoard = document.getElementById('candyBoard');
-            const candyLevelDisplay = document.getElementById('candyLevelDisplay');
-            const candyPairsMatchedSpan = document.getElementById('candyPairsMatched');
-            const candyMovesSpan = document.getElementById('candyMoves');
-            const candyProgressGame = document.getElementById('candyProgressGame');
-            const candyMessage = document.getElementById('candyMessage');
-            const candyResetLevel = document.getElementById('candyResetLevel');
-            const candyNextBtn = document.getElementById('candyNextBtn');
-            const candyBackHome = document.getElementById('candyBackHome');
-            const candyHomeLevel = document.getElementById('candyHomeLevel');
-            const candyHomeWords = document.getElementById('candyHomeWords');
-            const candyHomeStars = document.getElementById('candyHomeStars');
-            const candyProgressFill = document.getElementById('candyProgressFill');
-            const candyContinueBtn = document.getElementById('candyContinueBtn');
-            const candyContinueLevel = document.getElementById('candyContinueLevel');
-            const candyJumpInput = document.getElementById('candyJumpInput');
-            const candyJumpBtn = document.getElementById('candyJumpBtn');
-            const candyResetBtn = document.getElementById('candyResetBtn');
-            const candyStarsDisplay = document.getElementById('candyStarsDisplay');
-            const candyTimerBox = document.getElementById('candyTimerBox');
-            const candyTimerValue = document.getElementById('candyTimerValue');
-            const candyGameHint = document.getElementById('candyGameHint');
-
-            function candyGetMasteredCount() {
-                return Object.values(candyProgress.wordStats).filter(w => w.mastered).length;
-            }
-            function candyTotalStars() {
-                return Object.values(candyProgress.levelStars).reduce((a, b) => a + b, 0);
-            }
-            function candyUpdateStars(stars) {
-                const s = candyStarsDisplay.querySelectorAll('.star');
-                s.forEach((el, idx) => {
-                    if (idx < stars) {
-                        el.textContent = '★';
-                        el.classList.add('earned');
-                        el.style.color = '#ffb800';
-                    } else {
-                        el.textContent = '☆';
-                        el.classList.remove('earned');
-                        el.style.color = '#aaa';
-                    }
-                });
-            }
-
-            function candyRenderHome() {
-                candyCurrentLevel = candyProgress.currentLevel || 1;
-                candyHomeLevel.textContent = candyCurrentLevel;
-                candyHomeWords.textContent = candyGetMasteredCount();
-                candyHomeStars.textContent = candyTotalStars();
-                const percent = Math.max(1, (candyCurrentLevel / CANDY_TOTAL_LEVELS) * 100);
-                candyProgressFill.style.width = percent + '%';
-                candyProgressFill.textContent = candyCurrentLevel + ' / ' + CANDY_TOTAL_LEVELS;
-                candyContinueLevel.textContent = candyCurrentLevel;
-                candyJumpInput.value = candyCurrentLevel;
-            }
-
-            function candyBuildCards(words) {
-                const newCards = [];
-                words.forEach((wd, idx) => {
-                    const pairType = Math.random() < 0.5 ? 'letter' : 'image';
-                    if (pairType === 'letter') {
-                        const firstLetter = wd.word[0].toUpperCase();
-                        newCards.push({
-                            id: `cl-${candyCurrentLevel}-${idx}-${Date.now()}-${Math.random()}`,
-                            type: 'letter', content: firstLetter,
-                            pairId: idx, pairKey: wd.word, matched: false, isDecoy: false
-                        });
-                    } else {
-                        newCards.push({
-                            id: `ci-${candyCurrentLevel}-${idx}-${Date.now()}-${Math.random()}`,
-                            type: 'image', content: wd.emoji,
-                            pairId: idx, pairKey: wd.word, matched: false, isDecoy: false
-                        });
-                    }
-                    newCards.push({
-                        id: `cw-${candyCurrentLevel}-${idx}-${Date.now()}-${Math.random()}`,
-                        type: 'word', content: wd.word,
-                        pairId: idx, pairKey: wd.word, matched: false, isDecoy: false
-                    });
-                });
-                if (candyConfig && candyConfig.decoys > 0) {
-                    const decoyEmojis = ['👻', '🎃', '🦄', '🐉', '🍀', '💎', '🔮', '🎈'];
-                    for (let i = 0; i < candyConfig.decoys; i++) {
-                        newCards.push({
-                            id: `cd-${candyCurrentLevel}-${i}-${Date.now()}-${Math.random()}`,
-                            type: 'image', content: decoyEmojis[i % decoyEmojis.length],
-                            pairId: -1, pairKey: '', matched: false, isDecoy: true
-                        });
-                    }
-                }
-                return shuffleArray(newCards);
-            }
-
-            function candyUpdateStats() {
-                candyPairsMatchedSpan.textContent = candyMatched;
-                candyMovesSpan.textContent = candyMoves;
-                const percent = (candyMatched / candyConfig.pairCount) * 100;
-                candyProgressGame.style.width = percent + '%';
-                candyLevelDisplay.textContent = `第 ${candyCurrentLevel} / ${CANDY_TOTAL_LEVELS} 关`;
-            }
-
-            function candyRenderBoard() {
-                candyBoard.innerHTML = '';
-                candyCards.forEach(card => {
-                    const cardDiv = document.createElement('div');
-                    cardDiv.className = 'card-candy';
-                    cardDiv.dataset.type = card.type;
-                    cardDiv.dataset.id = card.id;
-                    if (card.matched) cardDiv.classList.add('eliminated');
-                    if (card.isDecoy) cardDiv.classList.add('decoy');
-                    if (candySelectedId === card.id && !card.matched) cardDiv.classList.add('selected');
-
-                    if (card.type === 'letter') {
-                        cardDiv.innerHTML = `<span style="font-size:inherit;">${card.content}</span>`;
-                    } else if (card.type === 'image') {
-                        cardDiv.innerHTML = `<span style="font-size:inherit;">${card.content}</span>`;
-                    } else {
-                        cardDiv.innerHTML = `<div class="word-text">${card.content}</div>`;
-                    }
-
-                    cardDiv.addEventListener('click', (e) => {
-                        if (card.matched) return;
-                        if (card.type === 'word') speakWord(card.content);
-                        else if (card.type === 'letter') speakLetter(card.content);
-                        else if (card.type === 'image' && !card.isDecoy) {
-                            const wordCard = candyCards.find(c => c.pairId === card.pairId && c.type === 'word');
-                            if (wordCard) speakWord(wordCard.content);
-                        }
-                        candyHandleClick(card.id, e);
-                    });
-                    candyBoard.appendChild(cardDiv);
-                });
-            }
-
-            function candyHandleClick(cardId, event) {
-                if (candyFinished || candyLock || !candyGameActive) return;
-                initAudio();
-                const card = candyCards.find(c => c.id === cardId);
-                if (!card || card.matched) return;
-
-                if (card.isDecoy) {
-                    card.matched = true;
-                    const el = document.querySelector(`.card-candy[data-id="${card.id}"]`);
-                    if (el) { el.classList.add('eliminated'); el.style.opacity = '0.3'; }
-                    candyMessage.textContent = '👻 捣蛋卡消失啦！';
-                    if (candySelectedId !== null) {
-                        const prev = candyCards.find(c => c.id === candySelectedId);
-                        if (prev) prev.selected = false;
-                        candySelectedId = null;
-                    }
-                    candyRenderBoard();
-                    return;
-                }
-
-                if (candySelectedId === null) {
-                    candySelectedId = cardId;
-                    playSelectSound();
-                    candyRenderBoard();
-                    return;
-                }
-                const firstCard = candyCards.find(c => c.id === candySelectedId);
-                if (!firstCard || firstCard.matched) {
-                    candySelectedId = cardId;
-                    playSelectSound();
-                    candyRenderBoard();
-                    return;
-                }
-                if (candySelectedId === cardId) {
-                    candySelectedId = null;
-                    playSelectSound();
-                    candyRenderBoard();
-                    return;
-                }
-
-                candyMoves++;
-                candyMovesSpan.textContent = candyMoves;
-
-                let isMatch = false;
-                let matchedWord = '';
-                const t1 = firstCard.type, t2 = card.type;
-
-                if ((t1 === 'letter' && t2 === 'word') || (t1 === 'word' && t2 === 'letter')) {
-                    const l = t1 === 'letter' ? firstCard : card;
-                    const w = t1 === 'word' ? firstCard : card;
-                    if (w.content[0].toUpperCase() === l.content.toUpperCase()) {
-                        isMatch = true;
-                        matchedWord = w.content;
-                    }
-                } else if ((t1 === 'image' && t2 === 'word') || (t1 === 'word' && t2 === 'image')) {
-                    const i = t1 === 'image' ? firstCard : card;
-                    const w = t1 === 'word' ? firstCard : card;
-                    if (i.pairId === w.pairId) {
-                        isMatch = true;
-                        matchedWord = w.content;
-                    }
-                }
-
-                const rect = event ? event.target.getBoundingClientRect() :
-                    { left: window.innerWidth / 2, top: window.innerHeight / 2 };
-                const clickX = rect.left + rect.width / 2;
-                const clickY = rect.top + rect.height / 2;
-
-                if (isMatch) {
-                    firstCard.matched = true;
-                    card.matched = true;
-                    candyMatched++;
-                    candySelectedId = null;
-                    candyUpdateStats();
-                    candyRenderBoard();
-                    playMatchSound();
-                    createStars(clickX, clickY, 6);
-                    showAnimalBubble(clickX, clickY, ['dog', 'cat', 'bird', 'duck'][Math.floor(Math.random() * 4)]);
-                    setTimeout(() => speakWord(matchedWord, 1.0), 200);
-                    candyMessage.textContent = `✔️ 正确！${matchedWord} 配对成功！`;
-                    candyRecordWord(matchedWord, candyCurrentLevel);
-                    candyCheckComplete();
-                } else {
-                    candySelectedId = null;
-                    candyRenderBoard();
-                    playErrorSound();
-                    candyMessage.textContent = `❌ 不对应，再试试看！`;
-                    setTimeout(() => {
-                        if (!candyFinished && candyMessage.textContent.includes('不对应')) {
-                            candyMessage.textContent = '👆 点一点卡片，配对它们吧！';
-                        }
-                    }, 800);
-                }
-            }
-
-            function candyCheckComplete() {
-                if (candyMatched === candyConfig.pairCount) {
-                    candyFinished = true;
-                    candyGameActive = false;
-                    stopCandyTimer();
-                    let stars = 3;
-                    if (candyMoves > candyConfig.pairCount * 3) stars = 1;
-                    else if (candyMoves > candyConfig.pairCount * 2) stars = 2;
-                    candyUpdateStars(stars);
-
-                    const prev = candyProgress.levelStars[candyCurrentLevel] || 0;
-                    if (stars > prev) candyProgress.levelStars[candyCurrentLevel] = stars;
-                    if (candyCurrentLevel >= candyProgress.currentLevel) {
-                        candyProgress.currentLevel = Math.min(CANDY_TOTAL_LEVELS, candyCurrentLevel + 1);
-                    }
-                    candySaveProgress();
-
-                    candyMessage.textContent = '🎉 太棒了！本关完成！';
-                    candyNextBtn.disabled = false;
-                    createConfetti(30);
-                    speakEncouragement(stars);
-                    setTimeout(() => showCandyCompleteModal(stars), 600);
-                } else {
-                    candyNextBtn.disabled = true;
-                }
-            }
-
-            function stopCandyTimer() {
-                if (candyTimerInterval) {
-                    clearInterval(candyTimerInterval);
-                    candyTimerInterval = null;
-                }
-                candyGameActive = false;
-            }
-
-            function startCandyTimer() {
-                if (!candyConfig.timeLimit) return;
-                stopCandyTimer();
-                candyTimeLeft = candyConfig.timeLimit;
-                candyTimerValue.textContent = candyTimeLeft;
-                candyTimerBox.classList.remove('warning');
-                candyGameActive = true;
-                candyTimerInterval = setInterval(() => {
-                    if (!candyGameActive) return;
-                    candyTimeLeft--;
-                    candyTimerValue.textContent = candyTimeLeft;
-                    if (candyTimeLeft <= 10) candyTimerBox.classList.add('warning');
-                    if (candyTimeLeft <= 0) {
-                        stopCandyTimer();
-                        candyMessage.textContent = '⏰ 时间到！';
-                        candyLock = true;
-                        showCandyTimeUpModal();
-                    }
-                }, 1000);
-            }
-
-            function showCandyTimeUpModal() {
-                const overlay = document.createElement('div');
-                overlay.className = 'overlay';
-                overlay.innerHTML = `
-                    <div class="modal">
-                        <h2>⏰ 时间到啦</h2>
-                        <div class="big-stars">😢</div>
-                        <div class="encourage-text">别灰心，再试一次一定可以！</div>
-                        <div class="modal-buttons">
-                            <button class="modal-btn primary" id="candyTimeRetry">🔄 重玩本关</button>
-                            <button class="modal-btn secondary" id="candyTimeHome">🏠 首页</button>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(overlay);
-                document.getElementById('candyTimeRetry').addEventListener('click', () => {
-                    overlay.remove(); candyLoadLevel(candyCurrentLevel);
-                });
-                document.getElementById('candyTimeHome').addEventListener('click', () => {
-                    overlay.remove(); candyRenderHome(); hideAllScreens();
-                    document.getElementById('candy-home').classList.remove('hidden');
-                });
-            }
-
-            function showCandyCompleteModal(starCount) {
-                const isLast = candyCurrentLevel === CANDY_TOTAL_LEVELS;
-                const encourage = getEncourageText(starCount);
-                const overlay = document.createElement('div');
-                overlay.className = 'overlay';
-                overlay.innerHTML = `
-                    <div class="modal">
-                        <h2>${isLast ? '🏆 全部通关！' : '🎉 第 ' + candyCurrentLevel + ' 关完成！'}</h2>
-                        <div class="big-stars">
-                            <span class="big-star">${starCount >= 1 ? '★' : '☆'}</span>
-                            <span class="big-star">${starCount >= 2 ? '★' : '☆'}</span>
-                            <span class="big-star">${starCount >= 3 ? '★' : '☆'}</span>
-                        </div>
-                        <div class="encourage-text">${encourage}</div>
-                        <div class="modal-buttons">
-                            ${!isLast ? '<button class="modal-btn primary" id="candyNextModalBtn">➡️ 下一关</button>' : ''}
-                            <button class="modal-btn secondary" id="candyRetryModalBtn">🔄 重玩</button>
-                            <button class="modal-btn secondary" id="candyHomeModalBtn">🏠 首页</button>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(overlay);
-                const nextM = document.getElementById('candyNextModalBtn');
-                if (nextM) {
-                    nextM.addEventListener('click', () => {
-                        overlay.remove();
-                        candyCurrentLevel = Math.min(CANDY_TOTAL_LEVELS, candyCurrentLevel + 1);
-                        candyProgress.currentLevel = candyCurrentLevel;
-                        candySaveProgress();
-                        candyLoadLevel(candyCurrentLevel);
-                    });
-                }
-                document.getElementById('candyRetryModalBtn').addEventListener('click', () => {
-                    overlay.remove(); candyLoadLevel(candyCurrentLevel);
-                });
-                document.getElementById('candyHomeModalBtn').addEventListener('click', () => {
-                    overlay.remove(); candyRenderHome(); hideAllScreens();
-                    document.getElementById('candy-home').classList.remove('hidden');
-                });
-            }
-
-            function candyLoadLevel(level) {
-                if (level < 1 || level > CANDY_TOTAL_LEVELS) return;
-                stopCandyTimer();
-                if (candyTimeoutId) { clearTimeout(candyTimeoutId); candyTimeoutId = null; }
-                if (speechSynth) speechSynth.cancel();
-
-                candyCurrentLevel = level;
-                candyConfig = candyGetLevelConfig(level);
-                candyCurrentWords = candySelectWordsForLevel(level);
-                candyCards = candyBuildCards(candyCurrentWords);
-                candySelectedId = null;
-                candyMatched = 0;
-                candyMoves = 0;
-                candyFinished = false;
-                candyLock = false;
-                candyGameActive = true;
-                candyNextBtn.disabled = true;
-
-                candyUpdateStars(0);
-                if (candyConfig.timeLimit) {
-                    candyTimerBox.style.display = 'flex';
-                    candyTimeLeft = candyConfig.timeLimit;
-                    candyTimerValue.textContent = candyTimeLeft;
-                    candyTimerBox.classList.remove('warning');
-                } else {
-                    candyTimerBox.style.display = 'none';
-                }
-
-                candyGameHint.textContent = `🧠 ${candyConfig.phase} · ${candyConfig.pairCount}对 · 复习 ${candyConfig.reviewWordCount}`;
-                candyMessage.textContent = `第 ${candyCurrentLevel} 关：点一点卡片，配对它们吧！`;
-                candyUpdateStats();
+        if (allSame && hasAllTypes) {
+            selected.forEach(c => c.matched = true);
+            candyMatched++;
+            candySelectedIds = [];
+            candyUpdateStats();
+            candyRenderBoard();
+            playMatchSound();
+            createStars(clickX, clickY, 8);
+            setTimeout(() => speakWord(words[0], 1.0), 200);
+            candyMessage.textContent = `✔️ 太棒了！${words[0]} 三张卡全配对！`;
+            recordWord(candyProgress, candySaveProgress, words[0], candyCurrentLevel);
+            candyLock = false;
+            candyCheckComplete();
+        } else {
+            playErrorSound();
+            candyMessage.textContent = `❌ 需要「字母 + 单词 + 图片」三张同源卡哦！`;
+            setTimeout(() => {
+                candySelectedIds = [];
                 candyRenderBoard();
-                if (candyConfig.timeLimit) startCandyTimer();
-            }
+                candyLock = false;
+                if (!candyFinished) {
+                    candyMessage.textContent = '👆 找出同一单词的 3 张卡片，一起消除！';
+                }
+            }, 700);
+        }
+    }
+}
 
-            function candyStart(level) {
-                hideAllScreens();
-                document.getElementById('candy-game').classList.remove('hidden');
-                candyLoadLevel(level);
-            }
+function candyCheckComplete() {
+    if (candyMatched === candyConfig.pairCount) {
+        candyFinished = true;
+        candyGameActive = false;
+        stopCandyTimer();
+        let stars = 3;
+        if (candyMoves > candyConfig.pairCount * 3) stars = 1;
+        else if (candyMoves > candyConfig.pairCount * 2) stars = 2;
+        candyUpdateStars(stars);
 
-            candyResetLevel.addEventListener('click', () => candyLoadLevel(candyCurrentLevel));
-            candyNextBtn.addEventListener('click', () => {
-                if (candyCurrentLevel < CANDY_TOTAL_LEVELS) candyLoadLevel(candyCurrentLevel + 1);
+        const prev = candyProgress.levelStars[candyCurrentLevel] || 0;
+        if (stars > prev) candyProgress.levelStars[candyCurrentLevel] = stars;
+        if (candyCurrentLevel >= candyProgress.currentLevel) {
+            candyProgress.currentLevel = Math.min(CANDY_TOTAL_LEVELS, candyCurrentLevel + 1);
+        }
+        candySaveProgress();
+
+        candyMessage.textContent = '🎉 太棒了！本关完成！';
+        candyNextBtn.disabled = false;
+        createConfetti(30);
+        speakEncouragement(stars);
+
+        // 检查是否触发隐藏关卡
+        const shouldTrigger = shouldTriggerDetective(candyCurrentLevel, candyProgress);
+
+        setTimeout(() => {
+            if (shouldTrigger) {
+                markDetectiveTriggered(candyCurrentLevel, candyProgress, candySaveProgress);
+                showCandyCompleteModal(stars, true);
+            } else {
+                showCandyCompleteModal(stars, false);
+            }
+        }, 600);
+    } else {
+        candyNextBtn.disabled = true;
+    }
+}
+
+function stopCandyTimer() {
+    if (candyTimerInterval) { clearInterval(candyTimerInterval); candyTimerInterval = null; }
+    candyGameActive = false;
+}
+function startCandyTimer() {
+    if (!candyConfig.timeLimit) return;
+    stopCandyTimer();
+    candyTimeLeft = candyConfig.timeLimit;
+    candyTimerValue.textContent = candyTimeLeft;
+    candyTimerBox.classList.remove('warning');
+    candyGameActive = true;
+    candyTimerInterval = setInterval(() => {
+        if (!candyGameActive) return;
+        candyTimeLeft--;
+        candyTimerValue.textContent = candyTimeLeft;
+        if (candyTimeLeft <= 10) candyTimerBox.classList.add('warning');
+        if (candyTimeLeft <= 0) {
+            stopCandyTimer();
+            candyMessage.textContent = '⏰ 时间到！';
+            candyLock = true;
+            showCandyTimeUpModal();
+        }
+    }, 1000);
+}
+
+function showCandyTimeUpModal() {
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = `
+        <div class="modal">
+            <h2>⏰ 时间到啦</h2>
+            <div class="big-stars">😢</div>
+            <div class="encourage-text">别灰心，再试一次一定可以！</div>
+            <div class="modal-buttons">
+                <button class="modal-btn primary" id="candyTimeRetry">🔄 重玩本关</button>
+                <button class="modal-btn secondary" id="candyTimeHome">🏠 首页</button>
+            </div>
+        </div>`;
+    document.body.appendChild(overlay);
+    document.getElementById('candyTimeRetry').onclick = () => { overlay.remove(); candyLoadLevel(candyCurrentLevel); };
+    document.getElementById('candyTimeHome').onclick = () => {
+        overlay.remove(); candyRenderHome(); hideAllScreens();
+        document.getElementById('candy-home').classList.remove('hidden');
+    };
+}
+
+function showCandyCompleteModal(starCount, hasDetective) {
+    const isLast = candyCurrentLevel === CANDY_TOTAL_LEVELS;
+    const encourage = getEncourageText(starCount);
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = `
+        <div class="modal">
+            <h2>${isLast ? '🏆 全部通关！' : '🎉 第 ' + candyCurrentLevel + ' 关完成！'}</h2>
+            <div class="big-stars">
+                <span class="big-star">${starCount>=1?'★':'☆'}</span>
+                <span class="big-star">${starCount>=2?'★':'☆'}</span>
+                <span class="big-star">${starCount>=3?'★':'☆'}</span>
+            </div>
+            <div class="encourage-text">${encourage}</div>
+            ${hasDetective ? '<div style="font-size:1.1rem;color:#d84315;font-weight:800;margin-bottom:12px;">🕵️ 隐藏寻宝已解锁！</div>' : ''}
+            <div class="modal-buttons">
+                ${hasDetective ? '<button class="modal-btn primary" id="candyDetectiveBtn">🕵️ 进入寻宝</button>' : ''}
+                ${!isLast && !hasDetective ? '<button class="modal-btn primary" id="candyNextModalBtn">➡️ 下一关</button>' : ''}
+                <button class="modal-btn secondary" id="candyRetryModalBtn">🔄 重玩</button>
+                <button class="modal-btn secondary" id="candyHomeModalBtn">🏠 首页</button>
+            </div>
+        </div>`;
+    document.body.appendChild(overlay);
+
+    const detBtn = document.getElementById('candyDetectiveBtn');
+    if (detBtn) detBtn.onclick = () => {
+        overlay.remove();
+        detectiveStart('candy', candyCurrentLevel);
+    };
+    const nextM = document.getElementById('candyNextModalBtn');
+    if (nextM) nextM.onclick = () => {
+        overlay.remove();
+        candyCurrentLevel = Math.min(CANDY_TOTAL_LEVELS, candyCurrentLevel + 1);
+        candyProgress.currentLevel = candyCurrentLevel;
+        candySaveProgress();
+        candyLoadLevel(candyCurrentLevel);
+    };
+    document.getElementById('candyRetryModalBtn').onclick = () => { overlay.remove(); candyLoadLevel(candyCurrentLevel); };
+    document.getElementById('candyHomeModalBtn').onclick = () => {
+        overlay.remove(); candyRenderHome(); hideAllScreens();
+        document.getElementById('candy-home').classList.remove('hidden');
+    };
+}
+
+function candyLoadLevel(level) {
+    if (level < 1 || level > CANDY_TOTAL_LEVELS) return;
+    stopCandyTimer();
+    if (candyTimeoutId) { clearTimeout(candyTimeoutId); candyTimeoutId = null; }
+    if (speechSynth) speechSynth.cancel();
+
+    candyCurrentLevel = level;
+    candyConfig = candyGetLevelConfig(level);
+    candyCurrentWords = selectWordsForLevel(candyProgress, level, candyConfig);
+    candyCards = candyBuildCards(candyCurrentWords);
+    candySelectedIds = [];
+    candyMatched = 0;
+    candyMoves = 0;
+    candyFinished = false;
+    candyLock = false;
+    candyGameActive = true;
+    candyNextBtn.disabled = true;
+
+    candyUpdateStars(0);
+    if (candyConfig.timeLimit) {
+        candyTimerBox.style.display = 'flex';
+        candyTimeLeft = candyConfig.timeLimit;
+        candyTimerValue.textContent = candyTimeLeft;
+        candyTimerBox.classList.remove('warning');
+    } else {
+        candyTimerBox.style.display = 'none';
+    }
+
+    candyGameHint.textContent = `🧩 ${candyConfig.phase} · ${candyConfig.pairCount}组 · 复习 ${candyConfig.reviewWordCount}`;
+    candyMessage.textContent = `第 ${candyCurrentLevel} 关：找出「字母 + 单词 + 图片」三张同源卡！`;
+    candyUpdateStats();
+    candyRenderBoard();
+    if (candyConfig.timeLimit) startCandyTimer();
+}
+
+function candyStart(level) {
+    hideAllScreens();
+    document.getElementById('candy-game').classList.remove('hidden');
+    candyLoadLevel(level);
+}
+
+candyResetLevel.addEventListener('click', () => candyLoadLevel(candyCurrentLevel));
+candyNextBtn.addEventListener('click', () => {
+    if (candyCurrentLevel < CANDY_TOTAL_LEVELS) candyLoadLevel(candyCurrentLevel + 1);
+});
+candyBackHome.addEventListener('click', () => {
+    if (speechSynth) speechSynth.cancel();
+    stopCandyTimer();
+    candyRenderHome();
+    hideAllScreens();
+    document.getElementById('candy-home').classList.remove('hidden');
+});
+candyContinueBtn.addEventListener('click', () => candyStart(candyProgress.currentLevel || 1));
+candyJumpBtn.addEventListener('click', () => {
+    const val = parseInt(candyJumpInput.value);
+    if (isNaN(val) || val < 1 || val > CANDY_TOTAL_LEVELS) { alert('请输入 1 - ' + CANDY_TOTAL_LEVELS); return; }
+    candyStart(val);
+});
+candyResetBtn.addEventListener('click', () => {
+    if (confirm('确定重置三消进度吗？')) {
+        candyProgress = { currentLevel:1, levelStars:{}, wordStats:{}, badges:[], bonusStars:0, detectiveTriggered:[] };
+        candySaveProgress();
+        candyRenderHome();
+    }
+});
+
+// ============================================================
+// 翻牌记忆模式
+// ============================================================
+const MEMORY_TOTAL_LEVELS = 1000;
+
+function memoryGetLevelConfig(level) {
+    let pairCount;
+    if (level <= 100) pairCount = 6;
+    else if (level <= 300) pairCount = 7;
+    else if (level <= 600) pairCount = 8;
+    else if (level <= 900) pairCount = 9;
+    else pairCount = 10;
+
+    let newWordCount, reviewWordCount;
+    if (level <= 100) { newWordCount = 3; reviewWordCount = pairCount - newWordCount; }
+    else if (level <= 300) { newWordCount = 3; reviewWordCount = pairCount - newWordCount; }
+    else if (level <= 600) { newWordCount = 4; reviewWordCount = pairCount - newWordCount; }
+    else { newWordCount = 4; reviewWordCount = pairCount - newWordCount; }
+    if (reviewWordCount < 0) reviewWordCount = 0;
+
+    let timeLimit = null;
+    if (level > 300) timeLimit = Math.max(40, 100 - Math.floor((level - 300) / 20));
+    if (level > 800) timeLimit = Math.max(30, 70 - Math.floor((level - 800) / 30));
+
+    let phase;
+    if (level <= 100) phase = '入门';
+    else if (level <= 300) phase = '基础';
+    else if (level <= 600) phase = '进阶';
+    else if (level <= 800) phase = '强化';
+    else phase = '大师';
+
+    return { pairCount, newWordCount, reviewWordCount, timeLimit, phase };
+}
+
+let memoryProgress = memoryLoadProgress();
+function memoryLoadProgress() {
+    try {
+        const saved = localStorage.getItem('memoryProgressV3');
+        if (saved) {
+            const d = JSON.parse(saved);
+            return {
+                currentLevel: d.currentLevel || 1,
+                wordStats: d.wordStats || {},
+                levelStars: d.levelStars || {},
+                badges: d.badges || [],
+                bonusStars: d.bonusStars || 0,
+                detectiveTriggered: d.detectiveTriggered || []
+            };
+        }
+    } catch(e) {}
+    return { currentLevel:1, wordStats:{}, levelStars:{}, badges:[], bonusStars:0, detectiveTriggered:[] };
+}
+function memorySaveProgress() {
+    try { localStorage.setItem('memoryProgressV3', JSON.stringify(memoryProgress)); } catch(e) {}
+}
+
+let memoryCurrentLevel = 1;
+let memoryCards = [];
+let memoryFlippedIdx = [];
+let memoryMatched = 0;
+let memoryAttempts = 0;
+let memoryLock = false;
+let memoryTimerInterval = null;
+let memoryTimeLeft = 0;
+let memoryGameActive = false;
+let memoryConfig = null;
+let memoryCurrentWords = [];
+
+const memoryBoard = document.getElementById('memoryBoard');
+const memoryLevelBadge = document.getElementById('memoryLevelBadge');
+const memoryPairsMatchedSpan = document.getElementById('memoryPairsMatched');
+const memoryAttemptsSpan = document.getElementById('memoryAttempts');
+const memoryMessage = document.getElementById('memoryMessage');
+const memoryResetLevel = document.getElementById('memoryResetLevel');
+const memoryBackHome = document.getElementById('memoryBackHome');
+const memoryStarsDisplay = document.getElementById('memoryStarsDisplay');
+const memoryTimerBox = document.getElementById('memoryTimerBox');
+const memoryTimerValue = document.getElementById('memoryTimerValue');
+const memorySoundToggle = document.getElementById('memorySoundToggle');
+const memorySoundIcon = document.getElementById('memorySoundIcon');
+const memorySoundText = document.getElementById('memorySoundText');
+const memoryGameHint = document.getElementById('memoryGameHint');
+const memoryHomeLevel = document.getElementById('memoryHomeLevel');
+const memoryHomeMastered = document.getElementById('memoryHomeMastered');
+const memoryHomeStars = document.getElementById('memoryHomeStars');
+const memoryHomeBadges = document.getElementById('memoryHomeBadges');
+const memoryProgressFill = document.getElementById('memoryProgressFill');
+const memoryContinueBtn = document.getElementById('memoryContinueBtn');
+const memoryContinueLevel = document.getElementById('memoryContinueLevel');
+const memoryJumpInput = document.getElementById('memoryJumpInput');
+const memoryJumpBtn = document.getElementById('memoryJumpBtn');
+const memoryResetBtn = document.getElementById('memoryResetBtn');
+
+function memoryGetMastered() {
+    return Object.values(memoryProgress.wordStats).filter(w => w.mastered).length;
+}
+function memoryGetStars() {
+    return Object.values(memoryProgress.levelStars).reduce((a,b) => a+b, 0) + (memoryProgress.bonusStars || 0);
+}
+
+function memoryRenderHome() {
+    memoryCurrentLevel = memoryProgress.currentLevel || 1;
+    memoryHomeLevel.textContent = memoryCurrentLevel;
+    memoryHomeMastered.textContent = memoryGetMastered();
+    memoryHomeStars.textContent = memoryGetStars();
+    memoryHomeBadges.textContent = (memoryProgress.badges || []).length;
+    const percent = Math.max(1, (memoryCurrentLevel / MEMORY_TOTAL_LEVELS) * 100);
+    memoryProgressFill.style.width = percent + '%';
+    memoryProgressFill.textContent = memoryCurrentLevel + ' / ' + MEMORY_TOTAL_LEVELS;
+    memoryContinueLevel.textContent = memoryCurrentLevel;
+    memoryJumpInput.value = memoryCurrentLevel;
+}
+
+function memoryBuildCards(pairs) {
+    const cards = [];
+    pairs.forEach((pair, pairId) => {
+        cards.push({
+            pairId, type: 'word', content: pair.word, word: pair.word, matched: false
+        });
+        cards.push({
+            pairId, type: 'emoji', content: pair.emoji, word: pair.word, matched: false
+        });
+    });
+    return shuffleArray(cards);
+}
+
+function memoryUpdateStats() {
+    memoryPairsMatchedSpan.textContent = memoryMatched;
+    memoryAttemptsSpan.textContent = memoryAttempts;
+}
+function memorySetMessage(text, isGood = true) {
+    memoryMessage.textContent = text;
+    memoryMessage.style.background = isGood ?
+        'linear-gradient(135deg,#fff8e1,#ffecb3)' :
+        'linear-gradient(135deg,#ffcdd2,#ef9a9a)';
+}
+function memoryUpdateStars(starCount) {
+    const stars = memoryStarsDisplay.querySelectorAll('.star');
+    stars.forEach((star, idx) => {
+        if (idx < starCount) {
+            star.textContent = '★';
+            star.classList.add('earned');
+            star.style.color = '#ffb800';
+        } else {
+            star.textContent = '☆';
+            star.classList.remove('earned');
+            star.style.color = '#aaa';
+        }
+    });
+}
+function memoryCalculateStars(pairCount, attempts) {
+    if (attempts <= pairCount + 2) return 3;
+    if (attempts <= Math.ceil(pairCount * 1.8)) return 2;
+    return 1;
+}
+function memoryRenderLevelInfo() {
+    memoryLevelBadge.textContent = `第 ${memoryCurrentLevel} 关`;
+    if (memoryConfig.timeLimit) {
+        memoryTimerBox.style.display = 'flex';
+        memoryTimeLeft = memoryConfig.timeLimit;
+        memoryTimerValue.textContent = memoryTimeLeft;
+        memoryTimerBox.classList.remove('warning');
+    } else {
+        memoryTimerBox.style.display = 'none';
+    }
+    const newCount = memoryCurrentWords.filter(w => {
+        const stat = memoryProgress.wordStats[w.word];
+        return !stat || stat.learned <= 1;
+    }).length;
+    const reviewCount = memoryConfig.pairCount - newCount;
+    memoryGameHint.textContent = `🧠 ${memoryConfig.phase}阶段 · ${memoryConfig.pairCount}对 · 新词 ${newCount} · 复习 ${reviewCount}`;
+    memoryUpdateStars(0);
+}
+function memoryStopTimer() {
+    if (memoryTimerInterval) { clearInterval(memoryTimerInterval); memoryTimerInterval = null; }
+    memoryGameActive = false;
+}
+function memoryStartTimer() {
+    if (!memoryConfig.timeLimit) return;
+    memoryStopTimer();
+    memoryTimeLeft = memoryConfig.timeLimit;
+    memoryTimerValue.textContent = memoryTimeLeft;
+    memoryTimerBox.classList.remove('warning');
+    memoryGameActive = true;
+    memoryTimerInterval = setInterval(() => {
+        if (!memoryGameActive) return;
+        memoryTimeLeft--;
+        memoryTimerValue.textContent = memoryTimeLeft;
+        if (memoryTimeLeft <= 10) memoryTimerBox.classList.add('warning');
+        if (memoryTimeLeft <= 0) {
+            memoryStopTimer();
+            memorySetMessage('⏰ 时间到！', false);
+            memoryLock = true;
+            memoryShowTimeUpModal();
+        }
+    }, 1000);
+}
+function memoryShowTimeUpModal() {
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = `
+        <div class="modal">
+            <h2>⏰ 时间到啦</h2>
+            <div class="big-stars">😢</div>
+            <div class="encourage-text">别灰心，再试一次一定可以！</div>
+            <div class="modal-buttons">
+                <button class="modal-btn primary" id="memTimeRetry">🔄 重玩本关</button>
+                <button class="modal-btn secondary" id="memTimeHome">🏠 首页</button>
+            </div>
+        </div>`;
+    document.body.appendChild(overlay);
+    document.getElementById('memTimeRetry').onclick = () => { overlay.remove(); memoryLoadLevel(memoryCurrentLevel); };
+    document.getElementById('memTimeHome').onclick = () => {
+        overlay.remove(); memoryRenderHome(); hideAllScreens();
+        document.getElementById('memory-home').classList.remove('hidden');
+    };
+}
+function memoryShowCompleteModal(stars, hasDetective) {
+    const isLast = memoryCurrentLevel === MEMORY_TOTAL_LEVELS;
+    const encourage = getEncourageText(stars);
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = `
+        <div class="modal">
+            <h2>${isLast ? '🏆 全部通关！' : '🎉 第 ' + memoryCurrentLevel + ' 关完成！'}</h2>
+            <div class="big-stars">
+                <span class="big-star">${stars>=1?'★':'☆'}</span>
+                <span class="big-star">${stars>=2?'★':'☆'}</span>
+                <span class="big-star">${stars>=3?'★':'☆'}</span>
+            </div>
+            <div class="encourage-text">${encourage}</div>
+            ${hasDetective ? '<div style="font-size:1.1rem;color:#d84315;font-weight:800;margin-bottom:12px;">🕵️ 隐藏寻宝已解锁！</div>' : ''}
+            <div class="modal-buttons">
+                ${hasDetective ? '<button class="modal-btn primary" id="memDetectiveBtn">🕵️ 进入寻宝</button>' : ''}
+                ${!isLast && !hasDetective ? '<button class="modal-btn primary" id="memNextModalBtn">➡️ 下一关</button>' : ''}
+                <button class="modal-btn secondary" id="memRetryModalBtn">🔄 重玩</button>
+                <button class="modal-btn secondary" id="memHomeModalBtn">🏠 首页</button>
+            </div>
+        </div>`;
+    document.body.appendChild(overlay);
+
+    const detBtn = document.getElementById('memDetectiveBtn');
+    if (detBtn) detBtn.onclick = () => {
+        overlay.remove();
+        detectiveStart('memory', memoryCurrentLevel);
+    };
+    const nextM = document.getElementById('memNextModalBtn');
+    if (nextM) nextM.onclick = () => {
+        overlay.remove();
+        memoryProgress.currentLevel = Math.min(MEMORY_TOTAL_LEVELS, memoryCurrentLevel + 1);
+        memorySaveProgress();
+        memoryCurrentLevel = memoryProgress.currentLevel;
+        memoryLoadLevel(memoryCurrentLevel);
+    };
+    document.getElementById('memRetryModalBtn').onclick = () => { overlay.remove(); memoryLoadLevel(memoryCurrentLevel); };
+    document.getElementById('memHomeModalBtn').onclick = () => {
+        overlay.remove(); memoryRenderHome(); hideAllScreens();
+        document.getElementById('memory-home').classList.remove('hidden');
+    };
+}
+
+function memoryRenderBoard() {
+    memoryBoard.innerHTML = '';
+    memoryCards.forEach((card, index) => {
+        const cardEl = document.createElement('div');
+        cardEl.className = 'card-memory';
+        if (card.matched) cardEl.classList.add('matched');
+        if (memoryFlippedIdx.includes(index)) cardEl.classList.add('flipped');
+        cardEl.dataset.index = index;
+
+        const back = document.createElement('div');
+        back.className = 'face back';
+        back.textContent = '?';
+
+        const front = document.createElement('div');
+        front.className = 'face front';
+
+        if (card.type === 'word') {
+            const wordSpan = document.createElement('div');
+            wordSpan.className = 'word-text';
+            wordSpan.textContent = card.content;
+            front.appendChild(wordSpan);
+            const speakerBtn = document.createElement('button');
+            speakerBtn.className = 'speaker-btn';
+            speakerBtn.textContent = '🔊';
+            speakerBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                speakWord(card.content);
             });
-            candyBackHome.addEventListener('click', () => {
-                if (speechSynth) speechSynth.cancel();
-                stopCandyTimer();
-                candyRenderHome();
-                hideAllScreens();
-                document.getElementById('candy-home').classList.remove('hidden');
-            });
-            candyContinueBtn.addEventListener('click', () => candyStart(candyProgress.currentLevel || 1));
-            candyJumpBtn.addEventListener('click', () => {
-                const val = parseInt(candyJumpInput.value);
-                if (isNaN(val) || val < 1 || val > CANDY_TOTAL_LEVELS) {
-                    alert('请输入 1 - ' + CANDY_TOTAL_LEVELS);
-                    return;
-                }
-                candyStart(val);
-            });
-            candyResetBtn.addEventListener('click', () => {
-                if (confirm('确定重置消消乐进度吗？')) {
-                    candyProgress = { currentLevel: 1, levelStars: {}, wordStats: {} };
-                    candySaveProgress();
-                    candyRenderHome();
-                }
-            });
+            front.appendChild(speakerBtn);
+        } else {
+            const emojiSpan = document.createElement('div');
+            emojiSpan.className = 'emoji';
+            emojiSpan.textContent = card.content;
+            front.appendChild(emojiSpan);
+        }
 
-            // ============================================================
-            // 记忆闯关模式（1000 关，每关至少 6 对）
-            // ============================================================
-            const MEMORY_TOTAL_LEVELS = 1000;
+        cardEl.appendChild(back);
+        cardEl.appendChild(front);
+        cardEl.addEventListener('click', () => memoryHandleClick(index));
+        memoryBoard.appendChild(cardEl);
+    });
+    memoryUpdateStats();
+}
 
-            function memoryGetLevelConfig(level) {
-                let pairCount;
-                if (level <= 100) pairCount = 6;
-                else if (level <= 300) pairCount = 7;
-                else if (level <= 600) pairCount = 8;
-                else if (level <= 900) pairCount = 9;
-                else pairCount = 10;
+function memoryHandleClick(index) {
+    if (memoryLock || !memoryGameActive) return;
+    const card = memoryCards[index];
+    if (card.matched) return;
+    if (memoryFlippedIdx.includes(index)) return;
 
-                let newWordCount, reviewWordCount;
-                if (level <= 100) { newWordCount = 3; reviewWordCount = pairCount - newWordCount; }
-                else if (level <= 300) { newWordCount = 3; reviewWordCount = pairCount - newWordCount; }
-                else if (level <= 600) { newWordCount = 4; reviewWordCount = pairCount - newWordCount; }
-                else { newWordCount = 4; reviewWordCount = pairCount - newWordCount; }
-                if (reviewWordCount < 0) reviewWordCount = 0;
+    memoryFlippedIdx.push(index);
+    const cardEl = document.querySelector(`.card-memory[data-index="${index}"]`);
+    if (cardEl) cardEl.classList.add('flipped');
 
-                let timeLimit = null;
-                if (level > 300) timeLimit = Math.max(40, 100 - Math.floor((level - 300) / 20));
-                if (level > 800) timeLimit = Math.max(30, 70 - Math.floor((level - 800) / 30));
+    if (card.type === 'word') speakWord(card.content);
+    else speakWord(card.word);
 
-                let decoys = 0;
-                if (level > 500) decoys = 1;
-                if (level > 800) decoys = 2;
+    if (memoryFlippedIdx.length === 1) {
+        memorySetMessage(`👉 已翻开：${card.type === 'word' ? card.content : '图片'}`, true);
+        return;
+    }
 
-                let phase;
-                if (level <= 100) phase = '入门';
-                else if (level <= 300) phase = '基础';
-                else if (level <= 600) phase = '进阶';
-                else if (level <= 800) phase = '强化';
-                else phase = '大师';
+    memoryAttempts++;
+    memoryUpdateStats();
+    memoryLock = true;
 
-                return { pairCount, newWordCount, reviewWordCount, timeLimit, decoys, phase };
+    const firstIdx = memoryFlippedIdx[0];
+    const firstCard = memoryCards[firstIdx];
+    const isMatch = (firstCard.pairId === card.pairId) && (firstCard.type !== card.type);
+
+    if (isMatch) {
+        setTimeout(() => {
+            memoryMatched++;
+            memoryCards[firstIdx].matched = true;
+            memoryCards[index].matched = true;
+            memoryFlippedIdx = [];
+            memoryRenderBoard();
+            memorySetMessage(`✅ ${card.word} 配对成功！`, true);
+            recordWord(memoryProgress, memorySaveProgress, card.word, memoryCurrentLevel);
+            memoryLock = false;
+            memoryCheckWin();
+        }, 500);
+    } else {
+        memorySetMessage(`❌ 不一样，再试试`, false);
+        setTimeout(() => {
+            memoryFlippedIdx = [];
+            memoryRenderBoard();
+            memoryLock = false;
+            memorySetMessage('💪 继续加油！', true);
+        }, 900);
+    }
+}
+
+function memoryCheckWin() {
+    if (memoryMatched === memoryConfig.pairCount) {
+        memoryStopTimer();
+        memoryGameActive = false;
+        const stars = memoryCalculateStars(memoryConfig.pairCount, memoryAttempts);
+        memoryUpdateStars(stars);
+        const prev = memoryProgress.levelStars[memoryCurrentLevel] || 0;
+        if (stars > prev) memoryProgress.levelStars[memoryCurrentLevel] = stars;
+        if (memoryCurrentLevel >= memoryProgress.currentLevel) {
+            memoryProgress.currentLevel = Math.min(MEMORY_TOTAL_LEVELS, memoryCurrentLevel + 1);
+        }
+        memorySaveProgress();
+        speakEncouragement(stars);
+
+        const shouldTrigger = shouldTriggerDetective(memoryCurrentLevel, memoryProgress);
+
+        setTimeout(() => {
+            if (shouldTrigger) {
+                markDetectiveTriggered(memoryCurrentLevel, memoryProgress, memorySaveProgress);
+                memoryShowCompleteModal(stars, true);
+            } else {
+                memoryShowCompleteModal(stars, false);
             }
+        }, 500);
+    }
+}
 
-            let memoryProgress = memoryLoadProgress();
-            function memoryLoadProgress() {
-                try {
-                    const saved = localStorage.getItem('memoryProgress');
-                    if (saved) {
-                        const d = JSON.parse(saved);
-                        return {
-                            currentLevel: d.currentLevel || 1,
-                            wordStats: d.wordStats || {},
-                            levelStars: d.levelStars || {}
-                        };
-                    }
-                } catch (e) {}
-                return { currentLevel: 1, wordStats: {}, levelStars: {} };
-            }
-            function memorySaveProgress() {
-                try { localStorage.setItem('memoryProgress', JSON.stringify(memoryProgress)); } catch (e) {}
-            }
+function memoryLoadLevel(level) {
+    memoryStopTimer();
+    if (speechSynth) speechSynth.cancel();
 
-            let memoryCurrentLevel = 1;
-            let memoryCards = [];
-            let memorySelectedIdx = null;
-            let memoryMatched = 0;
-            let memoryAttempts = 0;
-            let memoryLock = false;
-            let memoryTimeoutId = null;
-            let memoryTimerInterval = null;
-            let memoryTimeLeft = 0;
-            let memoryGameActive = false;
-            let memoryConfig = null;
-            let memoryCurrentWords = [];
+    memoryCurrentLevel = level;
+    memoryFlippedIdx = [];
+    memoryLock = false;
+    memoryMatched = 0;
+    memoryAttempts = 0;
+    memoryGameActive = true;
 
-            const memoryBoard = document.getElementById('memoryBoard');
-            const memoryLevelBadge = document.getElementById('memoryLevelBadge');
-            const memoryPairsMatchedSpan = document.getElementById('memoryPairsMatched');
-            const memoryAttemptsSpan = document.getElementById('memoryAttempts');
-            const memoryMessage = document.getElementById('memoryMessage');
-            const memoryResetLevel = document.getElementById('memoryResetLevel');
-            const memoryBackHome = document.getElementById('memoryBackHome');
-            const memoryStarsDisplay = document.getElementById('memoryStarsDisplay');
-            const memoryTimerBox = document.getElementById('memoryTimerBox');
-            const memoryTimerValue = document.getElementById('memoryTimerValue');
-            const memorySoundToggle = document.getElementById('memorySoundToggle');
-            const memorySoundIcon = document.getElementById('memorySoundIcon');
-            const memorySoundText = document.getElementById('memorySoundText');
-            const memoryGameHint = document.getElementById('memoryGameHint');
-            const memoryHomeLevel = document.getElementById('memoryHomeLevel');
-            const memoryHomeMastered = document.getElementById('memoryHomeMastered');
-            const memoryHomeStars = document.getElementById('memoryHomeStars');
-            const memoryProgressFill = document.getElementById('memoryProgressFill');
-            const memoryContinueBtn = document.getElementById('memoryContinueBtn');
-            const memoryContinueLevel = document.getElementById('memoryContinueLevel');
-            const memoryJumpInput = document.getElementById('memoryJumpInput');
-            const memoryJumpBtn = document.getElementById('memoryJumpBtn');
-            const memoryResetBtn = document.getElementById('memoryResetBtn');
+    memoryConfig = memoryGetLevelConfig(level);
+    memoryCurrentWords = selectWordsForLevel(memoryProgress, level, memoryConfig);
+    memoryRenderLevelInfo();
+    memoryCards = memoryBuildCards(memoryCurrentWords);
+    memoryRenderBoard();
+    if (memoryConfig.timeLimit) memoryStartTimer();
+    memorySetMessage('✨ 翻开卡片，配对单词和图片吧！', true);
+    memoryUpdateStats();
+}
 
-            function memoryGetMastered() {
-                return Object.values(memoryProgress.wordStats).filter(w => w.mastered).length;
-            }
-            function memoryGetStars() {
-                return Object.values(memoryProgress.levelStars).reduce((a, b) => a + b, 0);
-            }
+function memoryStart(level) {
+    hideAllScreens();
+    document.getElementById('memory-game').classList.remove('hidden');
+    memoryLoadLevel(level);
+}
 
-            function memoryRenderHome() {
-                memoryCurrentLevel = memoryProgress.currentLevel || 1;
-                memoryHomeLevel.textContent = memoryCurrentLevel;
-                memoryHomeMastered.textContent = memoryGetMastered();
-                memoryHomeStars.textContent = memoryGetStars();
-                const percent = Math.max(1, (memoryCurrentLevel / MEMORY_TOTAL_LEVELS) * 100);
-                memoryProgressFill.style.width = percent + '%';
-                memoryProgressFill.textContent = memoryCurrentLevel + ' / ' + MEMORY_TOTAL_LEVELS;
-                memoryContinueLevel.textContent = memoryCurrentLevel;
-                memoryJumpInput.value = memoryCurrentLevel;
-            }
+memoryResetLevel.addEventListener('click', () => memoryLoadLevel(memoryCurrentLevel));
+memoryBackHome.addEventListener('click', () => {
+    if (speechSynth) speechSynth.cancel();
+    memoryStopTimer();
+    memoryRenderHome();
+    hideAllScreens();
+    document.getElementById('memory-home').classList.remove('hidden');
+});
+memoryContinueBtn.addEventListener('click', () => memoryStart(memoryProgress.currentLevel || 1));
+memoryJumpBtn.addEventListener('click', () => {
+    const val = parseInt(memoryJumpInput.value);
+    if (isNaN(val) || val < 1 || val > MEMORY_TOTAL_LEVELS) { alert('请输入 1 - ' + MEMORY_TOTAL_LEVELS); return; }
+    memoryStart(val);
+});
+memoryResetBtn.addEventListener('click', () => {
+    if (confirm('确定重置翻牌记忆进度吗？')) {
+        memoryProgress = { currentLevel:1, wordStats:{}, levelStars:{}, badges:[], bonusStars:0, detectiveTriggered:[] };
+        memorySaveProgress();
+        memoryRenderHome();
+    }
+});
+memorySoundToggle.addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    if (!soundEnabled) {
+        if (speechSynth) speechSynth.cancel();
+        memorySoundIcon.textContent = '🔇';
+        memorySoundText.textContent = '静音';
+        memorySoundToggle.classList.add('muted');
+    } else {
+        memorySoundIcon.textContent = '🔊';
+        memorySoundText.textContent = '童声';
+        memorySoundToggle.classList.remove('muted');
+    }
+});
 
-            function memorySelectWords(level) {
-                const config = memoryGetLevelConfig(level);
-                const selected = [];
-                const reviewCandidates = [];
-                Object.keys(memoryProgress.wordStats).forEach(word => {
-                    const stat = memoryProgress.wordStats[word];
-                    if (!stat.mastered && stat.nextReview <= level) {
-                        reviewCandidates.push({ word, ...stat });
-                    }
-                });
-                reviewCandidates.sort((a, b) => a.nextReview - b.nextReview);
-                for (let i = 0; i < config.reviewWordCount && i < reviewCandidates.length; i++) {
-                    const r = reviewCandidates[i];
-                    const wd = WORD_BANK.find(w => w.word === r.word);
-                    if (wd) selected.push(wd);
-                }
-                const unseen = WORD_BANK.filter(w => !memoryProgress.wordStats[w.word]);
-                for (let i = 0; i < config.newWordCount && i < unseen.length; i++) {
-                    selected.push(unseen[i]);
-                }
-                if (selected.length < config.pairCount) {
-                    const mastered = Object.keys(memoryProgress.wordStats)
-                        .filter(w => memoryProgress.wordStats[w].mastered)
-                        .sort((a, b) => memoryProgress.wordStats[a].lastSeen - memoryProgress.wordStats[b].lastSeen);
-                    for (const w of mastered) {
-                        if (selected.length >= config.pairCount) break;
-                        if (selected.some(s => s.word === w)) continue;
-                        const wd = WORD_BANK.find(x => x.word === w);
-                        if (wd) selected.push(wd);
-                    }
-                }
-                while (selected.length < config.pairCount) {
-                    const rand = WORD_BANK[Math.floor(Math.random() * WORD_BANK.length)];
-                    if (!selected.some(s => s.word === rand.word)) selected.push(rand);
-                }
-                return selected.slice(0, config.pairCount);
-            }
+// 启动
+document.body.addEventListener('click', function initAudioOnce() {
+    initAudio();
+    if (speechSynth && voices.length === 0) loadVoices();
+    document.body.removeEventListener('click', initAudioOnce);
+}, { once: true });
 
-            function memoryRecordWord(word, level) {
-                if (!memoryProgress.wordStats[word]) {
-                    memoryProgress.wordStats[word] = {
-                        learned: 0, lastSeen: level, nextReview: level + 1, mastered: false
-                    };
-                }
-                const stat = memoryProgress.wordStats[word];
-                stat.learned++;
-                stat.lastSeen = level;
-                const intervals = [1, 3, 7, 15, 30];
-                if (stat.learned <= intervals.length) {
-                    stat.nextReview = level + intervals[stat.learned - 1];
-                } else {
-                    stat.mastered = true;
-                    stat.nextReview = Infinity;
-                }
-                memorySaveProgress();
-            }
+if (speechSynth) {
+    loadVoices();
+    speechSynth.onvoiceschanged = loadVoices;
+}
 
-            function memoryBuildCards(pairs, decoys = 0) {
-                const newCards = [];
-                pairs.forEach((pair, pairId) => {
-                    newCards.push({
-                        pairId, type: 'word', content: pair.word, word: pair.word,
-                        matched: false, isDecoy: false
-                    });
-                    newCards.push({
-                        pairId, type: 'emoji', content: pair.emoji, word: pair.word,
-                        matched: false, isDecoy: false
-                    });
-                });
-                if (decoys > 0) {
-                    const decoyEmojis = ['👻', '🎃', '🦄', '🐉', '🍀', '💎', '🔮', '🎈'];
-                    for (let i = 0; i < decoys; i++) {
-                        newCards.push({
-                            pairId: -1, type: 'emoji',
-                            content: decoyEmojis[i % decoyEmojis.length],
-                            matched: false, isDecoy: true
-                        });
-                    }
-                }
-                return shuffleArray(newCards);
-            }
-
-            function memoryUpdateStats() {
-                memoryPairsMatchedSpan.textContent = memoryMatched;
-                memoryAttemptsSpan.textContent = memoryAttempts;
-            }
-
-            function memorySetMessage(text, isGood = true) {
-                memoryMessage.textContent = text;
-                memoryMessage.style.background = isGood ?
-                    'linear-gradient(135deg, #fff8e1, #ffecb3)' :
-                    'linear-gradient(135deg, #ffcdd2, #ef9a9a)';
-            }
-
-            function memoryUpdateStars(starCount) {
-                const stars = memoryStarsDisplay.querySelectorAll('.star');
-                stars.forEach((star, idx) => {
-                    if (idx < starCount) {
-                        star.textContent = '★';
-                        star.classList.add('earned');
-                        star.style.color = '#ffb800';
-                    } else {
-                        star.textContent = '☆';
-                        star.classList.remove('earned');
-                        star.style.color = '#aaa';
-                    }
-                });
-            }
-
-            function memoryCalculateStars(pairCount, attempts) {
-                if (attempts <= pairCount + 2) return 3;
-                if (attempts <= Math.ceil(pairCount * 1.8)) return 2;
-                return 1;
-            }
-
-            function memoryRenderLevelInfo() {
-                memoryLevelBadge.textContent = `第 ${memoryCurrentLevel} 关`;
-                if (memoryConfig.timeLimit) {
-                    memoryTimerBox.style.display = 'flex';
-                    memoryTimeLeft = memoryConfig.timeLimit;
-                    memoryTimerValue.textContent = memoryTimeLeft;
-                    memoryTimerBox.classList.remove('warning');
-                } else {
-                    memoryTimerBox.style.display = 'none';
-                }
-                const newCount = memoryCurrentWords.filter(w => {
-                    const stat = memoryProgress.wordStats[w.word];
-                    return !stat || stat.learned <= 1;
-                }).length;
-                const reviewCount = memoryConfig.pairCount - newCount;
-                memoryGameHint.textContent = `🧠 ${memoryConfig.phase}阶段 · ${memoryConfig.pairCount}对 · 新词 ${newCount} · 复习 ${reviewCount}`;
-                memoryUpdateStars(0);
-            }
-
-            function memoryStopTimer() {
-                if (memoryTimerInterval) {
-                    clearInterval(memoryTimerInterval);
-                    memoryTimerInterval = null;
-                }
-                memoryGameActive = false;
-            }
-
-            function memoryStartTimer() {
-                if (!memoryConfig.timeLimit) return;
-                memoryStopTimer();
-                memoryTimeLeft = memoryConfig.timeLimit;
-                memoryTimerValue.textContent = memoryTimeLeft;
-                memoryTimerBox.classList.remove('warning');
-                memoryGameActive = true;
-                memoryTimerInterval = setInterval(() => {
-                    if (!memoryGameActive) return;
-                    memoryTimeLeft--;
-                    memoryTimerValue.textContent = memoryTimeLeft;
-                    if (memoryTimeLeft <= 10) memoryTimerBox.classList.add('warning');
-                    if (memoryTimeLeft <= 0) {
-                        memoryStopTimer();
-                        memorySetMessage('⏰ 时间到！', false);
-                        memoryLock = true;
-                        memoryShowTimeUpModal();
-                    }
-                }, 1000);
-            }
-
-            function memoryShowTimeUpModal() {
-                const overlay = document.createElement('div');
-                overlay.className = 'overlay';
-                overlay.innerHTML = `
-                    <div class="modal">
-                        <h2>⏰ 时间到啦</h2>
-                        <div class="big-stars">😢</div>
-                        <div class="encourage-text">别灰心，再试一次一定可以！</div>
-                        <div class="modal-buttons">
-                            <button class="modal-btn primary" id="memRetryBtn">🔄 重玩本关</button>
-                            <button class="modal-btn secondary" id="memHomeBtn">🏠 首页</button>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(overlay);
-                document.getElementById('memRetryBtn').addEventListener('click', () => {
-                    overlay.remove(); memoryLoadLevel(memoryCurrentLevel);
-                });
-                document.getElementById('memHomeBtn').addEventListener('click', () => {
-                    overlay.remove(); memoryRenderHome(); hideAllScreens();
-                    document.getElementById('memory-home').classList.remove('hidden');
-                });
-            }
-
-            function memoryShowCompleteModal(stars) {
-                const isLast = memoryCurrentLevel === MEMORY_TOTAL_LEVELS;
-                const encourage = getEncourageText(stars);
-                const overlay = document.createElement('div');
-                overlay.className = 'overlay';
-                overlay.innerHTML = `
-                    <div class="modal">
-                        <h2>${isLast ? '🏆 全部通关！' : '🎉 第 ' + memoryCurrentLevel + ' 关完成！'}</h2>
-                        <div class="big-stars">
-                            <span class="big-star">${stars >= 1 ? '★' : '☆'}</span>
-                            <span class="big-star">${stars >= 2 ? '★' : '☆'}</span>
-                            <span class="big-star">${stars >= 3 ? '★' : '☆'}</span>
-                        </div>
-                        <div class="encourage-text">${encourage}</div>
-                        <div class="modal-buttons">
-                            ${!isLast ? '<button class="modal-btn primary" id="memNextBtn">➡️ 下一关</button>' : ''}
-                            <button class="modal-btn secondary" id="memRetryBtn2">🔄 重玩</button>
-                            <button class="modal-btn secondary" id="memHomeBtn2">🏠 首页</button>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(overlay);
-                const nextBtn = document.getElementById('memNextBtn');
-                if (nextBtn) {
-                    nextBtn.addEventListener('click', () => {
-                        overlay.remove();
-                        memoryProgress.currentLevel = Math.min(MEMORY_TOTAL_LEVELS, memoryCurrentLevel + 1);
-                        memorySaveProgress();
-                        memoryCurrentLevel = memoryProgress.currentLevel;
-                        memoryLoadLevel(memoryCurrentLevel);
-                    });
-                }
-                document.getElementById('memRetryBtn2').addEventListener('click', () => {
-                    overlay.remove(); memoryLoadLevel(memoryCurrentLevel);
-                });
-                document.getElementById('memHomeBtn2').addEventListener('click', () => {
-                    overlay.remove(); memoryRenderHome(); hideAllScreens();
-                    document.getElementById('memory-home').classList.remove('hidden');
-                });
-            }
-
-            function memoryRenderBoard() {
-                if (memoryTimeoutId) { clearTimeout(memoryTimeoutId); memoryTimeoutId = null; }
-                memoryBoard.innerHTML = '';
-                memoryCards.forEach((card, index) => {
-                    const cardEl = document.createElement('div');
-                    cardEl.className = `card-memory ${card.matched ? 'matched' : ''} ${card.isDecoy ? 'decoy' : ''}`;
-                    cardEl.dataset.index = index;
-
-                    if (card.type === 'word') {
-                        const wordSpan = document.createElement('div');
-                        wordSpan.className = 'word-text';
-                        wordSpan.textContent = card.content;
-                        cardEl.appendChild(wordSpan);
-                        const speakerBtn = document.createElement('button');
-                        speakerBtn.className = 'speaker-btn';
-                        speakerBtn.textContent = '🔊';
-                        speakerBtn.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            speakWord(card.content);
-                        });
-                        cardEl.appendChild(speakerBtn);
-                    } else {
-                        const emojiSpan = document.createElement('div');
-                        emojiSpan.className = 'emoji';
-                        emojiSpan.textContent = card.content;
-                        cardEl.appendChild(emojiSpan);
-                    }
-
-                    cardEl.addEventListener('click', () => memoryHandleClick(index));
-                    memoryBoard.appendChild(cardEl);
-                });
-                memoryUpdateStats();
-            }
-
-            function memoryHandleClick(index) {
-                if (memoryLock || !memoryGameActive) return;
-                const card = memoryCards[index];
-                if (card.matched) return;
-
-                if (card.isDecoy) {
-                    memoryCards[index].matched = true;
-                    const el = document.querySelector(`.card-memory[data-index="${index}"]`);
-                    if (el) { el.classList.add('matched'); el.style.opacity = '0.3'; }
-                    memorySetMessage('👻 捣蛋卡消失啦！', true);
-                    if (memorySelectedIdx !== null) {
-                        const prev = document.querySelector(`.card-memory[data-index="${memorySelectedIdx}"]`);
-                        if (prev) prev.classList.remove('selected');
-                        memorySelectedIdx = null;
-                    }
-                    return;
-                }
-
-                const cardEl = document.querySelector(`.card-memory[data-index="${index}"]`);
-                if (!cardEl) return;
-
-                if (card.type === 'word') speakWord(card.content);
-                if (card.type === 'emoji' && card.word) speakWord(card.word);
-
-                if (memorySelectedIdx === null) {
-                    memorySelectedIdx = index;
-                    cardEl.classList.add('selected');
-                    memorySetMessage(`👉 已选中: ${card.type === 'word' ? card.content : '图片'}`, true);
-                    return;
-                }
-
-                const firstIdx = memorySelectedIdx;
-                const firstCard = memoryCards[firstIdx];
-                const firstEl = document.querySelector(`.card-memory[data-index="${firstIdx}"]`);
-
-                if (firstIdx === index) {
-                    if (firstEl) firstEl.classList.remove('selected');
-                    memorySelectedIdx = null;
-                    memorySetMessage('✨ 已取消选择', true);
-                    return;
-                }
-
-                memoryLock = true;
-                memoryAttempts++;
-                memoryUpdateStats();
-
-                const isMatch = (firstCard.pairId === card.pairId) &&
-                                (firstCard.type !== card.type) &&
-                                (!firstCard.isDecoy && !card.isDecoy);
-
-                if (isMatch) {
-                    const matchedWord = firstCard.type === 'word' ? firstCard.content : card.content;
-                    setTimeout(() => speakWord(matchedWord), 150);
-                    memoryMatched++;
-                    memoryCards[firstIdx].matched = true;
-                    memoryCards[index].matched = true;
-                    if (firstEl) { firstEl.classList.remove('selected'); firstEl.classList.add('matched'); }
-                    cardEl.classList.add('matched');
-                    memoryRecordWord(matchedWord, memoryCurrentLevel);
-                    memorySetMessage(`✅ ${matchedWord} 配对成功!`, true);
-                    memorySelectedIdx = null;
-                    memoryLock = false;
-                    memoryCheckWin();
-                } else {
-                    memorySetMessage(`❌ 配对失败，再试试`, false);
-                    if (firstEl) {
-                        firstEl.classList.remove('selected');
-                        firstEl.style.border = '3px solid #e74c3c';
-                        setTimeout(() => { firstEl.style.border = ''; }, 300);
-                    }
-                    cardEl.style.border = '3px solid #e74c3c';
-                    setTimeout(() => { cardEl.style.border = ''; }, 300);
-                    memoryTimeoutId = setTimeout(() => {
-                        if (firstEl) firstEl.classList.remove('selected');
-                        if (firstEl) firstEl.style.border = '';
-                        cardEl.style.border = '';
-                        memorySelectedIdx = null;
-                        memoryLock = false;
-                        memoryTimeoutId = null;
-                        memorySetMessage('💪 继续加油！', true);
-                    }, 700);
-                }
-            }
-
-            function memoryCheckWin() {
-                if (memoryMatched === memoryConfig.pairCount) {
-                    memoryStopTimer();
-                    memoryGameActive = false;
-                    const stars = memoryCalculateStars(memoryConfig.pairCount, memoryAttempts);
-                    memoryUpdateStars(stars);
-                    const prev = memoryProgress.levelStars[memoryCurrentLevel] || 0;
-                    if (stars > prev) memoryProgress.levelStars[memoryCurrentLevel] = stars;
-                    if (memoryCurrentLevel >= memoryProgress.currentLevel) {
-                        memoryProgress.currentLevel = Math.min(MEMORY_TOTAL_LEVELS, memoryCurrentLevel + 1);
-                    }
-                    memorySaveProgress();
-                    speakEncouragement(stars);
-                    setTimeout(() => memoryShowCompleteModal(stars), 500);
-                }
-            }
-
-            function memoryLoadLevel(level) {
-                memoryStopTimer();
-                if (memoryTimeoutId) { clearTimeout(memoryTimeoutId); memoryTimeoutId = null; }
-                if (speechSynth) speechSynth.cancel();
-
-                memoryCurrentLevel = level;
-                memorySelectedIdx = null;
-                memoryLock = false;
-                memoryMatched = 0;
-                memoryAttempts = 0;
-                memoryGameActive = true;
-
-                memoryConfig = memoryGetLevelConfig(level);
-                memoryCurrentWords = memorySelectWords(level);
-                memoryRenderLevelInfo();
-                memoryCards = memoryBuildCards(memoryCurrentWords, memoryConfig.decoys);
-                memoryRenderBoard();
-                if (memoryConfig.timeLimit) memoryStartTimer();
-                memorySetMessage('✨ 点击卡片，配对单词和图片吧！', true);
-                memoryUpdateStats();
-            }
-
-            function memoryStart(level) {
-                hideAllScreens();
-                document.getElementById('memory-game').classList.remove('hidden');
-                memoryLoadLevel(level);
-            }
-
-            memoryResetLevel.addEventListener('click', () => memoryLoadLevel(memoryCurrentLevel));
-            memoryBackHome.addEventListener('click', () => {
-                if (speechSynth) speechSynth.cancel();
-                memoryStopTimer();
-                memoryRenderHome();
-                hideAllScreens();
-                document.getElementById('memory-home').classList.remove('hidden');
-            });
-            memoryContinueBtn.addEventListener('click', () => memoryStart(memoryProgress.currentLevel || 1));
-            memoryJumpBtn.addEventListener('click', () => {
-                const val = parseInt(memoryJumpInput.value);
-                if (isNaN(val) || val < 1 || val > MEMORY_TOTAL_LEVELS) {
-                    alert('请输入 1 - ' + MEMORY_TOTAL_LEVELS);
-                    return;
-                }
-                memoryStart(val);
-            });
-            memoryResetBtn.addEventListener('click', () => {
-                if (confirm('确定重置记忆闯关进度吗？')) {
-                    memoryProgress = { currentLevel: 1, wordStats: {}, levelStars: {} };
-                    memorySaveProgress();
-                    memoryRenderHome();
-                }
-            });
-            memorySoundToggle.addEventListener('click', () => {
-                soundEnabled = !soundEnabled;
-                if (!soundEnabled) {
-                    if (speechSynth) speechSynth.cancel();
-                    memorySoundIcon.textContent = '🔇';
-                    memorySoundText.textContent = '静音';
-                    memorySoundToggle.classList.add('muted');
-                } else {
-                    memorySoundIcon.textContent = '🔊';
-                    memorySoundText.textContent = '童声';
-                    memorySoundToggle.classList.remove('muted');
-                }
-            });
-
-            // 启动
-            document.body.addEventListener('click', function initAudioOnce() {
-                initAudio();
-                if (speechSynth && voices.length === 0) loadVoices();
-                document.body.removeEventListener('click', initAudioOnce);
-            }, { once: true });
-
-            if (speechSynth) {
-                loadVoices();
-                speechSynth.onvoiceschanged = loadVoices;
-            }
-
-            window.addEventListener('DOMContentLoaded', () => {
-                switchMode('candy');
-            });
-
-        })();
-    </script>
+window.addEventListener('DOMContentLoaded', () => {
+    switchMode('candy');
+});
+})();
+</script>
 </body>
 </html>
