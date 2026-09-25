@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>趣味英语 · 主题单词闯关</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(145deg, #2b5a8c 0%, #1e3c5c 100%);
+            padding: 16px;
+        }
+
+        .game-wrapper {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 52px;
+            padding: 24px;
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            max-width: 720px;
+            width: 100%;
+        }
+
+        .game-panel {
+            background: #fef9e8;
+            background-image: radial-gradient(circle at 20% 30%, #fff8e7 0%, #f5e9d8 100%);
+            border-radius: 38px;
+            padding: 22px 22px 28px;
+            box-shadow: inset 0 2px 10px rgba(255, 245, 200, 0.8), 0 15px 20px -8px rgba(0, 0, 0, 0.4);
+            border: 1px solid #f0e0c0;
+        }
+
+        /* ===== 主题选择界面 ===== */
+        .screen {
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .main-title {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .main-title h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1f4e6f, #2b6c8f);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+            text-shadow: 3px 3px 0 rgba(255, 215, 120, 0.3);
+        }
+
+        .main-title p {
+            color: #7a6a4a;
+            font-weight: 600;
+            margin-top: 6px;
+            font-size: 1rem;
+        }
+
+        .total-stars {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(90deg, #ffd966, #ffb347);
+            border-radius: 40px;
+            padding: 8px 24px;
+            margin: 16px auto;
+            width: fit-content;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #4a3a1a;
+            box-shadow: 0 6px 0 #c9962a, 0 8px 14px rgba(0,0,0,0.2);
+        }
+
+        .total-stars .star-icon {
+            font-size: 1.4rem;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
+        }
+
+        .themes-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .theme-card {
+            background: white;
+            border-radius: 28px;
+            padding: 22px 18px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 9px 0 #c9b89a, 0 12px 20px rgba(0,0,0,0.2);
+            transition: all 0.15s;
+            border: 3px solid transparent;
+            transform: translateY(0);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 0 #c9b89a, 0 15px 24px rgba(0,0,0,0.25);
+        }
+
+        .theme-card:active {
+            transform: translateY(5px);
+            box-shadow: 0 4px 0 #c9b89a, 0 8px 12px rgba(0,0,0,0.2);
+        }
+
+        .theme-card .theme-emoji {
+            font-size: 3rem;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+            display: block;
+        }
+
+        .theme-card .theme-name {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #2d3e2f;
+            margin-bottom: 6px;
+        }
+
+        .theme-card .theme-desc {
+            font-size: 0.85rem;
+            color: #8a7a5a;
+            font-weight: 600;
+        }
+
+        .theme-progress {
+            display: flex;
+            justify-content: center;
+            gap: 3px;
+            margin-top: 12px;
+            font-size: 0.9rem;
+        }
+
+        .theme-progress .p-star {
+            color: #ddd;
+            transition: all 0.3s;
+        }
+
+        .theme-progress .p-star.earned {
+            color: #ffb800;
+            filter: drop-shadow(0 1px 2px rgba(255,180,0,0.5));
+        }
+
+        /* ===== 关卡选择界面 ===== */
+        .level-select-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: #e6d8c0;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #ab8e6a, 0 6px 12px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.1s;
+            transform: translateY(0);
+        }
+
+        .back-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #ab8e6a;
+        }
+
+        .level-select-title {
+            flex: 1;
+        }
+
+        .level-select-title h2 {
+            font-size: 1.6rem;
+            color: #1f4e6f;
+            font-weight: 800;
+        }
+
+        .level-select-title p {
+            font-size: 0.9rem;
+            color: #8a7a5a;
+            font-weight: 600;
+        }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .level-item {
+            background: white;
+            border-radius: 24px;
+            padding: 18px;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #c9b89a, 0 10px 16px rgba(0,0,0,0.18);
+            transition: all 0.12s;
+            border: 3px solid transparent;
+            position: relative;
+            transform: translateY(0);
+        }
+
+        .level-item.locked {
+            background: #e8e0d0;
+            box-shadow: 0 8px 0 #b0a080;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .level-item:not(.locked):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 0 #c9b89a, 0 12px 20px rgba(0,0,0,0.22);
+        }
+
+        .level-item:not(.locked):active {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #c9b89a;
+        }
+
+        .level-item .level-num {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1f4e6f;
+            margin-bottom: 4px;
+        }
+
+        .level-item .level-name {
+            font-size: 0.95rem;
+            color: #6a5a3a;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .level-item .level-stars {
+            display: flex;
+            gap: 3px;
+            font-size: 1.1rem;
+        }
+
+        .level-item .level-stars .l-star {
+            color: #ddd;
+        }
+
+        .level-item .level-stars .l-star.earned {
+            color: #ffb800;
+            filter: drop-shadow(0 1px 2px rgba(255,180,0,0.5));
+        }
+
+        .level-lock-icon {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 1.4rem;
+            opacity: 0.6;
+        }
+
+        /* ===== 游戏界面 (复用之前的样式) ===== */
+        .level-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(90deg, #2b6c8f, #1f4e6f);
+            border-radius: 60px;
+            padding: 10px 22px;
+            margin-bottom: 14px;
+            box-shadow: 0 6px 0 #0f2c40, 0 8px 14px rgba(0,0,0,0.3);
+            color: white;
+        }
+
+        .level-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+        }
+
+        .level-badge {
+            background: #ffd966;
+            color: #2d3e2f;
+            border-radius: 40px;
+            padding: 6px 18px;
+            font-size: 1.2rem;
+            box-shadow: inset 0 -3px 0 #c9a53a;
+        }
+
+        .level-title {
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .stars-display {
+            display: flex;
+            gap: 4px;
+            font-size: 1.4rem;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
+        }
+
+        .star {
+            transition: transform 0.3s;
+        }
+
+        .star.earned {
+            animation: pop 0.4s ease;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.5) rotate(-20deg); }
+            70% { transform: scale(1.3) rotate(10deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 6px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .title h1 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1f4e6f, #2b6c8f);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .title .emoji-badge {
+            font-size: 2rem;
+            filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.2));
+            transform: rotate(6deg);
+        }
+
+        .stats {
+            display: flex;
+            gap: 12px;
+            background: #e6d8c0;
+            padding: 8px 18px;
+            border-radius: 60px;
+            box-shadow: inset 0 2px 5px rgba(110, 70, 30, 0.2), 0 5px 0 #ab8e6a;
+            border-bottom: 3px solid #b89b78;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #2b4a3b;
+        }
+
+        .stat-item span:first-child {
+            font-size: 1.3rem;
+        }
+
+        .timer-box {
+            background: #ffecd2;
+            border-radius: 40px;
+            padding: 6px 16px;
+            font-weight: 800;
+            color: #b34a1a;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: inset 0 -3px 0 #d4a373;
+        }
+
+        .timer-box.warning {
+            background: #ffb3b3;
+            color: #8b0000;
+            animation: pulse 0.8s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .sound-toggle {
+            background: #e6d8c0;
+            border: none;
+            border-radius: 40px;
+            padding: 8px 16px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #2e4a3a;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #ab8e6a, 0 6px 12px rgba(0,0,0,0.2);
+            transition: all 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transform: translateY(0);
+        }
+
+        .sound-toggle:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #ab8e6a;
+        }
+
+        .sound-toggle.muted {
+            background: #d4c4b0;
+            color: #8a7a6a;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin: 14px 0 10px;
+            padding: 6px;
+        }
+
+        .card {
+            aspect-ratio: 1 / 1;
+            background: white;
+            border-radius: 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            box-shadow: 0 9px 0 #9b7e5e, 0 11px 16px rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+            transition: all 0.1s ease;
+            border: 2px solid #f3e1c2;
+            padding: 8px;
+            position: relative;
+            transform: translateY(0);
+        }
+
+        .card:active:not(.matched) {
+            transform: translateY(5px);
+            box-shadow: 0 4px 0 #9b7e5e, 0 7px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .card.matched {
+            box-shadow: 0 5px 0 #4c7a5e, 0 8px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(4px);
+            background: #e2f0e6;
+            border: 2px solid #7bbd8f;
+            cursor: default;
+            opacity: 0.85;
+            pointer-events: none;
+        }
+
+        .card.selected {
+            box-shadow: 0 0 0 5px #ffd966, 0 9px 0 #9b7e5e, 0 11px 16px rgba(0, 0, 0, 0.25);
+            border: 2px solid #ffb347;
+            transform: scale(1.02);
+        }
+
+        .card.decoy {
+            background: #f0e0f8;
+            border: 2px dashed #b39ddb;
+        }
+
+        .card.decoy .emoji,
+        .card.decoy .word-text {
+            opacity: 0.75;
+        }
+
+        .card .word-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1f3b4a;
+            text-align: center;
+            line-height: 1.2;
+            word-break: break-word;
+            letter-spacing: -0.02em;
+        }
+
+        .card .emoji {
+            font-size: 3rem;
+            line-height: 1;
+            filter: drop-shadow(2px 6px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .speaker-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #ffd966;
+            border: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #c9a53a;
+            transition: all 0.1s;
+            padding: 0;
+            line-height: 1;
+            z-index: 5;
+        }
+
+        .speaker-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 0 0 #c9a53a;
+        }
+
+        .speaker-btn.speaking {
+            animation: speakerPulse 0.6s infinite;
+        }
+
+        @keyframes speakerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); background: #ffb347; }
+        }
+
+        .bottom-area {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 18px;
+            padding: 0 6px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .message-box {
+            background: #f0e4d0;
+            padding: 12px 22px;
+            border-radius: 80px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: #2e4a3a;
+            box-shadow: inset 0 3px 6px rgba(90, 60, 30, 0.15), 0 5px 0 #a38767;
+            border-bottom: 2px solid #b69b7c;
+            flex: 1;
+            min-width: 180px;
+            text-align: center;
+            transition: all 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .reset-btn {
+            background: #ffb347;
+            border: none;
+            border-radius: 60px;
+            padding: 14px 26px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #2d3e2f;
+            box-shadow: 0 9px 0 #b16f2c, 0 10px 20px rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+            transition: all 0.08s linear;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transform: translateY(0);
+        }
+
+        .reset-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 3px 0 #b16f2c, 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .reset-btn .btn-icon {
+            font-size: 1.5rem;
+        }
+
+        /* 弹窗 */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+            padding: 16px;
+        }
+
+        .modal {
+            background: #fef9e8;
+            border-radius: 40px;
+            padding: 34px 40px;
+            text-align: center;
+            box-shadow: 0 30px 50px rgba(0,0,0,0.5), inset 0 0 0 3px #ffd966;
+            animation: bounceIn 0.5s;
+            max-width: 90vw;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.6); opacity: 0; }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal h2 {
+            font-size: 1.9rem;
+            color: #1f4e6f;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .modal .big-stars {
+            font-size: 3rem;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .modal .big-star {
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+            animation: starPop 0.5s backwards;
+        }
+
+        .modal .big-star:nth-child(1) { animation-delay: 0.1s; }
+        .modal .big-star:nth-child(2) { animation-delay: 0.3s; }
+        .modal .big-star:nth-child(3) { animation-delay: 0.5s; }
+
+        @keyframes starPop {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            80% { transform: scale(1.3) rotate(10deg); }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+
+        .modal p {
+            font-size: 1.1rem;
+            color: #4a5e4a;
+            margin-bottom: 22px;
+            font-weight: 600;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .modal-btn {
+            border: none;
+            border-radius: 50px;
+            padding: 13px 26px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.1s;
+            transform: translateY(0);
+        }
+
+        .modal-btn.primary {
+            background: #7bbd8f;
+            color: #1e3c2a;
+            box-shadow: 0 8px 0 #4c7a5e, 0 10px 16px rgba(0,0,0,0.25);
+        }
+
+        .modal-btn.primary:active {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #4c7a5e;
+        }
+
+        .modal-btn.secondary {
+            background: #e6d8c0;
+            color: #3e3e2e;
+            box-shadow: 0 8px 0 #ab8e6a, 0 10px 16px rgba(0,0,0,0.25);
+        }
+
+        .modal-btn.secondary:active {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #ab8e6a;
+        }
+
+        /* 小屏幕适配 */
+        @media (max-width: 650px) {
+            .game-panel { padding: 16px; }
+            .board { gap: 9px; }
+            .card .word-text { font-size: 1.1rem; }
+            .card .emoji { font-size: 2.3rem; }
+            .title h1 { font-size: 1.3rem; }
+            .title .emoji-badge { font-size: 1.6rem; }
+            .stats { padding: 5px 12px; gap: 10px; }
+            .stat-item { font-size: 0.85rem; }
+            .reset-btn { padding: 12px 18px; font-size: 0.95rem; }
+            .message-box { font-size: 0.9rem; padding: 10px 14px; }
+            .level-bar { padding: 8px 14px; }
+            .level-badge { font-size: 1rem; padding: 4px 12px; }
+            .level-title { font-size: 0.9rem; }
+            .stars-display { font-size: 1.1rem; }
+            .modal { padding: 26px 22px; }
+            .modal h2 { font-size: 1.5rem; }
+            .themes-grid { gap: 12px; }
+            .theme-card { padding: 16px 12px; }
+            .theme-card .theme-emoji { font-size: 2.4rem; }
+            .theme-card .theme-name { font-size: 1.05rem; }
+        }
+
+        @media (max-width: 450px) {
+            .board { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .card .word-text { font-size: 1rem; }
+            .card .emoji { font-size: 2rem; }
+            .bottom-area { flex-direction: column; }
+            .message-box { width: 100%; }
+            .reset-btn { width: 100%; justify-content: center; }
+            .levels-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .level-item { padding: 14px 12px; }
+            .level-item .level-num { font-size: 1.2rem; }
+            .level-item .level-name { font-size: 0.8rem; }
+            .themes-grid { gap: 10px; }
+            .theme-card { padding: 14px 10px; }
+            .theme-card .theme-emoji { font-size: 2rem; }
+            .theme-card .theme-name { font-size: 0.95rem; }
+            .theme-card .theme-desc { font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-wrapper">
+        <div class="game-panel">
+
+            <!-- ========== 1. 主题选择界面 ========== -->
+            <div id="screen-theme" class="screen">
+                <div class="main-title">
+                    <h1>🎓 趣味英语</h1>
+                    <p>选择一个主题，开始你的单词冒险</p>
+                </div>
+
+                <div class="total-stars">
+                    <span class="star-icon">⭐</span>
+                    <span>总星数</span>
+                    <span id="totalStarsCount">0</span>
+                    <span>/ 36</span>
+                </div>
+
+                <div class="themes-grid" id="themesGrid"></div>
+            </div>
+
+            <!-- ========== 2. 关卡选择界面 ========== -->
+            <div id="screen-level" class="screen hidden">
+                <div class="level-select-header">
+                    <button class="back-btn" id="backToTheme">←</button>
+                    <div class="level-select-title">
+                        <h2 id="levelSelectTitle">主题名称</h2>
+                        <p id="levelSelectDesc">选择关卡</p>
+                    </div>
+                </div>
+                <div class="levels-grid" id="levelsGrid"></div>
+            </div>
+
+            <!-- ========== 3. 游戏界面 ========== -->
+            <div id="screen-game" class="screen hidden">
+                <div class="level-bar">
+                    <div class="level-info">
+                        <span class="level-badge" id="levelBadge">第 1 关</span>
+                        <span class="level-title" id="levelTitle">关卡名称</span>
+                    </div>
+                    <div class="stars-display" id="starsDisplay">
+                        <span class="star">☆</span>
+                        <span class="star">☆</span>
+                        <span class="star">☆</span>
+                    </div>
+                </div>
+
+                <div class="header">
+                    <div class="title">
+                        <span class="emoji-badge" id="gameThemeEmoji">📚</span>
+                        <h1 id="gameTitle">单词配对</h1>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span>🎯</span>
+                            <span id="pairsMatched">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>⭐</span>
+                            <span id="attempts">0</span>
+                        </div>
+                        <button class="sound-toggle" id="soundToggle" title="开启/关闭语音朗读">
+                            <span id="soundIcon">🔊</span>
+                            <span id="soundText">有声</span>
+                        </button>
+                    </div>
+                    <div class="timer-box" id="timerBox" style="display: none;">
+                        <span>⏱️</span>
+                        <span id="timerValue">60</span>s
+                    </div>
+                </div>
+
+                <div class="board" id="board"></div>
+
+                <div class="bottom-area">
+                    <div class="message-box" id="message">✨ 点击卡片，配对单词和图片吧！</div>
+                    <button class="reset-btn" id="resetBtn">
+                        <span class="btn-icon">🔄</span> 重玩本关
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ============================================================
+            // 1. 主题词库定义
+            // ============================================================
+            const THEMES = {
+                animals: {
+                    id: 'animals',
+                    name: '动物乐园',
+                    emoji: '🐾',
+                    desc: '认识可爱的动物朋友',
+                    color: '#ffd966',
+                    words: [
+                        { word: 'cat', emoji: '🐱' },
+                        { word: 'dog', emoji: '🐶' },
+                        { word: 'fish', emoji: '🐟' },
+                        { word: 'bird', emoji: '🐦' },
+                        { word: 'rabbit', emoji: '🐰' },
+                        { word: 'bear', emoji: '🐻' },
+                        { word: 'lion', emoji: '🦁' },
+                        { word: 'monkey', emoji: '🐵' },
+                        { word: 'elephant', emoji: '🐘' },
+                        { word: 'tiger', emoji: '🐯' },
+                        { word: 'panda', emoji: '🐼' },
+                        { word: 'penguin', emoji: '🐧' }
+                    ]
+                },
+                food: {
+                    id: 'food',
+                    name: '美食广场',
+                    emoji: '🍎',
+                    desc: '美味食物大集合',
+                    color: '#ffb3ba',
+                    words: [
+                        { word: 'apple', emoji: '🍎' },
+                        { word: 'banana', emoji: '🍌' },
+                        { word: 'cake', emoji: '🍰' },
+                        { word: 'bread', emoji: '🍞' },
+                        { word: 'milk', emoji: '🥛' },
+                        { word: 'egg', emoji: '🥚' },
+                        { word: 'rice', emoji: '🍚' },
+                        { word: 'pizza', emoji: '🍕' },
+                        { word: 'ice cream', emoji: '🍦' },
+                        { word: 'hamburger', emoji: '🍔' },
+                        { word: 'watermelon', emoji: '🍉' },
+                        { word: 'strawberry', emoji: '🍓' }
+                    ]
+                },
+                colors: {
+                    id: 'colors',
+                    name: '颜色形状',
+                    emoji: '🎨',
+                    desc: '色彩与形状的世界',
+                    color: '#bae1ff',
+                    words: [
+                        { word: 'red', emoji: '🔴' },
+                        { word: 'blue', emoji: '🔵' },
+                        { word: 'green', emoji: '🟢' },
+                        { word: 'yellow', emoji: '🟡' },
+                        { word: 'purple', emoji: '🟣' },
+                        { word: 'orange', emoji: '🟠' },
+                        { word: 'star', emoji: '⭐' },
+                        { word: 'heart', emoji: '❤️' },
+                        { word: 'circle', emoji: '⭕' },
+                        { word: 'triangle', emoji: '🔺' },
+                        { word: 'square', emoji: '🟦' },
+                        { word: 'diamond', emoji: '💎' }
+                    ]
+                },
+                daily: {
+                    id: 'daily',
+                    name: '日常生活',
+                    emoji: '🏠',
+                    desc: '身边常用物品',
+                    color: '#c7f0d8',
+                    words: [
+                        { word: 'house', emoji: '🏠' },
+                        { word: 'book', emoji: '📖' },
+                        { word: 'pen', emoji: '🖊️' },
+                        { word: 'phone', emoji: '📱' },
+                        { word: 'clock', emoji: '⏰' },
+                        { word: 'key', emoji: '🔑' },
+                        { word: 'bag', emoji: '👜' },
+                        { word: 'cup', emoji: '☕' },
+                        { word: 'chair', emoji: '🪑' },
+                        { word: 'bed', emoji: '🛏️' },
+                        { word: 'lamp', emoji: '💡' },
+                        { word: 'shoe', emoji: '👟' }
+                    ]
+                }
+            };
+
+            // ============================================================
+            // 2. 每个主题的关卡配置 (4关, 递进难度)
+            // ============================================================
+            const THEME_LEVELS = [
+                { level: 1, name: '轻松入门', pairs: 3, timeLimit: null, decoys: 0 },
+                { level: 2, name: '小试身手', pairs: 4, timeLimit: null, decoys: 0 },
+                { level: 3, name: '记忆挑战', pairs: 5, timeLimit: null, decoys: 0 },
+                { level: 4, name: '争分夺秒', pairs: 6, timeLimit: 50, decoys: 1 }
+            ];
+
+            // ============================================================
+            // 3. 全局状态
+            // ============================================================
+            let currentTheme = null;        // 当前主题对象
+            let currentLevelIndex = 0;      // 当前关卡索引
+            let cards = [];
+            let selectedCardIndex = null;
+            let matchedPairs = 0;
+            let attemptsCount = 0;
+            let lockBoard = false;
+            let timeoutId = null;
+            let timerInterval = null;
+            let timeLeft = 0;
+            let gameActive = false;
+            let soundEnabled = true;
+
+            // 进度保存: { themeId: { levelIndex: starCount } }
+            let progress = loadProgress();
+
+            // DOM 元素
+            const screenTheme = document.getElementById('screen-theme');
+            const screenLevel = document.getElementById('screen-level');
+            const screenGame = document.getElementById('screen-game');
+            const themesGrid = document.getElementById('themesGrid');
+            const levelsGrid = document.getElementById('levelsGrid');
+            const totalStarsCount = document.getElementById('totalStarsCount');
+            const levelSelectTitle = document.getElementById('levelSelectTitle');
+            const levelSelectDesc = document.getElementById('levelSelectDesc');
+            const backToTheme = document.getElementById('backToTheme');
+
+            const boardEl = document.getElementById('board');
+            const pairsMatchedSpan = document.getElementById('pairsMatched');
+            const attemptsSpan = document.getElementById('attempts');
+            const messageEl = document.getElementById('message');
+            const resetBtn = document.getElementById('resetBtn');
+            const levelBadge = document.getElementById('levelBadge');
+            const levelTitle = document.getElementById('levelTitle');
+            const starsDisplay = document.getElementById('starsDisplay');
+            const timerBox = document.getElementById('timerBox');
+            const timerValue = document.getElementById('timerValue');
+            const soundToggle = document.getElementById('soundToggle');
+            const soundIcon = document.getElementById('soundIcon');
+            const soundText = document.getElementById('soundText');
+            const gameThemeEmoji = document.getElementById('gameThemeEmoji');
+            const gameTitle = document.getElementById('gameTitle');
+
+            // ============================================================
+            // 4. 进度存取
+            // ============================================================
+            function loadProgress() {
+                try {
+                    const saved = localStorage.getItem('wordGameProgress');
+                    return saved ? JSON.parse(saved) : {};
+                } catch (e) {
+                    return {};
+                }
+            }
+
+            function saveProgress() {
+                try {
+                    localStorage.setItem('wordGameProgress', JSON.stringify(progress));
+                } catch (e) {}
+            }
+
+            function getThemeStarCount(themeId) {
+                const themeProgress = progress[themeId] || {};
+                return Object.values(themeProgress).reduce((a, b) => a + b, 0);
+            }
+
+            function getTotalStars() {
+                let total = 0;
+                Object.keys(THEMES).forEach(id => {
+                    total += getThemeStarCount(id);
+                });
+                return total;
+            }
+
+            function getMaxStars() {
+                return Object.keys(THEMES).length * THEME_LEVELS.length * 3;
+            }
+
+            function isLevelUnlocked(themeId, levelIndex) {
+                if (levelIndex === 0) return true;
+                const themeProgress = progress[themeId] || {};
+                // 上一关至少获得 1 星才解锁下一关
+                return (themeProgress[levelIndex - 1] || 0) >= 1;
+            }
+
+            function setLevelStars(themeId, levelIndex, starCount) {
+                if (!progress[themeId]) progress[themeId] = {};
+                const prev = progress[themeId][levelIndex] || 0;
+                if (starCount > prev) {
+                    progress[themeId][levelIndex] = starCount;
+                    saveProgress();
+                }
+            }
+
+            // ============================================================
+            // 5. 界面切换
+            // ============================================================
+            function showScreen(screen) {
+                screenTheme.classList.add('hidden');
+                screenLevel.classList.add('hidden');
+                screenGame.classList.add('hidden');
+                screen.classList.remove('hidden');
+            }
+
+            // 渲染主题选择界面
+            function renderThemeScreen() {
+                totalStarsCount.textContent = getTotalStars();
+                themesGrid.innerHTML = '';
+
+                Object.values(THEMES).forEach(theme => {
+                    const stars = getThemeStarCount(theme.id);
+                    const maxStars = THEME_LEVELS.length * 3;
+
+                    const card = document.createElement('div');
+                    card.className = 'theme-card';
+                    card.innerHTML = `
+                        <span class="theme-emoji">${theme.emoji}</span>
+                        <div class="theme-name">${theme.name}</div>
+                        <div class="theme-desc">${theme.desc}</div>
+                        <div class="theme-progress">
+                            ${Array.from({ length: THEME_LEVELS.length }, (_, i) => {
+                                const starPerLevel = (progress[theme.id] && progress[theme.id][i]) || 0;
+                                const cls = starPerLevel > 0 ? 'earned' : '';
+                                return `<span class="p-star ${cls}">★</span>`;
+                            }).join('')}
+                        </div>
+                    `;
+                    card.addEventListener('click', () => {
+                        currentTheme = theme;
+                        renderLevelScreen();
+                        showScreen(screenLevel);
+                    });
+                    themesGrid.appendChild(card);
+                });
+            }
+
+            // 渲染关卡选择界面
+            function renderLevelScreen() {
+                if (!currentTheme) return;
+                levelSelectTitle.textContent = `${currentTheme.emoji} ${currentTheme.name}`;
+                levelSelectDesc.textContent = currentTheme.desc;
+
+                levelsGrid.innerHTML = '';
+                THEME_LEVELS.forEach((levelConfig, idx) => {
+                    const unlocked = isLevelUnlocked(currentTheme.id, idx);
+                    const stars = (progress[currentTheme.id] && progress[currentTheme.id][idx]) || 0;
+
+                    const item = document.createElement('div');
+                    item.className = `level-item ${unlocked ? '' : 'locked'}`;
+                    item.innerHTML = `
+                        ${!unlocked ? '<span class="level-lock-icon">🔒</span>' : ''}
+                        <div class="level-num">第 ${levelConfig.level} 关</div>
+                        <div class="level-name">${levelConfig.name}</div>
+                        <div class="level-stars">
+                            ${Array.from({ length: 3 }, (_, i) =>
+                                `<span class="l-star ${i < stars ? 'earned' : ''}">★</span>`
+                            ).join('')}
+                        </div>
+                    `;
+                    if (unlocked) {
+                        item.addEventListener('click', () => {
+                            currentLevelIndex = idx;
+                            startGame();
+                        });
+                    }
+                    levelsGrid.appendChild(item);
+                });
+            }
+
+            // ============================================================
+            // 6. 语音朗读
+            // ============================================================
+            function speakWord(word) {
+                if (!soundEnabled) return;
+                if (!window.speechSynthesis) return;
+
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.85;
+                utterance.pitch = 1.05;
+
+                const voices = window.speechSynthesis.getVoices();
+                const englishVoice = voices.find(v => v.lang.startsWith('en-US')) ||
+                                     voices.find(v => v.lang.startsWith('en'));
+                if (englishVoice) utterance.voice = englishVoice;
+
+                window.speechSynthesis.speak(utterance);
+            }
+
+            function toggleSound() {
+                soundEnabled = !soundEnabled;
+                if (!soundEnabled) {
+                    window.speechSynthesis.cancel();
+                    soundIcon.textContent = '🔇';
+                    soundText.textContent = '静音';
+                    soundToggle.classList.add('muted');
+                } else {
+                    soundIcon.textContent = '🔊';
+                    soundText.textContent = '有声';
+                    soundToggle.classList.remove('muted');
+                }
+            }
+
+            // ============================================================
+            // 7. 游戏逻辑
+            // ============================================================
+            function shuffleArray(arr) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                return arr;
+            }
+
+            function pickRandomPairs(pool, count) {
+                const shuffled = shuffleArray([...pool]);
+                return shuffled.slice(0, count);
+            }
+
+            function buildCardsFromPairs(pairs, decoyCount = 0) {
+                const newCards = [];
+                pairs.forEach((pair, pairId) => {
+                    newCards.push({
+                        pairId: pairId,
+                        type: 'word',
+                        content: pair.word,
+                        word: pair.word,
+                        matched: false,
+                        isDecoy: false,
+                    });
+                    newCards.push({
+                        pairId: pairId,
+                        type: 'emoji',
+                        content: pair.emoji,
+                        word: pair.word,
+                        matched: false,
+                        isDecoy: false,
+                    });
+                });
+
+                if (decoyCount > 0) {
+                    const decoyEmojis = ['👻', '🎃', '🦄', '🐉', '🍀', '💎', '🔮', '🎈'];
+                    for (let i = 0; i < decoyCount; i++) {
+                        newCards.push({
+                            pairId: -1,
+                            type: 'emoji',
+                            content: decoyEmojis[i % decoyEmojis.length],
+                            matched: false,
+                            isDecoy: true,
+                        });
+                    }
+                }
+
+                return shuffleArray(newCards);
+            }
+
+            function updateStats() {
+                pairsMatchedSpan.textContent = matchedPairs;
+                attemptsSpan.textContent = attemptsCount;
+            }
+
+            function setMessage(text, isGood = true) {
+                messageEl.textContent = text;
+                messageEl.style.background = isGood ? '#f0e4d0' : '#f8d7da';
+                messageEl.style.color = isGood ? '#2e4a3a' : '#a12b2b';
+            }
+
+            function clearSelected() {
+                if (selectedCardIndex !== null) {
+                    const prevSelected = document.querySelector(`.card[data-index="${selectedCardIndex}"]`);
+                    if (prevSelected) prevSelected.classList.remove('selected');
+                    selectedCardIndex = null;
+                }
+            }
+
+            function calculateStars(pairCount, attempts) {
+                if (attempts <= pairCount + 1) return 3;
+                if (attempts <= Math.ceil(pairCount * 1.6)) return 2;
+                return 1;
+            }
+
+            function updateStarsDisplay(starCount) {
+                const stars = starsDisplay.querySelectorAll('.star');
+                stars.forEach((star, idx) => {
+                    if (idx < starCount) {
+                        star.textContent = '★';
+                        star.classList.add('earned');
+                        star.style.color = '#ffb800';
+                    } else {
+                        star.textContent = '☆';
+                        star.classList.remove('earned');
+                        star.style.color = '#aaa';
+                    }
+                });
+            }
+
+            function renderLevelInfo() {
+                const config = THEME_LEVELS[currentLevelIndex];
+                levelBadge.textContent = `第 ${config.level} 关`;
+                levelTitle.textContent = config.name;
+                gameThemeEmoji.textContent = currentTheme.emoji;
+                gameTitle.textContent = currentTheme.name;
+
+                if (config.timeLimit) {
+                    timerBox.style.display = 'flex';
+                    timeLeft = config.timeLimit;
+                    timerValue.textContent = timeLeft;
+                    timerBox.classList.remove('warning');
+                } else {
+                    timerBox.style.display = 'none';
+                }
+                updateStarsDisplay(0);
+            }
+
+            function stopTimer() {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+                gameActive = false;
+            }
+
+            function startTimer() {
+                const config = THEME_LEVELS[currentLevelIndex];
+                if (!config.timeLimit) return;
+
+                stopTimer();
+                timeLeft = config.timeLimit;
+                timerValue.textContent = timeLeft;
+                timerBox.classList.remove('warning');
+                gameActive = true;
+
+                timerInterval = setInterval(() => {
+                    if (!gameActive) return;
+                    timeLeft--;
+                    timerValue.textContent = timeLeft;
+                    if (timeLeft <= 10) timerBox.classList.add('warning');
+                    if (timeLeft <= 0) {
+                        stopTimer();
+                        gameActive = false;
+                        setMessage('⏰ 时间到！点击"重玩本关"再试一次吧', false);
+                        lockBoard = true;
+                        showTimeUpModal();
+                    }
+                }, 1000);
+            }
+
+            function showTimeUpModal() {
+                const overlay = document.createElement('div');
+                overlay.className = 'overlay';
+                overlay.innerHTML = `
+                    <div class="modal">
+                        <h2>⏰ 时间到啦</h2>
+                        <div class="big-stars">😢</div>
+                        <p>别灰心，再试一次一定可以！</p>
+                        <div class="modal-buttons">
+                            <button class="modal-btn primary" id="retryLevelBtn">🔄 重玩本关</button>
+                            <button class="modal-btn secondary" id="backToLevelsBtn">📋 返回关卡</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+                document.getElementById('retryLevelBtn').addEventListener('click', () => {
+                    overlay.remove();
+                    resetLevel();
+                });
+                document.getElementById('backToLevelsBtn').addEventListener('click', () => {
+                    overlay.remove();
+                    renderLevelScreen();
+                    showScreen(screenLevel);
+                });
+            }
+
+            function showLevelCompleteModal(starCount) {
+                const config = THEME_LEVELS[currentLevelIndex];
+                const isLastLevel = currentLevelIndex === THEME_LEVELS.length - 1;
+
+                const overlay = document.createElement('div');
+                overlay.className = 'overlay';
+                overlay.innerHTML = `
+                    <div class="modal">
+                        <h2>🎉 过关啦！</h2>
+                        <div class="big-stars">
+                            <span class="big-star">${starCount >= 1 ? '★' : '☆'}</span>
+                            <span class="big-star">${starCount >= 2 ? '★' : '☆'}</span>
+                            <span class="big-star">${starCount >= 3 ? '★' : '☆'}</span>
+                        </div>
+                        <p>${starCount === 3 ? '完美！你是记忆大师！' : starCount === 2 ? '很棒！再少错几次就完美啦' : '不错，继续加油！'}</p>
+                        <div class="modal-buttons">
+                            ${!isLastLevel ? '<button class="modal-btn primary" id="nextLevelBtn">➡️ 下一关</button>' : ''}
+                            <button class="modal-btn secondary" id="retryBtn">🔄 重玩</button>
+                            <button class="modal-btn secondary" id="backToLevelsBtn">📋 关卡列表</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+
+                const nextBtn = document.getElementById('nextLevelBtn');
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', () => {
+                        overlay.remove();
+                        currentLevelIndex++;
+                        resetLevel();
+                    });
+                }
+                document.getElementById('retryBtn').addEventListener('click', () => {
+                    overlay.remove();
+                    resetLevel();
+                });
+                document.getElementById('backToLevelsBtn').addEventListener('click', () => {
+                    overlay.remove();
+                    renderLevelScreen();
+                    showScreen(screenLevel);
+                });
+            }
+
+            function checkWin() {
+                const config = THEME_LEVELS[currentLevelIndex];
+                if (matchedPairs === config.pairs) {
+                    stopTimer();
+                    gameActive = false;
+                    const starCount = calculateStars(config.pairs, attemptsCount);
+                    updateStarsDisplay(starCount);
+
+                    // 保存进度
+                    setLevelStars(currentTheme.id, currentLevelIndex, starCount);
+
+                    setTimeout(() => {
+                        showLevelCompleteModal(starCount);
+                    }, 500);
+                }
+            }
+
+            function renderBoard() {
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                    timeoutId = null;
+                }
+                boardEl.innerHTML = '';
+                cards.forEach((card, index) => {
+                    const cardEl = document.createElement('div');
+                    cardEl.className = `card ${card.matched ? 'matched' : ''} ${card.isDecoy ? 'decoy' : ''}`;
+                    cardEl.dataset.index = index;
+
+                    if (card.type === 'word') {
+                        const wordSpan = document.createElement('div');
+                        wordSpan.className = 'word-text';
+                        wordSpan.textContent = card.content;
+                        cardEl.appendChild(wordSpan);
+
+                        const speakerBtn = document.createElement('button');
+                        speakerBtn.className = 'speaker-btn';
+                        speakerBtn.textContent = '🔊';
+                        speakerBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            speakWord(card.content);
+                            speakerBtn.classList.add('speaking');
+                            setTimeout(() => speakerBtn.classList.remove('speaking'), 800);
+                        });
+                        cardEl.appendChild(speakerBtn);
+                    } else {
+                        const emojiSpan = document.createElement('div');
+                        emojiSpan.className = 'emoji';
+                        emojiSpan.textContent = card.content;
+                        cardEl.appendChild(emojiSpan);
+                    }
+
+                    cardEl.addEventListener('click', () => handleCardClick(index));
+                    boardEl.appendChild(cardEl);
+                });
+                updateStats();
+            }
+
+            function handleCardClick(index) {
+                if (lockBoard || !gameActive) return;
+                const card = cards[index];
+                if (card.matched) return;
+
+                // 干扰卡
+                if (card.isDecoy) {
+                    cards[index].matched = true;
+                    const decoyEl = document.querySelector(`.card[data-index="${index}"]`);
+                    if (decoyEl) {
+                        decoyEl.classList.add('matched');
+                        decoyEl.style.opacity = '0.3';
+                        decoyEl.style.pointerEvents = 'none';
+                    }
+                    setMessage('👻 捣蛋卡消失啦！', true);
+                    if (selectedCardIndex !== null) {
+                        const prevSelected = document.querySelector(`.card[data-index="${selectedCardIndex}"]`);
+                        if (prevSelected) prevSelected.classList.remove('selected');
+                        selectedCardIndex = null;
+                    }
+                    return;
+                }
+
+                const cardEl = document.querySelector(`.card[data-index="${index}"]`);
+                if (!cardEl) return;
+
+                // 点击朗读
+                if (card.type === 'word') speakWord(card.content);
+                if (card.type === 'emoji' && card.word) speakWord(card.word);
+
+                // 未选中任何卡片
+                if (selectedCardIndex === null) {
+                    selectedCardIndex = index;
+                    cardEl.classList.add('selected');
+                    setMessage(`👉 已选中: ${card.type === 'word' ? card.content : '图片'}`, true);
+                    return;
+                }
+
+                const firstIndex = selectedCardIndex;
+                const firstCard = cards[firstIndex];
+                const firstEl = document.querySelector(`.card[data-index="${firstIndex}"]`);
+
+                // 点击同一张卡片
+                if (firstIndex === index) {
+                    clearSelected();
+                    setMessage('✨ 已取消选择', true);
+                    return;
+                }
+
+                lockBoard = true;
+                attemptsCount++;
+                updateStats();
+
+                const isMatch = (firstCard.pairId === card.pairId) &&
+                                (firstCard.type !== card.type) &&
+                                (!firstCard.isDecoy && !card.isDecoy);
+
+                if (isMatch) {
+                    const matchedWord = firstCard.type === 'word' ? firstCard.content : card.content;
+                    setTimeout(() => speakWord(matchedWord), 150);
+
+                    matchedPairs++;
+                    pairsMatchedSpan.textContent = matchedPairs;
+                    cards[firstIndex].matched = true;
+                    cards[index].matched = true;
+
+                    if (firstEl) {
+                        firstEl.classList.remove('selected');
+                        firstEl.classList.add('matched');
+                    }
+                    cardEl.classList.add('matched');
+
+                    setMessage(`✅ 正确！${matchedWord} 配对成功!`, true);
+                    selectedCardIndex = null;
+                    lockBoard = false;
+                    checkWin();
+                } else {
+                    setMessage(`❌ 配对失败，再试试看`, false);
+                    if (firstEl) {
+                        firstEl.classList.remove('selected');
+                        firstEl.style.border = '3px solid #e74c3c';
+                        setTimeout(() => { firstEl.style.border = ''; }, 300);
+                    }
+                    cardEl.style.border = '3px solid #e74c3c';
+                    setTimeout(() => { cardEl.style.border = ''; }, 300);
+
+                    timeoutId = setTimeout(() => {
+                        if (firstEl) firstEl.classList.remove('selected');
+                        if (firstEl) firstEl.style.border = '';
+                        cardEl.style.border = '';
+                        selectedCardIndex = null;
+                        lockBoard = false;
+                        timeoutId = null;
+                        setMessage('💪 继续加油！', true);
+                    }, 700);
+                }
+            }
+
+            function resetLevel() {
+                stopTimer();
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                    timeoutId = null;
+                }
+                if (window.speechSynthesis) window.speechSynthesis.cancel();
+
+                selectedCardIndex = null;
+                lockBoard = false;
+                matchedPairs = 0;
+                attemptsCount = 0;
+                gameActive = true;
+
+                const config = THEME_LEVELS[currentLevelIndex];
+                renderLevelInfo();
+
+                const pairs = pickRandomPairs(currentTheme.words, config.pairs);
+                cards = buildCardsFromPairs(pairs, config.decoys);
+
+                renderBoard();
+
+                if (config.timeLimit) {
+                    startTimer();
+                } else {
+                    gameActive = true;
+                }
+                setMessage('✨ 点击卡片，配对单词和图片吧！', true);
+                updateStats();
+            }
+
+            // 开始游戏 (从关卡选择进入)
+            function startGame() {
+                showScreen(screenGame);
+                resetLevel();
+            }
+
+            // ============================================================
+            // 8. 事件绑定
+            // ============================================================
+            backToTheme.addEventListener('click', () => {
+                renderThemeScreen();
+                showScreen(screenTheme);
+            });
+
+            resetBtn.addEventListener('click', () => {
+                resetLevel();
+            });
+
+            soundToggle.addEventListener('click', toggleSound);
+
+            if (window.speechSynthesis) {
+                window.speechSynthesis.getVoices();
+                window.speechSynthesis.onvoiceschanged = () => {};
+            }
+
+            // ============================================================
+            // 9. 启动
+            // ============================================================
+            window.addEventListener('DOMContentLoaded', () => {
+                renderThemeScreen();
+                showScreen(screenTheme);
+            });
+
+        })();
+    </script>
+</body>
+</html>
