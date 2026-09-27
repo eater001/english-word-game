@@ -130,7 +130,86 @@ body::after {
     transform:translateY(-1px);
 }
 
-/* ===== 首页数据卡 ===== */
+/* ===== 首页：模式选择卡片 ===== */
+.mode-cards { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:20px 0 10px; }
+.mode-card {
+    border:none; cursor:pointer; border-radius:28px;
+    padding:30px 16px 26px; text-align:center;
+    transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    position:relative; overflow:hidden;
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+}
+.mode-card.candy-card {
+    background:linear-gradient(160deg,#e8f4ff,#c9e2ff);
+    box-shadow:
+        0 12px 0 #a8c8e0,
+        0 14px 26px rgba(80,140,200,0.22),
+        inset 0 3px 0 rgba(255,255,255,1);
+}
+.mode-card.memory-card {
+    background:linear-gradient(160deg,#f0eaff,#ddd0ff);
+    box-shadow:
+        0 12px 0 #b8a8d8,
+        0 14px 26px rgba(140,110,200,0.22),
+        inset 0 3px 0 rgba(255,255,255,1);
+}
+.mode-card:active {
+    transform:translateY(9px);
+}
+.mode-card.candy-card:active {
+    box-shadow:0 3px 0 #a8c8e0, 0 6px 12px rgba(80,140,200,0.2), inset 0 3px 0 rgba(255,255,255,1);
+}
+.mode-card.memory-card:active {
+    box-shadow:0 3px 0 #b8a8d8, 0 6px 12px rgba(140,110,200,0.2), inset 0 3px 0 rgba(255,255,255,1);
+}
+.mode-card::after {
+    content:''; position:absolute; top:-50%; left:-50%;
+    width:200%; height:200%;
+    background:linear-gradient(45deg,transparent 40%,rgba(255,255,255,0.5) 50%,transparent 60%);
+    animation:shimmer 4.5s ease-in-out infinite;
+    pointer-events:none;
+}
+.mode-card .mode-emoji {
+    font-size:4rem; line-height:1;
+    filter:drop-shadow(0 6px 8px rgba(80,120,160,0.25));
+    animation:emojiBob 3s ease-in-out infinite;
+}
+.mode-card .mode-name {
+    font-size:1.35rem; font-weight:900;
+    letter-spacing:0.5px;
+}
+.mode-card.candy-card .mode-name { color:#3d6fa8; }
+.mode-card.memory-card .mode-name { color:#6b4fa8; }
+.mode-card .mode-desc {
+    font-size:0.78rem; font-weight:700;
+    color:#7a8a9a; letter-spacing:0.2px;
+    margin-top:-6px;
+}
+.mode-card .mode-progress-mini {
+    width:100%; margin-top:6px;
+    background:rgba(255,255,255,0.6);
+    border-radius:20px; height:8px; overflow:hidden;
+    box-shadow:inset 0 2px 3px rgba(80,120,160,0.15);
+}
+.mode-card .mode-progress-fill {
+    height:100%; border-radius:20px;
+    transition:width 0.5s;
+}
+.mode-card.candy-card .mode-progress-fill {
+    background:linear-gradient(90deg,#7bb8e8,#5b8fd1);
+}
+.mode-card.memory-card .mode-progress-fill {
+    background:linear-gradient(90deg,#b8a8e8,#8b6fd1);
+}
+.mode-card .mode-level-tag {
+    font-size:0.72rem; font-weight:800;
+    color:#fff; padding:3px 10px; border-radius:20px;
+    margin-top:2px;
+}
+.mode-card.candy-card .mode-level-tag { background:#5b8fd1; }
+.mode-card.memory-card .mode-level-tag { background:#8b6fd1; }
+
+/* ===== 数据卡（进入模式后） ===== */
 .home-stats { display:grid; grid-template-columns:repeat(4,1fr);
     gap:10px; margin:18px 0; }
 
@@ -156,7 +235,6 @@ body::after {
     background:linear-gradient(160deg,#e8f8ec,#c9ecd4);
     box-shadow:0 8px 0 #a0d0b0, 0 10px 18px rgba(80,160,110,0.15), inset 0 2px 0 rgba(255,255,255,1);
 }
-
 .home-stat::after {
     content:''; position:absolute; top:-50%; left:-50%;
     width:200%; height:200%;
@@ -168,7 +246,6 @@ body::after {
     0% { transform:translateX(-100%) rotate(0); }
     100% { transform:translateX(100%) rotate(0); }
 }
-
 .home-stat .stat-num {
     font-size:1.55rem; font-weight:900; line-height:1;
     position:relative; z-index:1;
@@ -178,7 +255,6 @@ body::after {
 .home-stat:nth-child(2) .stat-num { background:linear-gradient(135deg,#6b4fa8,#9578d1); -webkit-background-clip:text; background-clip:text; color:transparent; }
 .home-stat:nth-child(3) .stat-num { background:linear-gradient(135deg,#c08020,#e8a840); -webkit-background-clip:text; background-clip:text; color:transparent; }
 .home-stat:nth-child(4) .stat-num { background:linear-gradient(135deg,#3d8858,#5bb878); -webkit-background-clip:text; background-clip:text; color:transparent; }
-
 .home-stat .stat-label {
     font-size:0.7rem; color:#7a8a9a; font-weight:800;
     margin-top:7px; position:relative; z-index:1;
@@ -274,7 +350,24 @@ body::after {
         inset 0 3px 0 rgba(255,255,255,0.7);
 }
 
-/* ===== 折叠"更多"区 ===== */
+/* ===== 返回按钮 ===== */
+.back-btn {
+    background:rgba(255,255,255,0.85);
+    border:2px solid rgba(180,200,220,0.5);
+    border-radius:40px;
+    padding:8px 16px; font-weight:800; font-size:0.85rem;
+    color:#5b8fd1; cursor:pointer;
+    transition:all 0.15s;
+    display:flex; align-items:center; gap:6px;
+    box-shadow:0 4px 8px rgba(80,120,160,0.1);
+    white-space:nowrap;
+}
+.back-btn:active {
+    transform:translateY(2px);
+    box-shadow:0 2px 4px rgba(80,120,160,0.1);
+}
+
+/* ===== 折叠"更多" ===== */
 .more-toggle {
     background:transparent; border:none; color:#7a8a9a;
     font-size:0.82rem; font-weight:800; cursor:pointer;
@@ -431,7 +524,7 @@ body::after {
     text-shadow:1px 1px 0 #bbdefb; line-height:1.1; word-break:break-all;
     text-align:center; letter-spacing:0.3px; }
 
-/* 翻牌记忆棋盘 */
+/* ===== 翻牌记忆棋盘（配对成功保持翻开） ===== */
 .board-memory { display:grid; grid-template-columns:repeat(4,1fr);
     gap:10px; margin:10px 0; perspective:1000px; }
 .card-memory {
@@ -458,11 +551,33 @@ body::after {
     transform:rotateY(180deg);
 }
 .card-memory.flipped { transform:rotateY(180deg); }
-.card-memory.matched .front {
-    background:#e2f0e6; border-color:#7bbd8f;
-    box-shadow:0 5px 0 #4c7a5e;
+
+/* 配对成功：保持翻开 + 绿色高亮 + 对勾 */
+.card-memory.matched {
+    pointer-events:none;
+    transform:rotateY(180deg);
 }
-.card-memory.matched { pointer-events:none; }
+.card-memory.matched .front {
+    background:linear-gradient(145deg,#e2f0e6,#c9ecd4);
+    border-color:#7bbd8f;
+    box-shadow:
+        0 5px 0 #4c7a5e,
+        inset 0 -4px 0 #b8e0c4,
+        0 0 0 3px rgba(123,189,143,0.35);
+    animation:matchedPulse 1.2s ease;
+}
+.card-memory.matched .front::before {
+    content:'✓';
+    position:absolute; top:4px; left:6px;
+    color:#2e7d52; font-weight:900; font-size:0.9rem;
+    text-shadow:0 1px 0 rgba(255,255,255,0.7);
+}
+@keyframes matchedPulse {
+    0% { transform:scale(1); }
+    50% { transform:scale(1.08); }
+    100% { transform:scale(1); }
+}
+
 .card-memory .front .word-text { font-size:1.1rem; font-weight:800;
     color:#3d6fa8; text-align:center; line-height:1.1; word-break:break-word; }
 .card-memory .front .emoji { font-size:2.3rem; line-height:1;
@@ -541,23 +656,6 @@ body::after {
     0%,100% { box-shadow:0 6px 0 #3d6fa8, 0 0 0 0 rgba(140,200,240,0.5); }
     50% { box-shadow:0 6px 0 #3d6fa8, 0 0 0 20px rgba(140,200,240,0); }
 }
-.badge-display {
-    display:flex; gap:6px; justify-content:center;
-    flex-wrap:wrap; margin:10px 0; min-height:40px;
-}
-.detective-badge {
-    width:42px; height:42px; border-radius:50%;
-    background:linear-gradient(145deg,#8cc8f0,#5b8fd1);
-    display:flex; align-items:center; justify-content:center;
-    font-size:22px; box-shadow:0 4px 0 #3d6fa8, inset 0 2px 4px rgba(255,255,255,0.5);
-    animation:badgePop 0.6s ease;
-    border:3px solid #fff;
-}
-@keyframes badgePop {
-    0% { transform:scale(0) rotate(-180deg); }
-    70% { transform:scale(1.3) rotate(10deg); }
-    100% { transform:scale(1) rotate(0); }
-}
 
 .message-area { min-height:52px; text-align:center; font-size:1rem;
     font-weight:bold; color:#4a5568; padding:11px;
@@ -625,7 +723,11 @@ body::after {
     .game-wrapper { padding:14px; }
     .main-title h1 { font-size:1.3rem; }
     .main-title .title-emoji { font-size:1.6rem; }
-    .mode-btn { padding:7px 10px; font-size:0.78rem; }
+    .mode-cards { gap:12px; }
+    .mode-card { padding:24px 12px 20px; }
+    .mode-card .mode-emoji { font-size:3.2rem; }
+    .mode-card .mode-name { font-size:1.1rem; }
+    .mode-card .mode-desc { font-size:0.7rem; }
     .home-stat .stat-num { font-size:1.3rem; }
     .home-stat .stat-label { font-size:0.64rem; }
     .big-btn { font-size:1rem; padding:14px 20px; }
@@ -647,7 +749,7 @@ body::after {
     .board-candy, .board-memory { grid-template-columns:repeat(3,1fr); gap:6px; }
     .controls { flex-direction:column; }
     .ctrl-btn { width:100%; }
-    .mode-switch { width:100%; justify-content:center; }
+    .mode-cards { grid-template-columns:1fr; }
 }
 </style>
 </head>
@@ -665,17 +767,40 @@ body::after {
 <div class="game-wrapper">
     <div class="top-bar">
         <div class="main-title">
-            <span class="title-emoji" id="mainEmoji">🧩</span>
-            <h1 id="mainTitle">三消英语</h1>
+            <span class="title-emoji" id="mainEmoji">🎮</span>
+            <h1 id="mainTitle">趣味英语</h1>
         </div>
-        <div class="mode-switch">
-            <button class="mode-btn active" id="modeCandy" data-mode="candy">🧩 三消</button>
-            <button class="mode-btn" id="modeMemory" data-mode="memory">🧠 翻牌记忆</button>
+        <button class="back-btn hidden" id="globalBackBtn">← 返回</button>
+    </div>
+
+    <!-- ========== 首页：模式选择 ========== -->
+    <div id="home-screen" class="screen">
+        <div class="learning-hint">🎉 欢迎来到趣味英语！选择一个游戏开始吧～</div>
+        <div class="mode-cards">
+            <button class="mode-card candy-card" id="homeCandyCard">
+                <span class="mode-emoji">🧩</span>
+                <span class="mode-name">三消英语</span>
+                <span class="mode-desc">中文 + 单词 + 图片</span>
+                <div class="mode-progress-mini">
+                    <div class="mode-progress-fill" id="homeCandyMini" style="width:0%;"></div>
+                </div>
+                <span class="mode-level-tag" id="homeCandyTag">第 1 关</span>
+            </button>
+            <button class="mode-card memory-card" id="homeMemoryCard">
+                <span class="mode-emoji">🧠</span>
+                <span class="mode-name">翻牌记忆</span>
+                <span class="mode-desc">翻牌配对记单词</span>
+                <div class="mode-progress-mini">
+                    <div class="mode-progress-fill" id="homeMemoryMini" style="width:0%;"></div>
+                </div>
+                <span class="mode-level-tag" id="homeMemoryTag">第 1 关</span>
+            </button>
         </div>
     </div>
 
-    <!-- ========== 三消首页 ========== -->
-    <div id="candy-home" class="screen">
+    <!-- ========== 三消关卡首页 ========== -->
+    <div id="candy-home" class="screen hidden">
+        <div class="learning-hint">🧩 三消英语 · 找出「中文 + 单词 + 图片」三张同源卡</div>
         <div class="home-stats">
             <div class="home-stat"><div class="stat-num" id="candyHomeLevel">1</div><div class="stat-label">当前关卡</div></div>
             <div class="home-stat"><div class="stat-num" id="candyHomeWords">0</div><div class="stat-label">已掌握</div></div>
@@ -685,12 +810,10 @@ body::after {
         <div class="progress-bar-wrapper">
             <div class="progress-bar-fill" id="candyProgressFill" style="width:1%;">1 / 120</div>
         </div>
-        <div class="learning-hint">🔤 中文 + 单词 + 图片 · 🔊 童声朗读 · 🕵️ 每10关解锁隐藏寻宝</div>
+        <div class="learning-hint">🔊 童声朗读 · 🕵️ 每10关解锁隐藏寻宝</div>
 
-        <!-- 主操作按钮 -->
         <button class="big-btn green" id="candyContinueBtn"><span>▶️</span> 继续第 <span id="candyContinueLevel">1</span> 关</button>
 
-        <!-- 折叠"更多" -->
         <button class="more-toggle" id="candyMoreToggle">
             <span>⚙️ 更多设置</span><span class="arrow">▼</span>
         </button>
@@ -730,12 +853,13 @@ body::after {
         <div class="controls">
             <button class="ctrl-btn" id="candyResetLevel">🔄 重玩</button>
             <button class="ctrl-btn green" id="candyNextBtn" disabled>➡️ 下一关</button>
-            <button class="ctrl-btn gray" id="candyBackHome">🏠 首页</button>
+            <button class="ctrl-btn gray" id="candyBackHome">🏠 关卡首页</button>
         </div>
     </div>
 
-    <!-- ========== 翻牌首页 ========== -->
+    <!-- ========== 翻牌关卡首页 ========== -->
     <div id="memory-home" class="screen hidden">
+        <div class="learning-hint">🧠 翻牌记忆 · 翻开卡片配对单词和图片</div>
         <div class="home-stats">
             <div class="home-stat"><div class="stat-num" id="memoryHomeLevel">1</div><div class="stat-label">当前关卡</div></div>
             <div class="home-stat"><div class="stat-num" id="memoryHomeMastered">0</div><div class="stat-label">已掌握</div></div>
@@ -745,7 +869,7 @@ body::after {
         <div class="progress-bar-wrapper">
             <div class="progress-bar-fill" id="memoryProgressFill" style="width:1%;">1 / 120</div>
         </div>
-        <div class="learning-hint">🧠 翻牌记忆 · 3对起步 · 连错2次自动提示 · 🕵️ 每10关解锁寻宝</div>
+        <div class="learning-hint">💡 配对成功保持翻开 · 连错2次自动提示 · 🕵️ 每10关解锁寻宝</div>
 
         <button class="big-btn green" id="memoryContinueBtn"><span>▶️</span> 继续第 <span id="memoryContinueLevel">1</span> 关</button>
 
@@ -787,7 +911,7 @@ body::after {
         <div class="message-area" id="memoryMessage">✨ 翻开卡片，配对单词和图片</div>
         <div class="controls">
             <button class="ctrl-btn" id="memoryResetLevel">🔄 重玩</button>
-            <button class="ctrl-btn gray" id="memoryBackHome">🏠 首页</button>
+            <button class="ctrl-btn gray" id="memoryBackHome">🏠 关卡首页</button>
         </div>
     </div>
 
@@ -1081,35 +1205,97 @@ const WORD_BANK = [
 ];
 
 // ============================================================
-// 模式切换
+// 页面导航
 // ============================================================
-const modeCandy = document.getElementById('modeCandy');
-const modeMemory = document.getElementById('modeMemory');
 const mainEmoji = document.getElementById('mainEmoji');
 const mainTitle = document.getElementById('mainTitle');
+const globalBackBtn = document.getElementById('globalBackBtn');
+
+const ALL_SCREENS = ['home-screen','candy-home','candy-game','memory-home','memory-game','detective-game'];
 
 function hideAllScreens() {
-    ['candy-home','candy-game','memory-home','memory-game','detective-game'].forEach(id => {
+    ALL_SCREENS.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add('hidden');
     });
 }
-function switchMode(mode) {
-    modeCandy.classList.toggle('active', mode === 'candy');
-    modeMemory.classList.toggle('active', mode === 'memory');
-    mainEmoji.textContent = mode === 'candy' ? '🧩' : '🧠';
-    mainTitle.textContent = mode === 'candy' ? '三消英语' : '翻牌记忆';
+
+function showScreen(id) {
     hideAllScreens();
-    if (mode === 'candy') {
-        candyRenderHome();
-        document.getElementById('candy-home').classList.remove('hidden');
-    } else {
-        memoryRenderHome();
-        document.getElementById('memory-home').classList.remove('hidden');
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('hidden');
+}
+
+// 导航历史栈
+let navStack = [];
+
+function navigateTo(screenId, options = {}) {
+    if (!options.replace) {
+        const current = ALL_SCREENS.find(id => !document.getElementById(id).classList.contains('hidden'));
+        if (current && current !== screenId) navStack.push(current);
+    }
+    showScreen(screenId);
+    updateTopBar(screenId);
+    updateBackBtn();
+}
+
+function navigateBack() {
+    if (navStack.length > 0) {
+        const prev = navStack.pop();
+        showScreen(prev);
+        updateTopBar(prev);
+        updateBackBtn();
+        if (prev === 'candy-home') candyRenderHome();
+        if (prev === 'memory-home') memoryRenderHome();
+        if (prev === 'home-screen') updateHomeMiniCards();
     }
 }
-modeCandy.addEventListener('click', () => switchMode('candy'));
-modeMemory.addEventListener('click', () => switchMode('memory'));
+
+function updateTopBar(screenId) {
+    if (screenId === 'home-screen') {
+        mainEmoji.textContent = '🎮';
+        mainTitle.textContent = '趣味英语';
+    } else if (screenId === 'candy-home' || screenId === 'candy-game') {
+        mainEmoji.textContent = '🧩';
+        mainTitle.textContent = '三消英语';
+    } else if (screenId === 'memory-home' || screenId === 'memory-game') {
+        mainEmoji.textContent = '🧠';
+        mainTitle.textContent = '翻牌记忆';
+    } else if (screenId === 'detective-game') {
+        mainEmoji.textContent = '🕵️';
+        mainTitle.textContent = '侦探寻宝';
+    }
+}
+
+function updateBackBtn() {
+    if (navStack.length > 0) {
+        globalBackBtn.classList.remove('hidden');
+    } else {
+        globalBackBtn.classList.add('hidden');
+    }
+}
+
+globalBackBtn.addEventListener('click', navigateBack);
+
+// 首页模式卡片
+document.getElementById('homeCandyCard').addEventListener('click', () => {
+    candyRenderHome();
+    navigateTo('candy-home');
+});
+document.getElementById('homeMemoryCard').addEventListener('click', () => {
+    memoryRenderHome();
+    navigateTo('memory-home');
+});
+
+// 首页迷你进度
+function updateHomeMiniCards() {
+    const candyLv = candyProgress.currentLevel || 1;
+    const memoryLv = memoryProgress.currentLevel || 1;
+    document.getElementById('homeCandyMini').style.width = Math.max(2, (candyLv / 120) * 100) + '%';
+    document.getElementById('homeMemoryMini').style.width = Math.max(2, (memoryLv / 120) * 100) + '%';
+    document.getElementById('homeCandyTag').textContent = '第 ' + candyLv + ' 关';
+    document.getElementById('homeMemoryTag').textContent = '第 ' + memoryLv + ' 关';
+}
 
 // ============================================================
 // 折叠"更多"
@@ -1207,8 +1393,7 @@ function detectiveStart(mode, returnLevel) {
     const badgeIdx = (returnLevel / DETECTIVE_TRIGGER_INTERVAL - 1) % BADGE_POOL.length;
     detectiveState.badge = BADGE_POOL[badgeIdx];
 
-    hideAllScreens();
-    document.getElementById('detective-game').classList.remove('hidden');
+    navigateTo('detective-game');
 
     document.getElementById('detectiveLevelBadge').textContent = `🕵️ 隐藏关卡 · 第 ${returnLevel} 关奖励`;
     document.getElementById('detectiveFoundCount').textContent = '0';
@@ -1347,22 +1532,26 @@ function detectiveComplete() {
     document.body.appendChild(overlay);
     document.getElementById('detectiveOkBtn').onclick = () => {
         overlay.remove();
-        switchMode(detectiveState.mode);
-        if (detectiveState.mode === 'candy') {
-            candyStart(detectiveState.returnLevel + 1);
+        const mode = detectiveState.mode;
+        const nextLv = detectiveState.returnLevel + 1;
+        navStack = [];
+        if (mode === 'candy') {
+            candyStart(nextLv);
         } else {
-            memoryStart(detectiveState.returnLevel + 1);
+            memoryStart(nextLv);
         }
     };
 }
 
 function detectiveSkip() {
     detectiveState.active = false;
-    switchMode(detectiveState.mode);
-    if (detectiveState.mode === 'candy') {
-        candyStart(detectiveState.returnLevel + 1);
+    const mode = detectiveState.mode;
+    const nextLv = detectiveState.returnLevel + 1;
+    navStack = [];
+    if (mode === 'candy') {
+        candyStart(nextLv);
     } else {
-        memoryStart(detectiveState.returnLevel + 1);
+        memoryStart(nextLv);
     }
 }
 
@@ -1421,6 +1610,7 @@ function candyLoadProgress() {
 }
 function candySaveProgress() {
     try { localStorage.setItem('candyProgressV6', JSON.stringify(candyProgress)); } catch(e) {}
+    updateHomeMiniCards();
 }
 
 let candyCurrentLevel = 1;
@@ -1683,14 +1873,18 @@ function showCandyTimeUpModal() {
             <div class="encourage-text">别灰心，再试一次一定可以！</div>
             <div class="modal-buttons">
                 <button class="modal-btn primary" id="candyTimeRetry">🔄 重玩本关</button>
-                <button class="modal-btn secondary" id="candyTimeHome">🏠 首页</button>
+                <button class="modal-btn secondary" id="candyTimeHome">🏠 关卡首页</button>
             </div>
         </div>`;
     document.body.appendChild(overlay);
     document.getElementById('candyTimeRetry').onclick = () => { overlay.remove(); candyLoadLevel(candyCurrentLevel); };
     document.getElementById('candyTimeHome').onclick = () => {
-        overlay.remove(); candyRenderHome(); hideAllScreens();
-        document.getElementById('candy-home').classList.remove('hidden');
+        overlay.remove();
+        navStack = ['candy-home'];
+        candyRenderHome();
+        showScreen('candy-home');
+        updateTopBar('candy-home');
+        updateBackBtn();
     };
 }
 
@@ -1713,7 +1907,7 @@ function showCandyCompleteModal(starCount, hasDetective) {
                 ${hasDetective ? '<button class="modal-btn primary" id="candyDetectiveBtn">🕵️ 进入寻宝</button>' : ''}
                 ${!isLast && !hasDetective ? '<button class="modal-btn primary" id="candyNextModalBtn">➡️ 下一关</button>' : ''}
                 <button class="modal-btn secondary" id="candyRetryModalBtn">🔄 重玩</button>
-                <button class="modal-btn secondary" id="candyHomeModalBtn">🏠 首页</button>
+                <button class="modal-btn secondary" id="candyHomeModalBtn">🏠 关卡首页</button>
             </div>
         </div>`;
     document.body.appendChild(overlay);
@@ -1730,8 +1924,12 @@ function showCandyCompleteModal(starCount, hasDetective) {
     };
     document.getElementById('candyRetryModalBtn').onclick = () => { overlay.remove(); candyLoadLevel(candyCurrentLevel); };
     document.getElementById('candyHomeModalBtn').onclick = () => {
-        overlay.remove(); candyRenderHome(); hideAllScreens();
-        document.getElementById('candy-home').classList.remove('hidden');
+        overlay.remove();
+        navStack = ['candy-home'];
+        candyRenderHome();
+        showScreen('candy-home');
+        updateTopBar('candy-home');
+        updateBackBtn();
     };
 }
 
@@ -1771,8 +1969,7 @@ function candyLoadLevel(level) {
 }
 
 function candyStart(level) {
-    hideAllScreens();
-    document.getElementById('candy-game').classList.remove('hidden');
+    navigateTo('candy-game');
     candyLoadLevel(level);
 }
 
@@ -1784,8 +1981,11 @@ candyBackHome.addEventListener('click', () => {
     if (speechSynth) speechSynth.cancel();
     stopCandyTimer();
     candyRenderHome();
-    hideAllScreens();
-    document.getElementById('candy-home').classList.remove('hidden');
+    navStack = navStack.filter(s => s !== 'candy-game');
+    if (!navStack.includes('home-screen')) navStack.unshift('home-screen');
+    showScreen('candy-home');
+    updateTopBar('candy-home');
+    updateBackBtn();
 });
 candyContinueBtn.addEventListener('click', () => candyStart(candyProgress.currentLevel || 1));
 candyJumpBtn.addEventListener('click', () => {
@@ -1838,6 +2038,7 @@ function memoryLoadProgress() {
 }
 function memorySaveProgress() {
     try { localStorage.setItem('memoryProgressV5', JSON.stringify(memoryProgress)); } catch(e) {}
+    updateHomeMiniCards();
 }
 
 let memoryCurrentLevel = 1;
@@ -1985,14 +2186,18 @@ function memoryShowTimeUpModal() {
             <div class="encourage-text">别灰心，再试一次一定可以！</div>
             <div class="modal-buttons">
                 <button class="modal-btn primary" id="memTimeRetry">🔄 重玩本关</button>
-                <button class="modal-btn secondary" id="memTimeHome">🏠 首页</button>
+                <button class="modal-btn secondary" id="memTimeHome">🏠 关卡首页</button>
             </div>
         </div>`;
     document.body.appendChild(overlay);
     document.getElementById('memTimeRetry').onclick = () => { overlay.remove(); memoryLoadLevel(memoryCurrentLevel); };
     document.getElementById('memTimeHome').onclick = () => {
-        overlay.remove(); memoryRenderHome(); hideAllScreens();
-        document.getElementById('memory-home').classList.remove('hidden');
+        overlay.remove();
+        navStack = ['memory-home'];
+        memoryRenderHome();
+        showScreen('memory-home');
+        updateTopBar('memory-home');
+        updateBackBtn();
     };
 }
 function memoryShowCompleteModal(stars, hasDetective) {
@@ -2014,7 +2219,7 @@ function memoryShowCompleteModal(stars, hasDetective) {
                 ${hasDetective ? '<button class="modal-btn primary" id="memDetectiveBtn">🕵️ 进入寻宝</button>' : ''}
                 ${!isLast && !hasDetective ? '<button class="modal-btn primary" id="memNextModalBtn">➡️ 下一关</button>' : ''}
                 <button class="modal-btn secondary" id="memRetryModalBtn">🔄 重玩</button>
-                <button class="modal-btn secondary" id="memHomeModalBtn">🏠 首页</button>
+                <button class="modal-btn secondary" id="memHomeModalBtn">🏠 关卡首页</button>
             </div>
         </div>`;
     document.body.appendChild(overlay);
@@ -2031,8 +2236,12 @@ function memoryShowCompleteModal(stars, hasDetective) {
     };
     document.getElementById('memRetryModalBtn').onclick = () => { overlay.remove(); memoryLoadLevel(memoryCurrentLevel); };
     document.getElementById('memHomeModalBtn').onclick = () => {
-        overlay.remove(); memoryRenderHome(); hideAllScreens();
-        document.getElementById('memory-home').classList.remove('hidden');
+        overlay.remove();
+        navStack = ['memory-home'];
+        memoryRenderHome();
+        showScreen('memory-home');
+        updateTopBar('memory-home');
+        updateBackBtn();
     };
 }
 
@@ -2042,7 +2251,7 @@ function memoryRenderBoard() {
         const cardEl = document.createElement('div');
         cardEl.className = 'card-memory';
         if (card.matched) cardEl.classList.add('matched');
-        if (memoryFlippedIdx.includes(index)) cardEl.classList.add('flipped');
+        if (memoryFlippedIdx.includes(index) && !card.matched) cardEl.classList.add('flipped');
         cardEl.dataset.index = index;
 
         const back = document.createElement('div');
@@ -2057,14 +2266,16 @@ function memoryRenderBoard() {
             wordSpan.className = 'word-text';
             wordSpan.textContent = card.content;
             front.appendChild(wordSpan);
-            const speakerBtn = document.createElement('button');
-            speakerBtn.className = 'speaker-btn';
-            speakerBtn.textContent = '🔊';
-            speakerBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                speakWord(card.content);
-            });
-            front.appendChild(speakerBtn);
+            if (!card.matched) {
+                const speakerBtn = document.createElement('button');
+                speakerBtn.className = 'speaker-btn';
+                speakerBtn.textContent = '🔊';
+                speakerBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    speakWord(card.content);
+                });
+                front.appendChild(speakerBtn);
+            }
         } else {
             const emojiSpan = document.createElement('div');
             emojiSpan.className = 'emoji';
@@ -2218,8 +2429,7 @@ function memoryLoadLevel(level) {
 }
 
 function memoryStart(level) {
-    hideAllScreens();
-    document.getElementById('memory-game').classList.remove('hidden');
+    navigateTo('memory-game');
     memoryLoadLevel(level);
 }
 
@@ -2229,8 +2439,11 @@ memoryBackHome.addEventListener('click', () => {
     memoryStopTimer();
     if (memoryHintTimeout) { clearTimeout(memoryHintTimeout); memoryHintTimeout = null; }
     memoryRenderHome();
-    hideAllScreens();
-    document.getElementById('memory-home').classList.remove('hidden');
+    navStack = navStack.filter(s => s !== 'memory-game');
+    if (!navStack.includes('home-screen')) navStack.unshift('home-screen');
+    showScreen('memory-home');
+    updateTopBar('memory-home');
+    updateBackBtn();
 });
 memoryContinueBtn.addEventListener('click', () => memoryStart(memoryProgress.currentLevel || 1));
 memoryJumpBtn.addEventListener('click', () => {
@@ -2272,7 +2485,10 @@ if (speechSynth) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-    switchMode('candy');
+    updateHomeMiniCards();
+    showScreen('home-screen');
+    updateTopBar('home-screen');
+    updateBackBtn();
 });
 })();
 </script>
