@@ -79,7 +79,7 @@ body {
 
 /* ===== 草地 ===== */
 .garden-ground {
-    position:absolute; bottom:0; left:0; width:100%; height:60px;
+    position:absolute; bottom:0; left:0; width:100%; height:120px;
     background:linear-gradient(180deg,#8bc34a 0%,#7cb342 40%,#689f38 100%);
     border-radius:0 0 22px 22px;
     z-index:1;
@@ -90,37 +90,13 @@ body {
     background:radial-gradient(ellipse at 20% 100%, rgba(255,255,255,0.35), transparent 60%),
                radial-gradient(ellipse at 70% 100%, rgba(255,255,255,0.35), transparent 60%);
 }
-
-/* ===== 藤蔓 SVG 层 ===== */
-.vine-svg {
-    position:absolute; top:0; left:0;
-    width:100%; height:100%;
-    pointer-events:none;
-    z-index:2;
-    overflow:visible;
-}
-.vine-path {
-    fill:none;
-    stroke:#4caf50;
-    stroke-width:5;
-    stroke-linecap:round;
-    stroke-linejoin:round;
-    filter:drop-shadow(2px 2px 2px rgba(0,0,0,0.15));
-    transition:stroke-dashoffset 1.5s ease;
-}
-.vine-path.new {
-    animation:vineGrow 1.5s ease-out forwards;
-}
-@keyframes vineGrow {
-    from { stroke-dashoffset: var(--len); }
-    to { stroke-dashoffset: 0; }
-}
-.vine-leaf {
-    fill:#66bb6a;
-    opacity:0.85;
+/* 草丛装饰 */
+.garden-ground .grass {
+    position:absolute; bottom:0; font-size:1.1rem;
+    opacity:0.9;
 }
 
-/* ===== 花朵（长在藤上） ===== */
+/* ===== 花朵（藤蔓连接版） ===== */
 .flower {
     position:absolute;
     display:flex; flex-direction:column;
@@ -132,13 +108,33 @@ body {
     animation:flowerSway 3.5s ease-in-out infinite;
 }
 @keyframes flowerSway {
-    0%,100% { transform:translateX(-50%) rotate(-3deg); }
-    50% { transform:translateX(-50%) rotate(3deg); }
+    0%,100% { transform:rotate(-3deg); }
+    50% { transform:rotate(3deg); }
 }
+/* 藤蔓茎 —— 取代原来的直线花茎 */
 .flower .flower-stem {
-    width:4px;
-    background:linear-gradient(180deg,#66bb6a,#2e7d32);
-    border-radius:2px;
+    width:6px;
+    background:repeating-linear-gradient(45deg, #6d8c4a, #6d8c4a 4px, #8aa86a 4px, #8aa86a 8px);
+    border-radius:3px;
+    position:relative;
+    box-shadow:inset -1px 0 0 #4a6b2e, inset 1px 0 0 #a8c88a;
+}
+/* 藤蔓卷曲装饰 */
+.flower .flower-stem::after {
+    content:"🌿";
+    position:absolute;
+    font-size:0.9rem;
+    top:30%;
+    left:8px;
+    transform:rotate(20deg);
+    opacity:0.9;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,0.1));
+}
+.flower .flower-leaf {
+    position:absolute;
+    font-size:0.9rem;
+    left:50%;
+    transform:translateX(-50%);
 }
 .flower .flower-head {
     border-radius:50%;
@@ -147,7 +143,7 @@ body {
     box-shadow:0 4px 10px rgba(0,0,0,0.2),
                inset -4px -4px 8px rgba(0,0,0,0.15),
                inset 4px 4px 8px rgba(255,255,255,0.5);
-    border:3px solid rgba(255,255,255,0.85);
+    border:3px solid rgba(255,255,255,0.8);
     position:relative;
     transition:all 0.3s;
 }
@@ -155,14 +151,6 @@ body {
     position:absolute; border-radius:50%;
     background:radial-gradient(circle at 35% 35%, #fff9c4, #ffd54f);
     box-shadow:inset -2px -2px 4px rgba(0,0,0,0.2);
-    z-index:2;
-}
-/* 花瓣 */
-.flower .petal {
-    position:absolute;
-    border-radius:50%;
-    box-shadow:inset -2px -2px 3px rgba(0,0,0,0.12),
-               inset 2px 2px 3px rgba(255,255,255,0.4);
 }
 .flower .flower-num {
     position:absolute; top:-22px; left:50%; transform:translateX(-50%);
@@ -174,21 +162,23 @@ body {
     border:1.5px solid #66bb6a;
     opacity:0;
     transition:opacity 0.2s;
-    z-index:5;
 }
 .flower:hover .flower-num { opacity:1; }
 
-/* 当前关：跳动 */
+/* 当前关：花瓣跳动 + 手指提示 */
 .flower.current {
     animation:flowerPulse 1.6s ease-in-out infinite;
     z-index:10;
 }
 @keyframes flowerPulse {
-    0%,100% { transform:translateX(-50%) scale(1); filter:drop-shadow(0 0 0 rgba(255,107,107,0)); }
-    50% { transform:translateX(-50%) scale(1.1); filter:drop-shadow(0 0 14px rgba(255,107,107,0.7)); }
+    0%,100% { transform:scale(1) rotate(0deg); filter:drop-shadow(0 0 0 rgba(255,107,107,0)); }
+    50% { transform:scale(1.08) rotate(0deg); filter:drop-shadow(0 0 12px rgba(255,107,107,0.7)); }
 }
 
-/* 未解锁：花苞 */
+/* 已完成的关卡：花完整绽放 */
+.flower.done { opacity:1; }
+
+/* 未解锁：花苞（小花 + 灰） */
 .flower.locked {
     cursor:not-allowed;
     opacity:0.55;
@@ -199,28 +189,29 @@ body {
     background:radial-gradient(circle at 35% 35%, #bdbdbd, #757575) !important;
     border:2px dashed rgba(255,255,255,0.7);
 }
-.flower.locked .petal { display:none; }
+.flower.locked .flower-head::after {
+    content:"🌸"; position:absolute; font-size:0.8rem; opacity:0.7;
+}
 
-/* bonus 关 */
+/* bonus 关：花更大更亮 */
 .flower.bonus .flower-head {
-    box-shadow:0 0 0 4px #fff, 0 0 22px rgba(255,215,0,0.9),
+    box-shadow:0 0 0 4px #fff, 0 0 20px rgba(255,215,0,0.9),
                inset -4px -4px 8px rgba(0,0,0,0.15),
                inset 4px 4px 8px rgba(255,255,255,0.5);
 }
-.flower.bonus::after {
-    content:"⭐"; position:absolute; top:-6px; right:-8px;
+.flower.bonus .flower-head::before {
+    content:"⭐"; position:absolute; top:-14px; right:-6px;
     font-size:1rem;
     filter:drop-shadow(0 2px 3px rgba(0,0,0,0.3));
-    z-index:12;
 }
 
-/* 绽放动画 */
+/* 花朵绽放动画 */
 @keyframes bloom {
-    0% { transform:translateX(-50%) scale(0) rotate(-180deg); opacity:0; }
-    60% { transform:translateX(-50%) scale(1.3) rotate(20deg); opacity:1; }
-    100% { transform:translateX(-50%) scale(1) rotate(0); opacity:1; }
+    0% { transform:scale(0) rotate(-180deg); opacity:0; }
+    60% { transform:scale(1.3) rotate(20deg); opacity:1; }
+    100% { transform:scale(1) rotate(0); opacity:1; }
 }
-.flower.blooming { animation:bloom 0.9s ease-out forwards; }
+.flower.blooming { animation:bloom 0.8s ease-out forwards; }
 
 /* 花园底部提示 */
 .garden-hint {
@@ -499,11 +490,20 @@ body {
     box-shadow:0 7px 0 #42a5f5, 0 9px 13px rgba(0,0,0,0.15), inset 0 -4px 0 #90caf9;
     padding:4px 3px; justify-content:center;
 }
+/* ===== 颜色球卡片 ===== */
 .card-candy[data-type="image"] {
     background:linear-gradient(145deg,#f3e5f5,#e1bee7);
     border:3px solid #ba68c8;
     box-shadow:0 7px 0 #8e24aa, 0 9px 13px rgba(0,0,0,0.15), inset 0 -4px 0 #ce93d8;
     font-size:2.6rem;
+}
+/* 颜色球专用样式 */
+.card-candy[data-type="image"] .color-ball {
+    width: 64%; height: 64%;
+    border-radius: 50%;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.25), inset -4px -4px 10px rgba(0,0,0,0.2), inset 4px 4px 12px rgba(255,255,255,0.7);
+    transition: transform 0.2s;
+    border: 2px solid rgba(255,255,255,0.8);
 }
 .card-candy.selected {
     box-shadow:0 0 0 6px #ffd54f, 0 7px 0 #bcaaa4 !important;
@@ -763,7 +763,7 @@ body {
             <div class="home-stat"><div class="stat-num" id="candyHomeBadges">0</div><div class="stat-label">徽章</div></div>
         </div>
 
-        <div class="learning-hint" id="candyGardenHint">🌸 每过一关，藤蔓上就会开出一朵新花！</div>
+        <div class="learning-hint" id="candyGardenHint">🌸 每过一关，花园里就会开出一朵新花！</div>
 
         <div class="garden-collection" id="candyCollection"></div>
 
@@ -772,7 +772,6 @@ body {
             <div class="sky-deco cloud-deco" style="top:20px;left:15%;">☁️</div>
             <div class="sky-deco cloud-deco" style="top:60px;left:70%;animation-delay:2s;">☁️</div>
             <div class="sky-deco cloud-deco" style="top:120px;left:25%;animation-delay:4s;">☁️</div>
-            <svg class="vine-svg" id="candyVineSvg" preserveAspectRatio="none"></svg>
             <div class="garden-ground"></div>
         </div>
 
@@ -800,7 +799,7 @@ body {
         </div>
         <div class="learning-hint" id="candyGameHint">🧠 科学记忆</div>
         <div class="board-candy" id="candyBoard"></div>
-        <div class="message-area" id="candyMessage">👆 找出「中文 + 英文 + 图片」三张同源卡，一起消除！</div>
+        <div class="message-area" id="candyMessage">👆 找出「中文 + 英文 + 颜色球」三张同源卡，一起消除！</div>
         <div class="controls">
             <button class="ctrl-btn gray" id="candyBackHome">🌻 返回花园</button>
             <button class="ctrl-btn" id="candyResetLevel">🔄 重玩本关</button>
@@ -816,7 +815,7 @@ body {
             <div class="home-stat"><div class="stat-num" id="memoryHomeBadges">0</div><div class="stat-label">徽章</div></div>
         </div>
 
-        <div class="learning-hint" id="memoryGardenHint">🌸 每过一关，藤蔓上就会开出一朵新花！</div>
+        <div class="learning-hint" id="memoryGardenHint">🌸 每过一关，花园里就会开出一朵新花！</div>
 
         <div class="garden-collection" id="memoryCollection"></div>
 
@@ -825,7 +824,6 @@ body {
             <div class="sky-deco cloud-deco" style="top:20px;left:15%;">☁️</div>
             <div class="sky-deco cloud-deco" style="top:60px;left:70%;animation-delay:2s;">☁️</div>
             <div class="sky-deco cloud-deco" style="top:120px;left:25%;animation-delay:4s;">☁️</div>
-            <svg class="vine-svg" id="memoryVineSvg" preserveAspectRatio="none"></svg>
             <div class="garden-ground"></div>
         </div>
 
@@ -926,6 +924,11 @@ const playBadgeSound = () => {
     setTimeout(() => playTone(1174, 0.12, 'sine', 0.25), 100);
     setTimeout(() => playTone(1568, 0.25, 'sine', 0.25), 220);
 };
+const playGrowthSound = () => {
+    playTone(440, 0.15, 'sine', 0.15);
+    setTimeout(() => playTone(587, 0.15, 'sine', 0.18), 100);
+    setTimeout(() => playTone(698, 0.2, 'sine', 0.2), 200);
+};
 const playWaterSound = () => {
     playTone(880, 0.08, 'sine', 0.1);
     setTimeout(() => playTone(1200, 0.1, 'sine', 0.12), 80);
@@ -990,6 +993,7 @@ function speakWord(word, rate=1.0) {
 function speakChinese(text) {
     if (!soundEnabled || !speechSynth) return;
     try {
+        if (speechSynth.speaking || speechSynth.pending) speechSynth.cancel();
         const u = new SpeechSynthesisUtterance(text);
         u.lang = 'zh-CN'; u.rate = 1.0; u.pitch = 1.3;
         if (chineseVoice) u.voice = chineseVoice;
@@ -1243,6 +1247,15 @@ const WORD_CHINESE = {
 };
 
 // ============================================================
+// 颜色球映射（代表颜色的词显示球）
+// ============================================================
+const COLOR_WORDS = {
+    red:'#e53935', blue:'#1e88e5', green:'#43a047', yellow:'#fdd835',
+    purple:'#8e24aa', black:'#212121', white:'#f5f5f5', brown:'#6d4c41',
+    pink:'#ec407a', gray:'#9e9e9e'
+};
+
+// ============================================================
 // 难度曲线
 // ============================================================
 function getWordDifficulty(word) {
@@ -1385,7 +1398,6 @@ const GARDEN_TYPES = [
     { emoji:'💐', name:'花束园' }
 ];
 
-// 花朵配色池
 const FLOWER_COLORS = [
     { petal:'#ff6b6b', edge:'#d32f2f' },
     { petal:'#ffb74d', edge:'#e65100' },
@@ -1401,8 +1413,13 @@ const FLOWER_COLORS = [
     { petal:'#4db6ac', edge:'#00695c' }
 ];
 
-// 花瓣数量
-const FLOWER_PETALS = [5, 6, 7, 8, 9, 10];
+const FLOWER_SHAPES = [
+    { petals:5, name:'五瓣花' },
+    { petals:6, name:'六瓣花' },
+    { petals:8, name:'八瓣花' },
+    { petals:7, name:'七瓣花' },
+    { petals:9, name:'九瓣花' }
+];
 
 function getGardenInfo(level) {
     const gardenIndex = Math.min(Math.floor((level - 1) / LEVELS_PER_GARDEN), GARDEN_COUNT - 1);
@@ -1421,27 +1438,23 @@ function getDoneInGarden(progress, gardenIndex) {
     return count;
 }
 
-// 确定性选取花朵样式
 function getFlowerStyle(level) {
     const colorIdx = (level * 7 + level * level * 3) % FLOWER_COLORS.length;
-    const petalCount = FLOWER_PETALS[(level * 5 + Math.floor(level / 3)) % FLOWER_PETALS.length];
+    const shapeIdx = (level * 5 + Math.floor(level / 3)) % FLOWER_SHAPES.length;
     return {
         color: FLOWER_COLORS[colorIdx],
-        petalCount: petalCount
+        shape: FLOWER_SHAPES[shapeIdx]
     };
 }
 
 // ============================================================
-// 渲染花园：藤蔓串花
+// 渲染花园（藤蔓连接版）
 // ============================================================
 function renderGarden(mode, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    // 清理旧的动态元素
-    container.querySelectorAll('.flower, .start-btn-wrapper, .finger-hint, .tap-bubble, .garden-hint').forEach(el => el.remove());
-    const svg = container.querySelector('.vine-svg');
-    if (svg) svg.innerHTML = '';
+    container.querySelectorAll('.flower, .start-btn-wrapper, .finger-hint, .tap-bubble, .garden-hint, .vine-connection').forEach(el => el.remove());
 
     const progress = mode === 'candy' ? candyProgress : memoryProgress;
     const currentLevel = progress.currentLevel || 1;
@@ -1450,16 +1463,15 @@ function renderGarden(mode, containerId) {
 
     const W = container.clientWidth;
     const H = container.clientHeight;
-    const groundTop = H - 60; // 草地顶部
+    const groundTop = H - 120;
 
     const doneInGarden = getDoneInGarden(progress, info.gardenIndex);
     const displayCount = Math.min(LEVELS_PER_GARDEN, doneInGarden + 3);
 
-    // 花朵在藤蔓上的位置
-    // 藤蔓是一条从左下角蜿蜒向上的曲线
-    const flowersPerRow = Math.max(5, Math.floor(W / 80));
-    const rowGap = 58; // 每行之间的垂直间距
-    const flowerPositions = []; // 记录每朵花的位置，用于画藤蔓
+    const flowersPerRow = Math.max(6, Math.floor(W / 60));
+    const rowGap = 46;
+
+    const flowerPositions = [];
 
     for (let i = 0; i < displayCount; i++) {
         const levelInGarden = i + 1;
@@ -1469,29 +1481,23 @@ function renderGarden(mode, containerId) {
         const done = levelStars[globalLv] !== undefined;
         const isCurrent = (globalLv === currentLevel) && !done;
 
-        // 网格布局
         const row = Math.floor(i / flowersPerRow);
         const col = i % flowersPerRow;
         const flowersInThisRow = Math.min(flowersPerRow, displayCount - row * flowersPerRow);
         const colWidth = W / (flowersInThisRow + 1);
+        const x = colWidth * (col + 1);
+        const baseY = groundTop + 60 - row * rowGap;
 
-        // 每行左右交错，让藤蔓更自然
-        const rowOffset = (row % 2 === 0) ? 0 : colWidth * 0.3;
-        let x = colWidth * (col + 1) + rowOffset;
-        if (row % 2 === 1 && col === flowersInThisRow - 1) x = Math.min(x, W - 30);
-
-        const baseY = groundTop - row * rowGap + 20;
-
-        flowerPositions.push({ x, y: baseY, levelInGarden, globalLv });
-
-        // 花朵大小
-        let flowerScale = 0.9;
-        if (isCurrent) flowerScale = 1.2;
-        else if (done) flowerScale = 1.05;
+        let flowerScale = 0.8;
+        if (isCurrent) flowerScale = 1.15;
+        else if (done) flowerScale = 1.0;
 
         const style = getFlowerStyle(globalLv);
-        const headSize = Math.round(34 * flowerScale);
-        const stemHeight = Math.round(24 * flowerScale);
+        const petalCount = style.shape.petals;
+        const headSize = Math.round(30 * flowerScale);
+        const stemHeight = Math.round(38 * flowerScale);
+
+        flowerPositions.push({ x, baseY, stemHeight, headSize, done, isCurrent, unlocked, globalLv, style, petalCount, flowerScale });
 
         const flower = document.createElement('div');
         flower.className = 'flower';
@@ -1505,13 +1511,18 @@ function renderGarden(mode, containerId) {
         if (!unlocked && !done) flower.classList.add('locked');
         if (globalLv % 10 === 0 && (unlocked || done)) flower.classList.add('bonus');
 
-        // 花茎（短）
         const stem = document.createElement('div');
         stem.className = 'flower-stem';
         stem.style.height = stemHeight + 'px';
         flower.appendChild(stem);
 
-        // 花头
+        const leaf = document.createElement('div');
+        leaf.className = 'flower-leaf';
+        leaf.textContent = '🍃';
+        leaf.style.bottom = Math.round(stemHeight * 0.35) + 'px';
+        leaf.style.left = (col % 2 === 0 ? '60%' : '40%');
+        flower.appendChild(leaf);
+
         const head = document.createElement('div');
         head.className = 'flower-head';
         head.style.width = headSize + 'px';
@@ -1519,34 +1530,29 @@ function renderGarden(mode, containerId) {
         if (!flower.classList.contains('locked')) {
             head.style.background = `radial-gradient(circle at 35% 35%, ${style.color.petal}, ${style.color.edge})`;
         }
-
-        // 花瓣
         if (!flower.classList.contains('locked')) {
-            const petalCount = style.petalCount;
-            const petalSize = headSize * 0.55;
-            const petalRadius = headSize * 0.32;
             for (let p = 0; p < petalCount; p++) {
-                const angle = (p / petalCount) * Math.PI * 2 - Math.PI / 2;
+                const angle = (p / petalCount) * Math.PI * 2;
+                const pr = headSize * 0.42;
                 const petal = document.createElement('div');
-                petal.className = 'petal';
-                petal.style.width = petalSize + 'px';
-                petal.style.height = petalSize + 'px';
-                petal.style.background = `radial-gradient(circle at 35% 35%, ${style.color.petal}, ${style.color.edge})`;
-                petal.style.left = `calc(50% + ${Math.cos(angle) * petalRadius}px)`;
-                petal.style.top = `calc(50% + ${Math.sin(angle) * petalRadius}px)`;
+                petal.style.position = 'absolute';
+                petal.style.width = (headSize * 0.42) + 'px';
+                petal.style.height = (headSize * 0.42) + 'px';
+                petal.style.borderRadius = '50%';
+                petal.style.background = `radial-gradient(circle at 40% 40%, ${style.color.petal}, ${style.color.edge})`;
+                petal.style.left = `calc(50% + ${Math.cos(angle) * pr}px)`;
+                petal.style.top = `calc(50% + ${Math.sin(angle) * pr}px)`;
                 petal.style.transform = 'translate(-50%, -50%)';
+                petal.style.boxShadow = 'inset -2px -2px 4px rgba(0,0,0,0.1)';
                 head.appendChild(petal);
             }
         }
-
-        // 花心
         const center = document.createElement('div');
         center.className = 'flower-center';
         center.style.width = (headSize * 0.42) + 'px';
         center.style.height = (headSize * 0.42) + 'px';
         head.appendChild(center);
 
-        // 关卡号
         const num = document.createElement('div');
         num.className = 'flower-num';
         num.textContent = `第 ${globalLv} 关`;
@@ -1554,7 +1560,6 @@ function renderGarden(mode, containerId) {
 
         flower.appendChild(head);
 
-        // 点击事件
         if (done || unlocked) {
             flower.addEventListener('click', () => {
                 if (mode === 'candy') candyStart(globalLv);
@@ -1567,7 +1572,6 @@ function renderGarden(mode, containerId) {
             });
         }
 
-        // 当前关的提示
         if (isCurrent) {
             const bubble = document.createElement('div');
             bubble.className = 'tap-bubble';
@@ -1587,106 +1591,59 @@ function renderGarden(mode, containerId) {
         container.appendChild(flower);
     }
 
-    // ===== 绘制藤蔓 SVG =====
-    if (svg && flowerPositions.length > 0) {
-        svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-        svg.setAttribute('width', W);
-        svg.setAttribute('height', H);
+    // ===== 藤蔓连线 =====
+    // 用曲线连接相邻的花朵
+    for (let i = 0; i < flowerPositions.length - 1; i++) {
+        const a = flowerPositions[i];
+        const b = flowerPositions[i + 1];
+        if (!a.done && !a.unlocked && !a.isCurrent) continue;
 
-        // 从草地底部开始，蛇形穿过每一朵花
-        const points = [];
-        // 起点：底部中间偏左
-        points.push({ x: 20, y: groundTop + 30 });
+        const startX = a.x;
+        const startY = a.baseY - a.stemHeight - 4;
+        const endX = b.x;
+        const endY = b.baseY - b.stemHeight - 4;
+        const midX = (startX + endX) / 2;
+        const midY = Math.min(startY, endY) - 14;
 
-        // 对每一行，取该行花的位置，做一条平滑曲线
-        const rows = {};
-        flowerPositions.forEach(p => {
-            const row = Math.floor((p.levelInGarden - 1) / flowersPerRow);
-            if (!rows[row]) rows[row] = [];
-            rows[row].push(p);
-        });
+        // 用 SVG path 画藤蔓
+        const svgNS = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(svgNS, "svg");
+        svg.setAttribute("class", "vine-connection");
+        svg.style.position = "absolute";
+        svg.style.left = "0";
+        svg.style.top = "0";
+        svg.style.width = "100%";
+        svg.style.height = "100%";
+        svg.style.pointerEvents = "none";
+        svg.style.zIndex = "4";
 
-        const sortedRows = Object.keys(rows).map(Number).sort((a, b) => a - b);
+        const path = document.createElementNS(svgNS, "path");
+        const d = `M ${startX} ${startY} Q ${midX} ${midY}, ${endX} ${endY}`;
+        path.setAttribute("d", d);
+        path.setAttribute("stroke", "#6d8c4a");
+        path.setAttribute("stroke-width", "3");
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke-linecap", "round");
+        path.setAttribute("stroke-dasharray", "6,4");
+        path.style.filter = "drop-shadow(0 1px 1px rgba(0,0,0,0.15))";
 
-        sortedRows.forEach(rowIdx => {
-            const rowFlowers = rows[rowIdx].sort((a, b) => a.x - b.x);
-            const rowY = rowFlowers[0].y;
+        const path2 = document.createElementNS(svgNS, "path");
+        path2.setAttribute("d", d);
+        path2.setAttribute("stroke", "#8aa86a");
+        path2.setAttribute("stroke-width", "1.5");
+        path2.setAttribute("fill", "none");
+        path2.setAttribute("stroke-linecap", "round");
 
-            if (rowIdx % 2 === 0) {
-                // 从左到右
-                rowFlowers.forEach((f, idx) => {
-                    if (idx === 0) {
-                        // 从上一行或起点连过来
-                        points.push({ x: f.x, y: rowY });
-                    } else {
-                        points.push({ x: f.x, y: rowY });
-                    }
-                });
-            } else {
-                // 从右到左
-                rowFlowers.slice().reverse().forEach(f => {
-                    points.push({ x: f.x, y: rowY });
-                });
-            }
-            // 到下一行的过渡点（在行尾往上走）
-            const lastF = rowIdx % 2 === 0 ? rowFlowers[rowFlowers.length - 1] : rowFlowers[0];
-            points.push({ x: lastF.x, y: rowY - rowGap / 2 });
-        });
-
-        // 终点：最上面一朵花的稍上方
-        if (flowerPositions.length > 0) {
-            const topFlower = flowerPositions.reduce((a, b) => a.y < b.y ? a : b);
-            points.push({ x: topFlower.x, y: topFlower.y - 20 });
-        }
-
-        // 用二次贝塞尔曲线生成平滑路径
-        let d = `M ${points[0].x} ${points[0].y}`;
-        for (let i = 1; i < points.length; i++) {
-            const prev = points[i - 1];
-            const cur = points[i];
-            const cpx = (prev.x + cur.x) / 2;
-            const cpy = (prev.y + cur.y) / 2;
-            d += ` Q ${prev.x} ${prev.y} ${cpx} ${cpy}`;
-        }
-        if (points.length > 1) {
-            const last = points[points.length - 1];
-            d += ` T ${last.x} ${last.y}`;
-        }
-
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', d);
-        path.setAttribute('class', 'vine-path');
-        // 计算总长度用于生长动画
-        try {
-            const len = path.getTotalLength ? path.getTotalLength() : 1000;
-            path.style.setProperty('--len', len);
-            path.style.strokeDasharray = len;
-            path.style.strokeDashoffset = 0;
-        } catch(e) {}
         svg.appendChild(path);
-
-        // 藤蔓上的叶子装饰
-        points.forEach((pt, i) => {
-            if (i % 2 === 0 && i > 0) {
-                const leaf = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
-                leaf.setAttribute('cx', pt.x + (i % 4 === 0 ? -8 : 8));
-                leaf.setAttribute('cy', pt.y + 4);
-                leaf.setAttribute('rx', '5');
-                leaf.setAttribute('ry', '3');
-                leaf.setAttribute('class', 'vine-leaf');
-                leaf.setAttribute('transform', `rotate(${i % 4 === 0 ? -30 : 30} ${pt.x} ${pt.y})`);
-                svg.appendChild(leaf);
-            }
-        });
+        svg.appendChild(path2);
+        container.appendChild(svg);
     }
 
-    // 底部提示
     const hint = document.createElement('div');
     hint.className = 'garden-hint';
-    hint.textContent = `🌸 藤蔓上已开花 ${doneInGarden} / ${LEVELS_PER_GARDEN} 朵`;
+    hint.textContent = `🌸 已开花 ${doneInGarden} / ${LEVELS_PER_GARDEN} 朵`;
     container.appendChild(hint);
 
-    // 开始按钮
     const btnWrapper = document.createElement('div');
     btnWrapper.className = 'start-btn-wrapper';
     const startBtn = document.createElement('button');
@@ -1699,7 +1656,6 @@ function renderGarden(mode, containerId) {
     btnWrapper.appendChild(startBtn);
     container.appendChild(btnWrapper);
 
-    // 滚动到当前花
     setTimeout(() => {
         const currentFlower = container.querySelector('.flower.current');
         if (currentFlower) {
@@ -1721,6 +1677,8 @@ function animateWaterAndBloom(mode, onComplete) {
 
     const progress = mode === 'candy' ? candyProgress : memoryProgress;
     const currentLevel = progress.currentLevel || 1;
+    const gardenInfo = getGardenInfo(currentLevel);
+    const doneInGarden = getDoneInGarden(progress, gardenInfo.gardenIndex);
 
     playWaterSound();
 
@@ -1728,7 +1686,6 @@ function animateWaterAndBloom(mode, onComplete) {
     const flowerX = currentFlower ? parseFloat(currentFlower.style.left) : container.clientWidth / 2;
     const flowerTop = currentFlower ? parseFloat(currentFlower.style.top) : container.clientHeight - 150;
 
-    // 浇水壶
     const can = document.createElement('div');
     can.className = 'watering-can';
     can.textContent = '🚿';
@@ -1737,7 +1694,6 @@ function animateWaterAndBloom(mode, onComplete) {
     container.appendChild(can);
     setTimeout(() => can.remove(), 2300);
 
-    // 水流 + 水滴
     setTimeout(() => {
         const stream = document.createElement('div');
         stream.className = 'water-stream';
@@ -1760,7 +1716,6 @@ function animateWaterAndBloom(mode, onComplete) {
         }
     }, 500);
 
-    // 水花
     setTimeout(() => {
         for (let i = 0; i < 6; i++) {
             const splash = document.createElement('div');
@@ -1774,29 +1729,51 @@ function animateWaterAndBloom(mode, onComplete) {
         }
     }, 1200);
 
-    // 新花绽放
     setTimeout(() => {
+        if (currentFlower) {
+            currentFlower.classList.remove('current');
+        }
+
+        const W = container.clientWidth;
+        const H = container.clientHeight;
+        const groundTop = H - 120;
+
         const justDone = currentLevel;
         const justDoneInfo = getGardenInfo(justDone);
-        const style = getFlowerStyle(justDone);
-        const petalCount = style.petalCount;
 
-        // 直接在当前花的位置创建绽放动画的花
+        const flowersPerRow = Math.max(6, Math.floor(W / 60));
+        const rowGap = 46;
+        const idx = justDoneInfo.levelInGarden - 1;
+        const row = Math.floor(idx / flowersPerRow);
+        const col = idx % flowersPerRow;
+        const flowersInThisRow = flowersPerRow;
+        const colWidth = W / (flowersInThisRow + 1);
+        const x = colWidth * (col + 1);
+        const baseY = groundTop + 60 - row * rowGap;
+
+        const style = getFlowerStyle(justDone);
+        const petalCount = style.shape.petals;
+        const headSize = 30;
+        const stemHeight = 38;
+
         const bloomFlower = document.createElement('div');
         bloomFlower.className = 'flower blooming';
-        bloomFlower.style.left = flowerX + 'px';
-        bloomFlower.style.top = flowerTop + 'px';
+        bloomFlower.style.left = x + 'px';
+        bloomFlower.style.top = (baseY - stemHeight - headSize) + 'px';
         bloomFlower.style.transform = 'translateX(-50%)';
         bloomFlower.style.transformOrigin = 'bottom center';
         bloomFlower.style.zIndex = 30;
-
-        const headSize = 40;
-        const stemHeight = 24;
 
         const stem = document.createElement('div');
         stem.className = 'flower-stem';
         stem.style.height = stemHeight + 'px';
         bloomFlower.appendChild(stem);
+
+        const leaf = document.createElement('div');
+        leaf.className = 'flower-leaf';
+        leaf.textContent = '🍃';
+        leaf.style.bottom = Math.round(stemHeight * 0.35) + 'px';
+        bloomFlower.appendChild(leaf);
 
         const head = document.createElement('div');
         head.className = 'flower-head';
@@ -1804,17 +1781,17 @@ function animateWaterAndBloom(mode, onComplete) {
         head.style.height = headSize + 'px';
         head.style.background = `radial-gradient(circle at 35% 35%, ${style.color.petal}, ${style.color.edge})`;
 
-        const petalSize = headSize * 0.55;
-        const petalRadius = headSize * 0.32;
         for (let p = 0; p < petalCount; p++) {
-            const angle = (p / petalCount) * Math.PI * 2 - Math.PI / 2;
+            const angle = (p / petalCount) * Math.PI * 2;
+            const pr = headSize * 0.42;
             const petal = document.createElement('div');
-            petal.className = 'petal';
-            petal.style.width = petalSize + 'px';
-            petal.style.height = petalSize + 'px';
-            petal.style.background = `radial-gradient(circle at 35% 35%, ${style.color.petal}, ${style.color.edge})`;
-            petal.style.left = `calc(50% + ${Math.cos(angle) * petalRadius}px)`;
-            petal.style.top = `calc(50% + ${Math.sin(angle) * petalRadius}px)`;
+            petal.style.position = 'absolute';
+            petal.style.width = (headSize * 0.42) + 'px';
+            petal.style.height = (headSize * 0.42) + 'px';
+            petal.style.borderRadius = '50%';
+            petal.style.background = `radial-gradient(circle at 40% 40%, ${style.color.petal}, ${style.color.edge})`;
+            petal.style.left = `calc(50% + ${Math.cos(angle) * pr}px)`;
+            petal.style.top = `calc(50% + ${Math.sin(angle) * pr}px)`;
             petal.style.transform = 'translate(-50%, -50%)';
             head.appendChild(petal);
         }
@@ -1830,12 +1807,11 @@ function animateWaterAndBloom(mode, onComplete) {
 
         playBloomSound();
 
-        // 花瓣粒子
         for (let i = 0; i < 16; i++) {
             const p = document.createElement('div');
             p.className = 'growth-particle';
             p.textContent = ['🌸','✨','🌼','💐','🌟','🌺','🍃'][Math.floor(Math.random()*7)];
-            p.style.left = (flowerX - 40 + Math.random() * 80) + 'px';
+            p.style.left = (x - 40 + Math.random() * 80) + 'px';
             p.style.bottom = (60 + Math.random() * 100) + 'px';
             p.style.animationDelay = (i * 0.06) + 's';
             p.style.fontSize = (1 + Math.random() * 0.8) + 'rem';
@@ -1843,21 +1819,19 @@ function animateWaterAndBloom(mode, onComplete) {
             setTimeout(() => p.remove(), 1800);
         }
 
-        // 绽放横幅
         setTimeout(() => {
             const banner = document.createElement('div');
             banner.className = 'bloom-banner';
             banner.innerHTML = `
-                <div class="big-flower">🌸</div>
+                <div class="big-flower">${style.color.petal ? '🌸' : '🌻'}</div>
                 <div class="text">🎉 新花绽放！</div>
-                <div class="subtext">第 ${justDone} 关完成 · 藤蔓上又开了一朵花</div>
+                <div class="subtext">第 ${justDone} 关完成 · 花园里又多了一朵花</div>
             `;
             container.appendChild(banner);
             setTimeout(() => banner.remove(), 3000);
         }, 300);
     }, 1700);
 
-    // 重新渲染花园
     setTimeout(() => {
         renderGarden(mode, containerId);
     }, 3000);
@@ -2132,7 +2106,7 @@ function markDetectiveTriggered(level, progress, saveFn) {
 }
 
 // ============================================================
-// 三消模式
+// 三消模式（中文卡片朗读普通话 + 颜色球）
 // ============================================================
 function candyGetLevelConfig(level) {
     const { levelInGarden } = getGardenInfo(level);
@@ -2162,7 +2136,7 @@ function candyGetLevelConfig(level) {
 let candyProgress = candyLoadProgress();
 function candyLoadProgress() {
     try {
-        const saved = localStorage.getItem('candyProgressV12');
+        const saved = localStorage.getItem('candyProgressV11');
         if (saved) {
             const d = JSON.parse(saved);
             return {
@@ -2178,7 +2152,7 @@ function candyLoadProgress() {
     return { currentLevel:1, levelStars:{}, wordStats:{}, badges:[], bonusStars:0, detectiveTriggered:[] };
 }
 function candySaveProgress() {
-    try { localStorage.setItem('candyProgressV12', JSON.stringify(candyProgress)); } catch(e) {}
+    try { localStorage.setItem('candyProgressV11', JSON.stringify(candyProgress)); } catch(e) {}
 }
 
 let candyCurrentLevel = 1;
@@ -2245,7 +2219,7 @@ function candyRenderHome() {
 
     const info = getGardenInfo(candyCurrentLevel);
     const doneInGarden = getDoneInGarden(candyProgress, info.gardenIndex);
-    candyGardenHint.textContent = `${info.gardenType.emoji} ${info.gardenType.name} · 藤蔓上已开花 ${doneInGarden} / ${LEVELS_PER_GARDEN} 朵`;
+    candyGardenHint.textContent = `${info.gardenType.emoji} ${info.gardenType.name} · 已开花 ${doneInGarden} / ${LEVELS_PER_GARDEN} 朵`;
 
     renderGarden('candy', 'candyGarden');
     renderGardenCollection('candy', 'candyCollection');
@@ -2296,14 +2270,24 @@ function candyRenderBoard() {
         if (card.type === 'chinese') {
             cardDiv.innerHTML = `<div class="chinese-text">${card.content}</div>`;
         } else if (card.type === 'image') {
-            cardDiv.innerHTML = `<span style="font-size:inherit;">${card.content}</span>`;
+            // 颜色词显示为彩色球，其他显示 emoji
+            if (COLOR_WORDS[card.word]) {
+                cardDiv.innerHTML = `<div class="color-ball" style="background: ${COLOR_WORDS[card.word]};"></div>`;
+            } else {
+                cardDiv.innerHTML = `<span style="font-size:inherit;">${card.content}</span>`;
+            }
         } else {
             cardDiv.innerHTML = `<div class="word-text">${card.content}</div>`;
         }
 
         cardDiv.addEventListener('click', (e) => {
             if (card.matched) return;
-            speakWord(card.word);
+            // 中文卡片朗读普通话，英文卡片朗读英语
+            if (card.type === 'chinese') {
+                speakChinese(card.word);
+            } else {
+                speakWord(card.word);
+            }
             candyHandleClick(card.id, e);
         });
         candyBoard.appendChild(cardDiv);
@@ -2351,20 +2335,24 @@ function candyHandleClick(cardId, event) {
             candyRenderBoard();
             playMatchSound();
             createStars(clickX, clickY, 8);
-            setTimeout(() => speakWord(words[0], 1.0), 200);
+            setTimeout(() => {
+                // 匹配成功时先读英文再读中文
+                speakWord(words[0], 1.0);
+                setTimeout(() => speakChinese(words[0]), 800);
+            }, 200);
             candyMessage.textContent = `✔️ 太棒了！${words[0]} 三张卡全配对！`;
             recordWord(candyProgress, candySaveProgress, words[0], candyCurrentLevel);
             candyLock = false;
             candyCheckComplete();
         } else {
             playErrorSound();
-            candyMessage.textContent = `❌ 需要「中文 + 英文 + 图片」三张同源卡哦！`;
+            candyMessage.textContent = `❌ 需要「中文 + 英文 + 颜色球」三张同源卡哦！`;
             setTimeout(() => {
                 candySelectedIds = [];
                 candyRenderBoard();
                 candyLock = false;
                 if (!candyFinished) {
-                    candyMessage.textContent = '👆 找出「中文 + 英文 + 图片」三张同源卡，一起消除！';
+                    candyMessage.textContent = '👆 找出「中文 + 英文 + 颜色球」三张同源卡，一起消除！';
                 }
             }, 700);
         }
@@ -2552,7 +2540,7 @@ function candyLoadLevel(level) {
     }
 
     candyGameHint.textContent = `🧩 ${candyConfig.phase} · ${candyConfig.pairCount}组 · 复习 ${candyConfig.reviewWordCount}`;
-    candyMessage.textContent = `第 ${candyCurrentLevel} 关：找出「中文 + 英文 + 图片」三张同源卡！`;
+    candyMessage.textContent = `第 ${candyCurrentLevel} 关：找出「中文 + 英文 + 颜色球」三张同源卡！`;
     candyUpdateStats();
     candyRenderBoard();
     if (candyConfig.timeLimit) startCandyTimer();
@@ -2588,7 +2576,7 @@ candyResetBtn.addEventListener('click', () => {
 });
 
 // ============================================================
-// 翻牌记忆模式
+// 翻牌记忆模式（保持不变，仅保留原逻辑）
 // ============================================================
 function memoryGetLevelConfig(level) {
     const { levelInGarden } = getGardenInfo(level);
@@ -2618,7 +2606,7 @@ function memoryGetLevelConfig(level) {
 let memoryProgress = memoryLoadProgress();
 function memoryLoadProgress() {
     try {
-        const saved = localStorage.getItem('memoryProgressV11');
+        const saved = localStorage.getItem('memoryProgressV10');
         if (saved) {
             const d = JSON.parse(saved);
             return {
@@ -2634,7 +2622,7 @@ function memoryLoadProgress() {
     return { currentLevel:1, wordStats:{}, levelStars:{}, badges:[], bonusStars:0, detectiveTriggered:[] };
 }
 function memorySaveProgress() {
-    try { localStorage.setItem('memoryProgressV11', JSON.stringify(memoryProgress)); } catch(e) {}
+    try { localStorage.setItem('memoryProgressV10', JSON.stringify(memoryProgress)); } catch(e) {}
 }
 
 let memoryCurrentLevel = 1;
@@ -2688,7 +2676,7 @@ function memoryRenderHome() {
 
     const info = getGardenInfo(memoryCurrentLevel);
     const doneInGarden = getDoneInGarden(memoryProgress, info.gardenIndex);
-    memoryGardenHint.textContent = `${info.gardenType.emoji} ${info.gardenType.name} · 藤蔓上已开花 ${doneInGarden} / ${LEVELS_PER_GARDEN} 朵`;
+    memoryGardenHint.textContent = `${info.gardenType.emoji} ${info.gardenType.name} · 已开花 ${doneInGarden} / ${LEVELS_PER_GARDEN} 朵`;
 
     renderGarden('memory', 'memoryGarden');
     renderGardenCollection('memory', 'memoryCollection');
