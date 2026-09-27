@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>趣味英语 · 三消 + 翻牌记忆 + 侦探寻宝</title>
+<title>趣味英语 · 三消 + 翻牌记忆 + 三字经</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Poppins',system-ui,sans-serif;
     user-select:none; -webkit-tap-highlight-color:transparent; }
@@ -52,7 +52,7 @@ body::after {
 
 /* ===== 主容器 ===== */
 .game-wrapper {
-    position:relative; z-index:2; width:100%; max-width:720px;
+    position:relative; z-index:2; width:100%; max-width:760px;
     background:rgba(255,255,255,0.88);
     backdrop-filter:blur(20px) saturate(1.3);
     -webkit-backdrop-filter:blur(20px) saturate(1.3);
@@ -67,7 +67,7 @@ body::after {
 }
 .game-wrapper::before {
     content:''; position:absolute; top:0; left:0; right:0; height:5px;
-    background:linear-gradient(90deg,#7bb8e8,#a8c8ff,#c9b3ff,#ffb3d1,#7bb8e8);
+    background:linear-gradient(90deg,#7bb8e8,#a8c8ff,#c9b3ff,#ffb3d1,#ffcc80,#7bb8e8);
     background-size:200% 100%;
     animation:rainbowSlide 7s linear infinite;
 }
@@ -104,40 +104,14 @@ body::after {
     letter-spacing:0.5px;
 }
 
-/* ===== 模式切换 ===== */
-.mode-switch {
-    display:flex; background:rgba(220,232,245,0.7);
-    border-radius:40px; padding:5px;
-    box-shadow:inset 0 2px 6px rgba(80,120,160,0.12), 0 2px 0 rgba(255,255,255,0.8);
-    gap:4px;
-    border:1px solid rgba(255,255,255,0.7);
-}
-.mode-btn {
-    border:none; background:transparent; border-radius:40px;
-    padding:9px 15px; font-weight:800; font-size:0.85rem;
-    color:#6b88a8; cursor:pointer;
-    transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);
-    white-space:nowrap; position:relative;
-}
-.mode-btn:hover:not(.active) { color:#3d6fa8; }
-.mode-btn.active {
-    background:linear-gradient(145deg,#ffffff,#f0f6fc);
-    color:#3d6fa8;
-    box-shadow:
-        0 4px 10px rgba(80,120,160,0.18),
-        inset 0 -2px 0 rgba(180,200,220,0.3),
-        inset 0 2px 0 rgba(255,255,255,1);
-    transform:translateY(-1px);
-}
-
-/* ===== 首页：模式选择卡片 ===== */
-.mode-cards { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:20px 0 10px; }
+/* ===== 首页：模式选择 ===== */
+.mode-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:20px 0 10px; }
 .mode-card {
-    border:none; cursor:pointer; border-radius:28px;
-    padding:30px 16px 26px; text-align:center;
+    border:none; cursor:pointer; border-radius:24px;
+    padding:22px 12px 18px; text-align:center;
     transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);
     position:relative; overflow:hidden;
-    display:flex; flex-direction:column; align-items:center; gap:14px;
+    display:flex; flex-direction:column; align-items:center; gap:10px;
 }
 .mode-card.candy-card {
     background:linear-gradient(160deg,#e8f4ff,#c9e2ff);
@@ -153,15 +127,17 @@ body::after {
         0 14px 26px rgba(140,110,200,0.22),
         inset 0 3px 0 rgba(255,255,255,1);
 }
-.mode-card:active {
-    transform:translateY(9px);
+.mode-card.sanzijing-card {
+    background:linear-gradient(160deg,#fff4e0,#fde0b8);
+    box-shadow:
+        0 12px 0 #d8b888,
+        0 14px 26px rgba(200,140,60,0.22),
+        inset 0 3px 0 rgba(255,255,255,1);
 }
-.mode-card.candy-card:active {
-    box-shadow:0 3px 0 #a8c8e0, 0 6px 12px rgba(80,140,200,0.2), inset 0 3px 0 rgba(255,255,255,1);
-}
-.mode-card.memory-card:active {
-    box-shadow:0 3px 0 #b8a8d8, 0 6px 12px rgba(140,110,200,0.2), inset 0 3px 0 rgba(255,255,255,1);
-}
+.mode-card:active { transform:translateY(9px); }
+.mode-card.candy-card:active { box-shadow:0 3px 0 #a8c8e0, 0 6px 12px rgba(80,140,200,0.2), inset 0 3px 0 rgba(255,255,255,1); }
+.mode-card.memory-card:active { box-shadow:0 3px 0 #b8a8d8, 0 6px 12px rgba(140,110,200,0.2), inset 0 3px 0 rgba(255,255,255,1); }
+.mode-card.sanzijing-card:active { box-shadow:0 3px 0 #d8b888, 0 6px 12px rgba(200,140,60,0.2), inset 0 3px 0 rgba(255,255,255,1); }
 .mode-card::after {
     content:''; position:absolute; top:-50%; left:-50%;
     width:200%; height:200%;
@@ -169,24 +145,29 @@ body::after {
     animation:shimmer 4.5s ease-in-out infinite;
     pointer-events:none;
 }
+@keyframes shimmer {
+    0% { transform:translateX(-100%) rotate(0); }
+    100% { transform:translateX(100%) rotate(0); }
+}
 .mode-card .mode-emoji {
-    font-size:4rem; line-height:1;
+    font-size:3.2rem; line-height:1;
     filter:drop-shadow(0 6px 8px rgba(80,120,160,0.25));
     animation:emojiBob 3s ease-in-out infinite;
 }
 .mode-card .mode-name {
-    font-size:1.35rem; font-weight:900;
+    font-size:1.15rem; font-weight:900;
     letter-spacing:0.5px;
 }
 .mode-card.candy-card .mode-name { color:#3d6fa8; }
 .mode-card.memory-card .mode-name { color:#6b4fa8; }
+.mode-card.sanzijing-card .mode-name { color:#a1582e; }
 .mode-card .mode-desc {
-    font-size:0.78rem; font-weight:700;
+    font-size:0.72rem; font-weight:700;
     color:#7a8a9a; letter-spacing:0.2px;
-    margin-top:-6px;
+    margin-top:-4px;
 }
 .mode-card .mode-progress-mini {
-    width:100%; margin-top:6px;
+    width:100%; margin-top:4px;
     background:rgba(255,255,255,0.6);
     border-radius:20px; height:8px; overflow:hidden;
     box-shadow:inset 0 2px 3px rgba(80,120,160,0.15);
@@ -195,24 +176,21 @@ body::after {
     height:100%; border-radius:20px;
     transition:width 0.5s;
 }
-.mode-card.candy-card .mode-progress-fill {
-    background:linear-gradient(90deg,#7bb8e8,#5b8fd1);
-}
-.mode-card.memory-card .mode-progress-fill {
-    background:linear-gradient(90deg,#b8a8e8,#8b6fd1);
-}
+.mode-card.candy-card .mode-progress-fill { background:linear-gradient(90deg,#7bb8e8,#5b8fd1); }
+.mode-card.memory-card .mode-progress-fill { background:linear-gradient(90deg,#b8a8e8,#8b6fd1); }
+.mode-card.sanzijing-card .mode-progress-fill { background:linear-gradient(90deg,#ffcc80,#ff9800); }
 .mode-card .mode-level-tag {
-    font-size:0.72rem; font-weight:800;
+    font-size:0.7rem; font-weight:800;
     color:#fff; padding:3px 10px; border-radius:20px;
     margin-top:2px;
 }
 .mode-card.candy-card .mode-level-tag { background:#5b8fd1; }
 .mode-card.memory-card .mode-level-tag { background:#8b6fd1; }
+.mode-card.sanzijing-card .mode-level-tag { background:#e08a2e; }
 
-/* ===== 数据卡（进入模式后） ===== */
+/* ===== 数据卡 ===== */
 .home-stats { display:grid; grid-template-columns:repeat(4,1fr);
     gap:10px; margin:18px 0; }
-
 .home-stat {
     border-radius:22px; padding:14px 6px 12px;
     text-align:center;
@@ -241,10 +219,6 @@ body::after {
     background:linear-gradient(45deg,transparent 40%,rgba(255,255,255,0.55) 50%,transparent 60%);
     animation:shimmer 4.5s ease-in-out infinite;
     pointer-events:none;
-}
-@keyframes shimmer {
-    0% { transform:translateX(-100%) rotate(0); }
-    100% { transform:translateX(100%) rotate(0); }
 }
 .home-stat .stat-num {
     font-size:1.55rem; font-weight:900; line-height:1;
@@ -293,6 +267,28 @@ body::after {
 @keyframes progressFlow {
     0% { background-position:0% 0; }
     100% { background-position:200% 0; }
+}
+.sanzijing-progress-fill {
+    background:linear-gradient(90deg,#ffcc80,#ff9800,#ffcc80,#ff9800);
+    background-size:200% 100%;
+    animation:progressFlow 3s linear infinite;
+    border-radius:40px; height:22px;
+    transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    display:flex; align-items:center; justify-content:flex-end;
+    padding-right:10px; font-size:0.72rem; font-weight:900; color:#fff;
+    min-width:60px;
+    box-shadow:
+        0 3px 0 #b46f1e,
+        inset 0 2px 0 rgba(255,255,255,0.4),
+        inset 0 -2px 0 rgba(0,0,0,0.15);
+    text-shadow:1px 1px 0 rgba(0,0,0,0.2);
+    position:relative; overflow:hidden;
+}
+.sanzijing-progress-fill::after {
+    content:''; position:absolute; top:0; left:0; right:0; height:50%;
+    background:linear-gradient(180deg,rgba(255,255,255,0.45),transparent);
+    border-radius:40px 40px 0 0;
+    pointer-events:none;
 }
 
 /* ===== 主按钮 ===== */
@@ -348,6 +344,26 @@ body::after {
         0 3px 0 #a8b0bc,
         0 5px 10px rgba(120,130,150,0.2),
         inset 0 3px 0 rgba(255,255,255,0.7);
+}
+.big-btn.orange {
+    background:linear-gradient(160deg,#ffcc80,#f0a040);
+    color:#4a2e18;
+    box-shadow:
+        0 10px 0 #b46f1e,
+        0 12px 24px rgba(200,140,60,0.35),
+        inset 0 3px 0 rgba(255,255,255,0.5),
+        inset 0 -4px 0 rgba(0,0,0,0.1);
+    text-shadow:0 1px 0 rgba(255,255,255,0.5);
+}
+.big-btn.orange::after {
+    content:''; position:absolute; top:0; left:-60%; width:60%; height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.5),transparent);
+    animation:btnShine 3s ease-in-out infinite;
+    pointer-events:none;
+}
+.big-btn.orange:active {
+    transform:translateY(7px);
+    box-shadow:0 3px 0 #b46f1e, 0 5px 10px rgba(200,140,60,0.3), inset 0 3px 0 rgba(255,255,255,0.5);
 }
 
 /* ===== 返回按钮 ===== */
@@ -445,6 +461,12 @@ body::after {
     box-shadow:0 3px 8px rgba(91,143,209,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
     letter-spacing:0.2px;
 }
+.learning-hint.orange {
+    background:linear-gradient(135deg,#fff4e0,#ffe0b8);
+    color:#a1582e;
+    border-left:5px solid #f0a040;
+    box-shadow:0 3px 8px rgba(240,160,64,0.18), inset 0 1px 0 rgba(255,255,255,0.8);
+}
 
 /* ===== 关卡信息栏 ===== */
 .level-bar {
@@ -479,7 +501,7 @@ body::after {
 .sound-toggle:active { transform:translateY(3px); box-shadow:0 1px 0 #a8b8c8; }
 .sound-toggle.muted { background:#d4dce0; color:#7a8a9a; }
 
-/* 三消棋盘 */
+/* ===== 三消棋盘 ===== */
 .board-candy { display:grid; grid-template-columns:repeat(4,1fr);
     gap:8px; margin:10px 0; }
 .card-candy {
@@ -551,8 +573,6 @@ body::after {
     transform:rotateY(180deg);
 }
 .card-memory.flipped { transform:rotateY(180deg); }
-
-/* 配对成功：保持翻开 + 绿色高亮 + 对勾 */
 .card-memory.matched {
     pointer-events:none;
     transform:rotateY(180deg);
@@ -577,7 +597,6 @@ body::after {
     50% { transform:scale(1.08); }
     100% { transform:scale(1); }
 }
-
 .card-memory .front .word-text { font-size:1.1rem; font-weight:800;
     color:#3d6fa8; text-align:center; line-height:1.1; word-break:break-word; }
 .card-memory .front .emoji { font-size:2.3rem; line-height:1;
@@ -589,7 +608,7 @@ body::after {
     cursor:pointer; box-shadow:0 2px 0 #3d6fa8; z-index:5; padding:0;
 }
 
-/* 侦探寻宝场景 */
+/* ===== 侦探寻宝 ===== */
 .board-detective {
     position:relative; width:100%; aspect-ratio:4/3;
     background:linear-gradient(180deg,#c9e2ff 0%,#e8f4ff 100%);
@@ -719,15 +738,307 @@ body::after {
     0%{transform:translateY(-20px) rotate(0);opacity:1;}
     100%{transform:translateY(100vh) rotate(720deg);opacity:0;}
 }
+
+/* ============================================================
+   三字经专属样式（橙色暖调）
+   ============================================================ */
+.szj-score-board{
+    background:#d9b382;padding:6px 14px;border-radius:60px;color:#2e1b0e;
+    font-weight:700;font-size:0.95rem;
+    box-shadow:inset 0 -3px 0 #b28b5c,0 6px 12px rgba(150,100,50,.25);
+    display:flex;align-items:center;gap:5px;
+}
+.szj-score-board.bump{animation:bump .35s ease}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.2)}100%{transform:scale(1)}}
+.szj-score-board .star{font-size:1.2rem;line-height:1;color:#ffc107;text-shadow:0 2px 0 #b87c1b}
+
+.szj-level-bar{
+    display:flex;align-items:center;justify-content:space-between;
+    background:#f7e9d5;border-radius:40px;padding:10px 18px;margin-bottom:16px;
+    box-shadow:inset 0 2px 6px rgba(150,100,50,.15);flex-wrap:wrap;gap:8px;
+}
+.szj-level-info{display:flex;align-items:center;gap:10px}
+.szj-level-badge{
+    background:#ffb74d;color:#4a2e18;font-weight:800;font-size:.9rem;
+    padding:5px 14px;border-radius:40px;box-shadow:0 3px 0 #b46f1e;letter-spacing:1px;
+}
+.szj-level-title{font-size:.85rem;color:#8a6a4a;font-weight:600;letter-spacing:1px}
+.szj-level-dots{display:flex;gap:5px;flex-wrap:wrap}
+.szj-level-dot{
+    width:22px;height:22px;border-radius:50%;
+    background:#e0c9a8;box-shadow:inset 0 2px 3px rgba(150,100,50,.3);
+    display:flex;align-items:center;justify-content:center;
+    font-size:.7rem;font-weight:800;color:#8a6a4a;transition:all .3s;
+}
+.szj-level-dot.done{background:#ffb74d;color:#4a2e18;box-shadow:0 2px 0 #b46f1e}
+.szj-level-dot.current{
+    background:#fff;border:3px solid #ff9800;
+    box-shadow:0 0 0 4px rgba(255,152,0,.25);animation:pulseDot 1.5s infinite;
+}
+@keyframes pulseDot{
+    0%,100%{box-shadow:0 0 0 4px rgba(255,152,0,.25)}
+    50%{box-shadow:0 0 0 8px rgba(255,152,0,.12)}
+}
+
+.szj-map-title{
+    text-align:center;font-size:1.25rem;color:#a1582e;font-weight:800;
+    letter-spacing:3px;margin-bottom:4px;
+}
+.szj-map-sub{
+    text-align:center;font-size:.8rem;color:#b98a63;margin-bottom:6px;letter-spacing:1px;
+}
+.szj-progress-outer{
+    background:#f0dbb8;border-radius:20px;height:12px;margin:8px 20px 16px;
+    overflow:hidden;box-shadow:inset 0 2px 4px rgba(150,100,50,.2);
+}
+.szj-progress-inner{
+    height:100%;background:linear-gradient(90deg,#ffb74d,#ff9800);
+    border-radius:20px;width:0%;transition:width .5s ease;
+}
+.szj-review-banner{
+    background:linear-gradient(135deg,#b3e5fc,#81d4fa);
+    border-radius:22px;padding:14px 18px;margin-bottom:14px;
+    box-shadow:0 6px 0 #4fc3f7,0 8px 16px rgba(30,100,180,.2);
+    display:flex;align-items:center;justify-content:space-between;
+    cursor:pointer;transition:all .15s;gap:10px;
+}
+.szj-review-banner:active{transform:translateY(4px);box-shadow:0 2px 0 #4fc3f7}
+.szj-review-banner .rb-left{display:flex;align-items:center;gap:12px}
+.szj-review-banner .rb-icon{font-size:2rem;line-height:1}
+.szj-review-banner .rb-text{display:flex;flex-direction:column;gap:2px}
+.szj-review-banner .rb-title{font-size:1rem;font-weight:800;color:#0d47a1;letter-spacing:1px}
+.szj-review-banner .rb-sub{font-size:.75rem;color:#1565c0;font-weight:600;letter-spacing:1px}
+.szj-review-banner .rb-count{
+    background:#fff;color:#0d47a1;font-weight:800;font-size:1.1rem;
+    padding:6px 16px;border-radius:40px;box-shadow:inset 0 2px 4px rgba(30,100,180,.2);
+}
+
+.szj-level-group{margin-bottom:14px}
+.szj-level-group-title{
+    font-size:.78rem;color:#b98a63;font-weight:700;letter-spacing:1px;
+    margin-bottom:8px;padding-left:6px;
+}
+.szj-level-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.szj-level-card{
+    background:#fef3e2;border-radius:20px;padding:12px 4px 8px;
+    text-align:center;cursor:pointer;transition:all .2s;
+    box-shadow:inset 0 0 0 2px #f7e2c0,0 5px 0 #d9b382;position:relative;
+}
+.szj-level-card:active{transform:translateY(4px);box-shadow:inset 0 0 0 2px #f7e2c0,0 1px 0 #d9b382}
+.szj-level-card.locked{opacity:.45;cursor:not-allowed;box-shadow:inset 0 0 0 2px #f7e2c0,0 5px 0 #c9b088}
+.szj-level-card.locked:active{transform:none}
+.szj-level-card .lv-num{font-size:1.25rem;font-weight:800;color:#6b3f1c}
+.szj-level-card .lv-stars{font-size:.8rem;margin-top:3px;letter-spacing:1px;min-height:1rem}
+.szj-level-card .lv-label{font-size:.65rem;color:#a5835a;font-weight:600;margin-top:2px;line-height:1.2}
+.szj-level-card .lock-icon{position:absolute;top:5px;right:7px;font-size:.85rem;opacity:.7}
+.szj-level-card.unlocked .lock-icon{display:none}
+
+.szj-card-scene{perspective:1000px;margin-bottom:16px}
+.szj-learn-card{
+    background:transparent;border-radius:36px;position:relative;width:100%;height:250px;
+    cursor:pointer;user-select:none;transform-style:preserve-3d;
+    transition:transform .6s cubic-bezier(.4,0,.2,1);
+}
+.szj-learn-card.flipped{transform:rotateY(180deg)}
+.szj-card-face{
+    position:absolute;width:100%;height:100%;backface-visibility:hidden;
+    border-radius:36px;display:flex;flex-direction:column;justify-content:center;align-items:center;
+    padding:14px 16px;box-shadow:inset 0 0 0 2px #f7e2c0,inset 0 0 20px #f0dbb8;
+}
+.szj-card-front{background:#fef3e2}
+.szj-card-back{
+    background:#f0e2cf;transform:rotateY(180deg);
+    box-shadow:inset 0 0 0 2px #e0c9a8,inset 0 0 20px #d9c4a4;
+}
+.szj-card-back .question-mark{
+    font-size:5.5rem;font-weight:800;color:#c9a87c;line-height:1;
+    text-shadow:4px 4px 0 #b89468;animation:breathe 2s ease-in-out infinite;
+}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.08);opacity:1}}
+.szj-learn-label{
+    display:inline-block;background:#ffb74d;color:#4a2e18;font-size:.8rem;
+    font-weight:700;padding:3px 14px;border-radius:40px;letter-spacing:1px;
+    margin-bottom:8px;box-shadow:0 3px 0 #b46f1e;
+}
+.szj-learn-label.review{background:#81d4fa;box-shadow:0 3px 0 #0288d1;color:#0d47a1}
+.szj-learn-label.new{background:#ffb74d;box-shadow:0 3px 0 #b46f1e}
+.szj-speaker-icon{position:absolute;top:12px;right:16px;font-size:1.4rem;opacity:.7}
+.szj-big-line{
+    font-size:3.8rem;font-weight:800;color:#6b3f1c;line-height:1.3;
+    text-shadow:5px 5px 0 #edd6b6;letter-spacing:12px;padding:4px 0;
+    text-align:center;word-break:break-all;
+}
+.szj-big-line.pop{animation:pop .5s ease}
+.szj-big-pinyin{
+    font-size:1.2rem;font-weight:600;color:#b98a63;letter-spacing:2px;
+    margin-top:8px;line-height:1.5;text-align:center;
+}
+.szj-back-hint{
+    font-size:.95rem;color:#a5835a;font-weight:600;letter-spacing:2px;
+    margin-top:10px;background:rgba(255,242,226,.7);padding:5px 18px;border-radius:30px;
+}
+.szj-countdown-hint{
+    position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+    font-size:.75rem;color:#b98a63;font-weight:600;letter-spacing:1px;
+    opacity:0;transition:opacity .3s;
+}
+.szj-countdown-hint.show{opacity:1}
+
+.szj-practice-area{
+    opacity:0;visibility:hidden;transform:translateY(12px);
+    transition:opacity .4s ease,transform .4s ease,visibility .4s;pointer-events:none;
+}
+.szj-practice-area.visible{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
+.szj-practice-title{
+    text-align:center;font-size:1.05rem;color:#a1582e;font-weight:700;
+    letter-spacing:1px;margin-bottom:10px;min-height:1.5rem;
+}
+.szj-options-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:0 2px 10px}
+.szj-option-btn{
+    background:#fffcf6;border:4px solid #e2c6a2;border-radius:22px;
+    padding:18px 8px;font-size:1.8rem;font-weight:700;color:#3d2b1a;
+    display:flex;justify-content:center;align-items:center;cursor:pointer;
+    transition:all .1s ease;box-shadow:0 6px 0 #b28b5c,0 8px 14px rgba(130,80,40,.18);
+    user-select:none;font-family:inherit;line-height:1.4;letter-spacing:6px;
+    text-align:center;word-break:break-all;
+}
+.szj-option-btn:hover:not(:disabled){background:#fff6e6;transform:translateY(-2px);
+    box-shadow:0 8px 0 #b28b5c,0 12px 18px rgba(130,80,40,.22)}
+.szj-option-btn:active:not(:disabled){transform:translateY(4px);
+    box-shadow:0 2px 0 #b28b5c,0 6px 10px rgba(130,80,40,.18)}
+.szj-option-btn.correct{
+    background:#c8e6c9;border-color:#6b9e6b;color:#1e4a1e;
+    box-shadow:0 6px 0 #4a754a,0 8px 14px rgba(70,120,70,.3);
+    animation:szjCorrectPop .4s ease;
+}
+@keyframes szjCorrectPop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+.szj-option-btn.wrong{
+    background:#ffcdd2;border-color:#c97b7b;color:#6b2a2a;
+    box-shadow:0 6px 0 #a15c5c,0 8px 14px rgba(160,80,80,.25);
+    animation:szjShake .4s ease;
+}
+@keyframes szjShake{
+    0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}
+    40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}
+}
+.szj-option-btn:disabled{cursor:default;opacity:.85;transform:translateY(0)}
+.szj-option-btn.hint-pulse{animation:szjHintPulse 1s infinite}
+@keyframes szjHintPulse{
+    0%{border-color:#e2c6a2}50%{border-color:#ffb74d;background:#fff6e6;transform:scale(1.02)}
+    100%{border-color:#e2c6a2;transform:scale(1)}
+}
+
+.szj-feedback-msg{
+    text-align:center;font-size:1.1rem;font-weight:600;min-height:2.4rem;
+    padding:4px;margin:2px 0;letter-spacing:1px;transition:all .2s;
+}
+.szj-feedback-msg.success{color:#2e7d32}
+.szj-feedback-msg.error{color:#b33e3e}
+
+.szj-action-area{display:flex;justify-content:center;gap:10px;margin-top:6px;flex-wrap:wrap}
+.szj-btn{
+    border:none;border-radius:60px;padding:13px 26px;font-size:1.15rem;font-weight:700;
+    color:#4a2e18;letter-spacing:3px;cursor:pointer;transition:all .1s ease;
+    display:inline-flex;align-items:center;gap:6px;font-family:inherit;
+}
+.szj-btn-next{background:#ffb74d;box-shadow:0 8px 0 #b46f1e,0 10px 18px rgba(150,90,30,.3)}
+.szj-btn-next:active:not(:disabled){transform:translateY(5px);box-shadow:0 3px 0 #b46f1e,0 8px 14px rgba(150,90,30,.25)}
+.szj-btn-next:disabled{opacity:.45;transform:translateY(5px);box-shadow:0 3px 0 #b46f1e;cursor:default}
+.szj-btn-hint{
+    background:#a5d6a7;box-shadow:0 8px 0 #558b2f,0 10px 18px rgba(70,120,50,.25);
+    font-size:1rem;padding:13px 18px;
+}
+.szj-btn-hint:active:not(:disabled){transform:translateY(5px);box-shadow:0 3px 0 #558b2f,0 8px 14px rgba(70,120,50,.2)}
+.szj-btn-hint:disabled{opacity:.4;transform:translateY(5px);box-shadow:0 3px 0 #558b2f;cursor:default}
+.szj-btn-speak{
+    background:#90caf9;box-shadow:0 8px 0 #1565c0,0 10px 18px rgba(30,100,180,.25);
+    font-size:1rem;padding:13px 18px;
+}
+.szj-btn-speak:active:not(:disabled){transform:translateY(5px);box-shadow:0 3px 0 #1565c0,0 8px 14px rgba(30,100,180,.2)}
+.szj-btn-speak:disabled{opacity:.4;transform:translateY(5px);box-shadow:0 3px 0 #1565c0;cursor:default}
+.szj-btn-primary{
+    background:#ffb74d;box-shadow:0 8px 0 #b46f1e,0 10px 18px rgba(150,90,30,.3);
+    font-size:1.25rem;padding:15px 38px;letter-spacing:4px;
+}
+.szj-btn-primary:active{transform:translateY(5px);box-shadow:0 3px 0 #b46f1e,0 8px 14px rgba(150,90,30,.25)}
+.szj-btn-order{
+    background:#ce93d8;box-shadow:0 8px 0 #7b1fa2,0 10px 18px rgba(120,30,160,.25);
+    font-size:1rem;padding:13px 18px;color:#3a0a4a;
+}
+.szj-btn-order:active:not(:disabled){transform:translateY(5px);box-shadow:0 3px 0 #7b1fa2,0 8px 14px rgba(120,30,160,.2)}
+.szj-btn-order:disabled{opacity:.4;transform:translateY(5px);box-shadow:0 3px 0 #7b1fa2;cursor:default}
+
+.szj-order-area{margin-top:8px}
+.szj-order-title{
+    text-align:center;font-size:1.05rem;color:#a1582e;font-weight:700;
+    letter-spacing:1px;margin-bottom:10px;
+}
+.szj-order-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.szj-order-slot{
+    background:#f7e9d5;border:3px dashed #d9b382;border-radius:18px;
+    padding:14px 6px;text-align:center;font-size:1.15rem;font-weight:700;
+    color:#6b3f1c;letter-spacing:3px;min-height:52px;
+    display:flex;align-items:center;justify-content:center;transition:all .2s;
+}
+.szj-order-slot.filled{background:#e8f5e9;border:3px solid #6b9e6b;color:#1e4a1e}
+.szj-order-slot.correct{background:#c8e6c9;border:3px solid #4a754a;color:#1e4a1e}
+.szj-order-slot.wrong{
+    background:#ffcdd2;border:3px solid #c97b7b;color:#6b2a2a;animation:szjShake .4s ease;
+}
+.szj-order-pool{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.szj-order-card{
+    background:#fffcf6;border:3px solid #e2c6a2;border-radius:18px;
+    padding:12px 6px;font-size:1.15rem;font-weight:700;color:#3d2b1a;
+    cursor:pointer;transition:all .1s ease;letter-spacing:3px;
+    box-shadow:0 5px 0 #b28b5c;text-align:center;word-break:break-all;
+}
+.szj-order-card:active{transform:translateY(3px);box-shadow:0 2px 0 #b28b5c}
+.szj-order-card.used{opacity:.3;pointer-events:none;box-shadow:none;transform:translateY(3px)}
+
+.szj-result-screen{text-align:center;padding:16px 8px;animation:fadeIn .4s ease}
+.szj-result-emoji{font-size:3.5rem;line-height:1;margin-bottom:6px}
+.szj-result-title{font-size:1.4rem;font-weight:800;color:#a1582e;letter-spacing:3px;margin-bottom:4px}
+.szj-result-sub{font-size:.9rem;color:#b98a63;margin-bottom:12px;letter-spacing:1px}
+.szj-result-stars{font-size:2.2rem;letter-spacing:8px;margin-bottom:14px;min-height:2.6rem}
+.szj-result-stats{
+    display:inline-flex;gap:20px;background:#f7e9d5;border-radius:30px;
+    padding:12px 24px;margin-bottom:18px;box-shadow:inset 0 2px 6px rgba(150,100,50,.15);
+}
+.szj-result-stat{text-align:center}
+.szj-result-stat .num{font-size:1.4rem;font-weight:800;color:#6b3f1c}
+.szj-result-stat .lbl{font-size:.7rem;color:#a5835a;font-weight:600;letter-spacing:1px}
+
+.szj-fulltext-view{
+    background:#fef9ef;border-radius:24px;padding:18px 16px;margin-top:10px;
+    box-shadow:inset 0 0 0 2px #f7e2c0;max-height:420px;overflow-y:auto;
+}
+.szj-fulltext-view .ft-line{
+    font-size:.95rem;color:#6b3f1c;line-height:1.9;letter-spacing:1px;
+    text-align:center;padding:3px 0;
+}
+.szj-fulltext-view .ft-line .ft-pinyin{
+    display:block;font-size:.68rem;color:#b98a63;font-weight:600;letter-spacing:1px;
+}
+.szj-fulltext-view .ft-line.learned{color:#2e7d32;font-weight:700}
+.szj-fulltext-view .ft-line.learned .ft-pinyin{color:#4a754a}
+.szj-fulltext-view .ft-line.partial{color:#f57c00;font-weight:700}
+
+.szj-footer-note{
+    margin-top:14px;text-align:center;color:#c2a07e;font-size:.75rem;
+    letter-spacing:1px;font-weight:500;
+}
+
+/* 响应式 */
 @media (max-width:650px) {
     .game-wrapper { padding:14px; }
     .main-title h1 { font-size:1.3rem; }
     .main-title .title-emoji { font-size:1.6rem; }
-    .mode-cards { gap:12px; }
-    .mode-card { padding:24px 12px 20px; }
-    .mode-card .mode-emoji { font-size:3.2rem; }
-    .mode-card .mode-name { font-size:1.1rem; }
+    .mode-cards { grid-template-columns:1fr; gap:10px; }
+    .mode-card { padding:18px 12px 14px; flex-direction:row; justify-content:flex-start; text-align:left; gap:14px; }
+    .mode-card .mode-emoji { font-size:2.4rem; }
+    .mode-card .mode-name { font-size:1.05rem; }
     .mode-card .mode-desc { font-size:0.7rem; }
+    .mode-card .mode-progress-mini { display:none; }
     .home-stat .stat-num { font-size:1.3rem; }
     .home-stat .stat-label { font-size:0.64rem; }
     .big-btn { font-size:1rem; padding:14px 20px; }
@@ -744,12 +1055,28 @@ body::after {
     .detective-item { font-size:2.3rem; width:48px; height:48px; }
     .detective-slot { width:30px; height:30px; font-size:18px; }
     .detective-speak-btn { width:58px; height:58px; font-size:26px; }
+    .szj-big-line { font-size:2.8rem; letter-spacing:8px; }
+    .szj-big-pinyin { font-size:.9rem; }
+    .szj-learn-card { height:220px; }
+    .szj-card-back .question-mark { font-size:4.5rem; }
+    .szj-option-btn { font-size:1.4rem; padding:14px 6px; border-radius:16px; letter-spacing:4px; }
+    .szj-btn { font-size:.9rem; padding:10px 16px; letter-spacing:1px; }
+    .szj-btn-hint, .szj-btn-speak, .szj-btn-order { font-size:.85rem; padding:10px 14px; }
+    .szj-btn-primary { font-size:1.05rem; padding:12px 26px; }
+    .szj-feedback-msg { font-size:.95rem; }
+    .szj-level-grid { grid-template-columns:repeat(3,1fr); gap:7px; }
+    .szj-level-card { padding:10px 4px 8px; }
+    .szj-level-card .lv-num { font-size:1.05rem; }
+    .szj-order-card, .szj-order-slot { font-size:1rem; padding:10px 4px; letter-spacing:2px; }
+    .szj-review-banner { padding:12px 14px; }
+    .szj-review-banner .rb-icon { font-size:1.6rem; }
+    .szj-review-banner .rb-title { font-size:.9rem; }
+    .szj-review-banner .rb-count { font-size:.95rem; padding:5px 12px; }
 }
 @media (max-width:450px) {
     .board-candy, .board-memory { grid-template-columns:repeat(3,1fr); gap:6px; }
     .controls { flex-direction:column; }
     .ctrl-btn { width:100%; }
-    .mode-cards { grid-template-columns:1fr; }
 }
 </style>
 </head>
@@ -768,14 +1095,20 @@ body::after {
     <div class="top-bar">
         <div class="main-title">
             <span class="title-emoji" id="mainEmoji">🎮</span>
-            <h1 id="mainTitle">趣味英语</h1>
+            <h1 id="mainTitle">趣味学习</h1>
         </div>
-        <button class="back-btn hidden" id="globalBackBtn">← 返回</button>
+        <div style="display:flex;align-items:center;gap:8px">
+            <div class="szj-score-board hidden" id="szjScoreBoard">
+                <span class="star">⭐</span>
+                <span id="szjScoreDisplay">0</span>
+            </div>
+            <button class="back-btn hidden" id="globalBackBtn">← 返回</button>
+        </div>
     </div>
 
     <!-- ========== 首页：模式选择 ========== -->
     <div id="home-screen" class="screen">
-        <div class="learning-hint">🎉 欢迎来到趣味英语！选择一个游戏开始吧～</div>
+        <div class="learning-hint">🎉 欢迎来到趣味学习！选择一个游戏开始吧～</div>
         <div class="mode-cards">
             <button class="mode-card candy-card" id="homeCandyCard">
                 <span class="mode-emoji">🧩</span>
@@ -794,6 +1127,15 @@ body::after {
                     <div class="mode-progress-fill" id="homeMemoryMini" style="width:0%;"></div>
                 </div>
                 <span class="mode-level-tag" id="homeMemoryTag">第 1 关</span>
+            </button>
+            <button class="mode-card sanzijing-card" id="homeSzjCard">
+                <span class="mode-emoji">📖</span>
+                <span class="mode-name">三字经</span>
+                <span class="mode-desc">艾宾浩斯记忆闯关</span>
+                <div class="mode-progress-mini">
+                    <div class="mode-progress-fill" id="homeSzjMini" style="width:0%;"></div>
+                </div>
+                <span class="mode-level-tag" id="homeSzjTag">第 1 关</span>
             </button>
         </div>
     </div>
@@ -915,6 +1257,19 @@ body::after {
         </div>
     </div>
 
+    <!-- ========== 三字经主界面（地图 / 关卡 / 复习 / 结算 / 全文） ========== -->
+    <div id="szj-screen" class="screen hidden">
+        <div class="szj-level-bar" id="szjLevelBar" style="display:none">
+            <div class="szj-level-info">
+                <span class="szj-level-badge" id="szjLevelBadge">第1关</span>
+                <span class="szj-level-title" id="szjLevelTitle"></span>
+            </div>
+            <div class="szj-level-dots" id="szjLevelDots"></div>
+        </div>
+        <div id="szjMainArea"></div>
+        <div class="szj-footer-note">《三字经》· 人之初 性本善</div>
+    </div>
+
     <!-- ========== 侦探寻宝 ========== -->
     <div id="detective-game" class="screen hidden">
         <div class="level-bar">
@@ -941,6 +1296,8 @@ body::after {
 
 <script>
 (function() {
+'use strict';
+
 // ============================================================
 // 音效引擎
 // ============================================================
@@ -984,7 +1341,7 @@ const playBadgeSound = () => {
 };
 
 // ============================================================
-// 语音引擎
+// 语音引擎（效果优先）
 // ============================================================
 let speechSynth = window.speechSynthesis || null;
 let voices = [];
@@ -1096,20 +1453,45 @@ function createStars(x, y, count=5) {
         setTimeout(() => star.remove(), 1500);
     }
 }
-function createConfetti(count=20) {
+function createConfetti(count=20, emojis) {
     const colors = ['#7bb8e8','#5b8fd1','#a8c8ff','#c9b3ff','#ffb3d1','#8cc8f0'];
+    const emojiPool = emojis || null;
     for (let i = 0; i < count; i++) {
         const c = document.createElement('div');
-        c.className = 'confetti';
-        c.style.left = Math.random()*100 + 'vw';
-        c.style.top = '-10px';
-        c.style.background = colors[Math.floor(Math.random()*colors.length)];
-        c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-        c.style.width = (8+Math.random()*8) + 'px';
-        c.style.height = (8+Math.random()*8) + 'px';
-        c.style.animationDelay = (Math.random()*0.5) + 's';
+        if (emojiPool) {
+            c.className = 'star-fall';
+            c.textContent = emojiPool[Math.floor(Math.random()*emojiPool.length)];
+            c.style.left = Math.random()*100 + 'vw';
+            c.style.top = '-20px';
+            c.style.fontSize = (1.2 + Math.random()*1.2) + 'rem';
+            c.style.animationDuration = (0.9 + Math.random()*0.6) + 's';
+            c.style.animationDelay = (Math.random()*0.4) + 's';
+        } else {
+            c.className = 'confetti';
+            c.style.left = Math.random()*100 + 'vw';
+            c.style.top = '-10px';
+            c.style.background = colors[Math.floor(Math.random()*colors.length)];
+            c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+            c.style.width = (8+Math.random()*8) + 'px';
+            c.style.height = (8+Math.random()*8) + 'px';
+            c.style.animationDelay = (Math.random()*0.5) + 's';
+        }
         document.body.appendChild(c);
         setTimeout(() => c.remove(), 2500);
+    }
+}
+function spawnFloatStars(element, count=5) {
+    if (!element) return;
+    const rect = element.getBoundingClientRect();
+    for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'star-fall';
+        el.textContent = ['⭐','🌟','✨'][Math.floor(Math.random()*3)];
+        el.style.left = (rect.left + rect.width/2 + (Math.random()-0.5)*80) + 'px';
+        el.style.top = (rect.top + rect.height/2) + 'px';
+        el.style.animationDelay = (i*0.08) + 's';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1200);
     }
 }
 function shuffleArray(arr) {
@@ -1210,8 +1592,10 @@ const WORD_BANK = [
 const mainEmoji = document.getElementById('mainEmoji');
 const mainTitle = document.getElementById('mainTitle');
 const globalBackBtn = document.getElementById('globalBackBtn');
+const szjScoreBoard = document.getElementById('szjScoreBoard');
+const szjScoreDisplay = document.getElementById('szjScoreDisplay');
 
-const ALL_SCREENS = ['home-screen','candy-home','candy-game','memory-home','memory-game','detective-game'];
+const ALL_SCREENS = ['home-screen','candy-home','candy-game','memory-home','memory-game','szj-screen','detective-game'];
 
 function hideAllScreens() {
     ALL_SCREENS.forEach(id => {
@@ -1219,16 +1603,12 @@ function hideAllScreens() {
         if (el) el.classList.add('hidden');
     });
 }
-
 function showScreen(id) {
     hideAllScreens();
     const el = document.getElementById(id);
     if (el) el.classList.remove('hidden');
 }
-
-// 导航历史栈
 let navStack = [];
-
 function navigateTo(screenId, options = {}) {
     if (!options.replace) {
         const current = ALL_SCREENS.find(id => !document.getElementById(id).classList.contains('hidden'));
@@ -1238,7 +1618,6 @@ function navigateTo(screenId, options = {}) {
     updateTopBar(screenId);
     updateBackBtn();
 }
-
 function navigateBack() {
     if (navStack.length > 0) {
         const prev = navStack.pop();
@@ -1248,46 +1627,70 @@ function navigateBack() {
         if (prev === 'candy-home') candyRenderHome();
         if (prev === 'memory-home') memoryRenderHome();
         if (prev === 'home-screen') updateHomeMiniCards();
+        if (prev === 'szj-screen') { szjState.inLevel = false; szjRenderMap(); }
     }
 }
-
 function updateTopBar(screenId) {
     if (screenId === 'home-screen') {
         mainEmoji.textContent = '🎮';
-        mainTitle.textContent = '趣味英语';
+        mainTitle.textContent = '趣味学习';
+        szjScoreBoard.classList.add('hidden');
     } else if (screenId === 'candy-home' || screenId === 'candy-game') {
         mainEmoji.textContent = '🧩';
         mainTitle.textContent = '三消英语';
+        szjScoreBoard.classList.add('hidden');
     } else if (screenId === 'memory-home' || screenId === 'memory-game') {
         mainEmoji.textContent = '🧠';
         mainTitle.textContent = '翻牌记忆';
+        szjScoreBoard.classList.add('hidden');
+    } else if (screenId === 'szj-screen') {
+        mainEmoji.textContent = '📖';
+        mainTitle.textContent = '三字经 · 闯关';
+        szjScoreBoard.classList.remove('hidden');
+        szjScoreDisplay.textContent = szjState.totalScore;
     } else if (screenId === 'detective-game') {
         mainEmoji.textContent = '🕵️';
         mainTitle.textContent = '侦探寻宝';
+        szjScoreBoard.classList.add('hidden');
     }
 }
-
 function updateBackBtn() {
-    if (navStack.length > 0) {
-        globalBackBtn.classList.remove('hidden');
-    } else {
-        globalBackBtn.classList.add('hidden');
-    }
+    if (navStack.length > 0) globalBackBtn.classList.remove('hidden');
+    else globalBackBtn.classList.add('hidden');
 }
-
-globalBackBtn.addEventListener('click', navigateBack);
+globalBackBtn.addEventListener('click', () => {
+    playSelectSound();
+    // 在三字经关卡内返回时先回地图
+    if (!document.getElementById('szj-screen').classList.contains('hidden') && szjState.inLevel) {
+        szjState.inLevel = false;
+        szjState.orderMode = false;
+        szjState.isReviewMode = false;
+        if (szjState.flipTimer) { clearTimeout(szjState.flipTimer); szjState.flipTimer = null; }
+        if (szjState.optionTimer) { clearTimeout(szjState.optionTimer); szjState.optionTimer = null; }
+        szjSave();
+        szjRenderMap();
+        return;
+    }
+    navigateBack();
+});
 
 // 首页模式卡片
 document.getElementById('homeCandyCard').addEventListener('click', () => {
+    playSelectSound();
     candyRenderHome();
     navigateTo('candy-home');
 });
 document.getElementById('homeMemoryCard').addEventListener('click', () => {
+    playSelectSound();
     memoryRenderHome();
     navigateTo('memory-home');
 });
+document.getElementById('homeSzjCard').addEventListener('click', () => {
+    playSelectSound();
+    szjRenderMap();
+    navigateTo('szj-screen');
+});
 
-// 首页迷你进度
 function updateHomeMiniCards() {
     const candyLv = candyProgress.currentLevel || 1;
     const memoryLv = memoryProgress.currentLevel || 1;
@@ -1295,6 +1698,10 @@ function updateHomeMiniCards() {
     document.getElementById('homeMemoryMini').style.width = Math.max(2, (memoryLv / 120) * 100) + '%';
     document.getElementById('homeCandyTag').textContent = '第 ' + candyLv + ' 关';
     document.getElementById('homeMemoryTag').textContent = '第 ' + memoryLv + ' 关';
+    const szjLv = (szjState.currentLevel || 0) + 1;
+    const szjPct = Math.max(2, (szjState.learnedUnits.length / szjTotalUnits) * 100);
+    document.getElementById('homeSzjMini').style.width = szjPct + '%';
+    document.getElementById('homeSzjTag').textContent = '第 ' + szjLv + ' 关';
 }
 
 // ============================================================
@@ -1389,12 +1796,10 @@ function detectiveStart(mode, returnLevel) {
 
     const shuffled = shuffleArray([...WORD_BANK]);
     detectiveState.words = shuffled.slice(0, 4);
-
     const badgeIdx = (returnLevel / DETECTIVE_TRIGGER_INTERVAL - 1) % BADGE_POOL.length;
     detectiveState.badge = BADGE_POOL[badgeIdx];
 
     navigateTo('detective-game');
-
     document.getElementById('detectiveLevelBadge').textContent = `🕵️ 隐藏关卡 · 第 ${returnLevel} 关奖励`;
     document.getElementById('detectiveFoundCount').textContent = '0';
     document.getElementById('detectiveTryCount').textContent = '0';
@@ -1402,13 +1807,11 @@ function detectiveStart(mode, returnLevel) {
     document.getElementById('detectiveStarsDisplay').querySelectorAll('.star').forEach(s => {
         s.textContent = '☆'; s.classList.remove('earned'); s.style.color = '#aaa';
     });
-
     detectiveRenderBackpack();
     detectiveRenderScene();
     detectiveRenderHint();
     setTimeout(() => detectiveAskCurrent(), 500);
 }
-
 function detectiveRenderBackpack() {
     const bp = document.getElementById('detectiveBackpack');
     bp.innerHTML = '';
@@ -1419,7 +1822,6 @@ function detectiveRenderBackpack() {
         bp.appendChild(slot);
     }
 }
-
 function detectiveRenderScene() {
     const board = document.getElementById('detectiveBoard');
     board.innerHTML = '';
@@ -1427,7 +1829,6 @@ function detectiveRenderScene() {
     const others = WORD_BANK.filter(w => !targetWords.some(t => t.word === w.word));
     const distractors = shuffleArray([...others]).slice(0, 4);
     const allItems = shuffleArray([...targetWords, ...distractors]);
-
     allItems.forEach((item) => {
         const el = document.createElement('div');
         el.className = 'detective-item';
@@ -1440,7 +1841,6 @@ function detectiveRenderScene() {
         board.appendChild(el);
     });
 }
-
 function detectiveRenderHint() {
     const hint = document.getElementById('detectiveHint');
     if (detectiveState.currentIndex < detectiveState.words.length) {
@@ -1449,7 +1849,6 @@ function detectiveRenderHint() {
         hint.textContent = `🎉 全部找到了！点击「完成寻宝」领取徽章！`;
     }
 }
-
 function detectiveAskCurrent() {
     if (detectiveState.currentIndex >= detectiveState.words.length) return;
     const t = detectiveState.words[detectiveState.currentIndex];
@@ -1458,11 +1857,9 @@ function detectiveAskCurrent() {
     btn.classList.add('playing');
     setTimeout(() => btn.classList.remove('playing'), 1200);
 }
-
 function detectiveOnItemClick(item, el) {
     if (detectiveState.currentIndex >= detectiveState.words.length) return;
     const target = detectiveState.words[detectiveState.currentIndex];
-
     if (item.word === target.word) {
         el.classList.add('correct');
         speakWord(target.word, 1.0);
@@ -1472,7 +1869,6 @@ function detectiveOnItemClick(item, el) {
         createStars(rect.left + rect.width / 2, rect.top + rect.height / 2, 5);
         document.getElementById('detectiveFoundCount').textContent = detectiveState.found.length;
         document.getElementById('detectiveMessage').textContent = `✔️ 找到了！${target.word}！`;
-
         setTimeout(() => {
             el.classList.add('hidden');
             detectiveState.currentIndex++;
@@ -1496,28 +1892,21 @@ function detectiveOnItemClick(item, el) {
         setTimeout(() => el.classList.remove('wrong'), 500);
         document.getElementById('detectiveMessage').textContent = `❌ 这是 ${item.word}，再试试看！`;
         setTimeout(() => {
-            if (detectiveState.currentIndex < detectiveState.words.length) {
-                detectiveAskCurrent();
-            }
+            if (detectiveState.currentIndex < detectiveState.words.length) detectiveAskCurrent();
         }, 900);
     }
 }
-
 function detectiveComplete() {
     detectiveState.active = false;
     const progress = detectiveState.mode === 'candy' ? candyProgress : memoryProgress;
     const saveFn = detectiveState.mode === 'candy' ? candySaveProgress : memorySaveProgress;
     if (!progress.badges) progress.badges = [];
-    if (!progress.badges.includes(detectiveState.badge)) {
-        progress.badges.push(detectiveState.badge);
-    }
+    if (!progress.badges.includes(detectiveState.badge)) progress.badges.push(detectiveState.badge);
     if (!progress.bonusStars) progress.bonusStars = 0;
     progress.bonusStars += 1;
     saveFn();
-
     playBadgeSound();
     speakChinese('太棒了！你获得了侦探徽章！');
-
     const overlay = document.createElement('div');
     overlay.className = 'overlay';
     overlay.innerHTML = `
@@ -1535,30 +1924,21 @@ function detectiveComplete() {
         const mode = detectiveState.mode;
         const nextLv = detectiveState.returnLevel + 1;
         navStack = [];
-        if (mode === 'candy') {
-            candyStart(nextLv);
-        } else {
-            memoryStart(nextLv);
-        }
+        if (mode === 'candy') candyStart(nextLv);
+        else memoryStart(nextLv);
     };
 }
-
 function detectiveSkip() {
     detectiveState.active = false;
     const mode = detectiveState.mode;
     const nextLv = detectiveState.returnLevel + 1;
     navStack = [];
-    if (mode === 'candy') {
-        candyStart(nextLv);
-    } else {
-        memoryStart(nextLv);
-    }
+    if (mode === 'candy') candyStart(nextLv);
+    else memoryStart(nextLv);
 }
-
 document.getElementById('detectiveSpeakBtn').addEventListener('click', () => detectiveAskCurrent());
 document.getElementById('detectiveCompleteBtn').addEventListener('click', detectiveComplete);
 document.getElementById('detectiveSkipBtn').addEventListener('click', detectiveSkip);
-
 function shouldTriggerDetective(level, progress) {
     if (level % DETECTIVE_TRIGGER_INTERVAL !== 0) return false;
     if (!progress.detectiveTriggered) progress.detectiveTriggered = [];
@@ -1577,7 +1957,6 @@ function markDetectiveTriggered(level, progress, saveFn) {
 // 三消模式
 // ============================================================
 const CANDY_TOTAL_LEVELS = 120;
-
 function candyGetLevelConfig(level) {
     let pairCount, newWordCount, timeLimit, phase;
     if (level <= 20) { pairCount = 3; newWordCount = 2; timeLimit = null; phase = '入门'; }
@@ -1651,23 +2030,15 @@ const candyTimerBox = document.getElementById('candyTimerBox');
 const candyTimerValue = document.getElementById('candyTimerValue');
 const candyGameHint = document.getElementById('candyGameHint');
 
-function candyGetMasteredCount() {
-    return Object.values(candyProgress.wordStats).filter(w => w.mastered).length;
-}
-function candyTotalStars() {
-    return Object.values(candyProgress.levelStars).reduce((a,b) => a+b, 0) + (candyProgress.bonusStars || 0);
-}
+function candyGetMasteredCount() { return Object.values(candyProgress.wordStats).filter(w => w.mastered).length; }
+function candyTotalStars() { return Object.values(candyProgress.levelStars).reduce((a,b) => a+b, 0) + (candyProgress.bonusStars || 0); }
 function candyUpdateStars(stars) {
     const s = candyStarsDisplay.querySelectorAll('.star');
     s.forEach((el, idx) => {
-        if (idx < stars) {
-            el.textContent = '★'; el.classList.add('earned'); el.style.color = '#ffb800';
-        } else {
-            el.textContent = '☆'; el.classList.remove('earned'); el.style.color = '#aaa';
-        }
+        if (idx < stars) { el.textContent = '★'; el.classList.add('earned'); el.style.color = '#ffb800'; }
+        else { el.textContent = '☆'; el.classList.remove('earned'); el.style.color = '#aaa'; }
     });
 }
-
 function candyRenderHome() {
     candyCurrentLevel = candyProgress.currentLevel || 1;
     candyHomeLevel.textContent = candyCurrentLevel;
@@ -1680,29 +2051,15 @@ function candyRenderHome() {
     candyContinueLevel.textContent = candyCurrentLevel;
     candyJumpInput.value = candyCurrentLevel;
 }
-
 function candyBuildCards(words) {
     const cards = [];
     words.forEach((wd, idx) => {
-        cards.push({
-            id: `cc-${idx}-${Date.now()}-${Math.random()}`,
-            type: 'chinese', content: wd.cn,
-            word: wd.word, matched: false
-        });
-        cards.push({
-            id: `cw-${idx}-${Date.now()}-${Math.random()}`,
-            type: 'word', content: wd.word,
-            word: wd.word, matched: false
-        });
-        cards.push({
-            id: `ci-${idx}-${Date.now()}-${Math.random()}`,
-            type: 'image', content: wd.emoji,
-            word: wd.word, matched: false
-        });
+        cards.push({ id: `cc-${idx}-${Date.now()}-${Math.random()}`, type: 'chinese', content: wd.cn, word: wd.word, matched: false });
+        cards.push({ id: `cw-${idx}-${Date.now()}-${Math.random()}`, type: 'word', content: wd.word, word: wd.word, matched: false });
+        cards.push({ id: `ci-${idx}-${Date.now()}-${Math.random()}`, type: 'image', content: wd.emoji, word: wd.word, matched: false });
     });
     return shuffleArray(cards);
 }
-
 function candyUpdateStats() {
     candyPairsMatchedSpan.textContent = candyMatched;
     candyMovesSpan.textContent = candyMoves;
@@ -1710,7 +2067,6 @@ function candyUpdateStats() {
     candyProgressGame.style.width = percent + '%';
     candyLevelDisplay.textContent = `第 ${candyCurrentLevel} / ${CANDY_TOTAL_LEVELS} 关`;
 }
-
 function candyRenderBoard() {
     candyBoard.innerHTML = '';
     candyCards.forEach(card => {
@@ -1720,15 +2076,11 @@ function candyRenderBoard() {
         cardDiv.dataset.id = card.id;
         if (card.matched) cardDiv.classList.add('eliminated');
         if (candySelectedIds.includes(card.id) && !card.matched) cardDiv.classList.add('selected');
-
-        if (card.type === 'chinese') {
-            cardDiv.innerHTML = `<span style="font-size:inherit;">${card.content}</span>`;
-        } else if (card.type === 'image') {
+        if (card.type === 'chinese' || card.type === 'image') {
             cardDiv.innerHTML = `<span style="font-size:inherit;">${card.content}</span>`;
         } else {
             cardDiv.innerHTML = `<div class="word-text">${card.content}</div>`;
         }
-
         cardDiv.addEventListener('click', (e) => {
             if (card.matched) return;
             if (card.type === 'word') speakWord(card.content);
@@ -1739,40 +2091,32 @@ function candyRenderBoard() {
         candyBoard.appendChild(cardDiv);
     });
 }
-
 function candyHandleClick(cardId, event) {
     if (candyFinished || candyLock || !candyGameActive) return;
     initAudio();
     const card = candyCards.find(c => c.id === cardId);
     if (!card || card.matched) return;
-
     if (candySelectedIds.includes(cardId)) {
         candySelectedIds = candySelectedIds.filter(id => id !== cardId);
         playSelectSound();
         candyRenderBoard();
         return;
     }
-
     candySelectedIds.push(cardId);
     playSelectSound();
     candyRenderBoard();
-
     if (candySelectedIds.length === 3) {
         candyMoves++;
         candyMovesSpan.textContent = candyMoves;
         candyLock = true;
-
         const selected = candySelectedIds.map(id => candyCards.find(c => c.id === id));
         const words = selected.map(c => c.word);
         const allSame = words.every(w => w === words[0]);
         const types = selected.map(c => c.type).sort();
         const hasAllTypes = types[0] === 'chinese' && types[1] === 'image' && types[2] === 'word';
-
-        const rect = event ? event.target.getBoundingClientRect() :
-            { left: window.innerWidth/2, top: window.innerHeight/2 };
+        const rect = event ? event.target.getBoundingClientRect() : { left: window.innerWidth/2, top: window.innerHeight/2 };
         const clickX = rect.left + rect.width/2;
         const clickY = rect.top + rect.height/2;
-
         if (allSame && hasAllTypes) {
             selected.forEach(c => c.matched = true);
             candyMatched++;
@@ -1793,14 +2137,11 @@ function candyHandleClick(cardId, event) {
                 candySelectedIds = [];
                 candyRenderBoard();
                 candyLock = false;
-                if (!candyFinished) {
-                    candyMessage.textContent = '👆 找出同一单词的 3 张卡片，一起消除！';
-                }
+                if (!candyFinished) candyMessage.textContent = '👆 找出同一单词的 3 张卡片，一起消除！';
             }, 700);
         }
     }
 }
-
 function candyCheckComplete() {
     if (candyMatched === candyConfig.pairCount) {
         candyFinished = true;
@@ -1810,21 +2151,15 @@ function candyCheckComplete() {
         if (candyMoves > candyConfig.pairCount * 3) stars = 1;
         else if (candyMoves > candyConfig.pairCount * 2) stars = 2;
         candyUpdateStars(stars);
-
         const prev = candyProgress.levelStars[candyCurrentLevel] || 0;
         if (stars > prev) candyProgress.levelStars[candyCurrentLevel] = stars;
-        if (candyCurrentLevel >= candyProgress.currentLevel) {
-            candyProgress.currentLevel = Math.min(CANDY_TOTAL_LEVELS, candyCurrentLevel + 1);
-        }
+        if (candyCurrentLevel >= candyProgress.currentLevel) candyProgress.currentLevel = Math.min(CANDY_TOTAL_LEVELS, candyCurrentLevel + 1);
         candySaveProgress();
-
         candyMessage.textContent = '🎉 太棒了！本关完成！';
         candyNextBtn.disabled = false;
         createConfetti(30);
         speakEncouragement(stars);
-
         const shouldTrigger = shouldTriggerDetective(candyCurrentLevel, candyProgress);
-
         setTimeout(() => {
             if (shouldTrigger) {
                 markDetectiveTriggered(candyCurrentLevel, candyProgress, candySaveProgress);
@@ -1837,7 +2172,6 @@ function candyCheckComplete() {
         candyNextBtn.disabled = true;
     }
 }
-
 function stopCandyTimer() {
     if (candyTimerInterval) { clearInterval(candyTimerInterval); candyTimerInterval = null; }
     candyGameActive = false;
@@ -1862,7 +2196,6 @@ function startCandyTimer() {
         }
     }, 1000);
 }
-
 function showCandyTimeUpModal() {
     const overlay = document.createElement('div');
     overlay.className = 'overlay';
@@ -1880,14 +2213,13 @@ function showCandyTimeUpModal() {
     document.getElementById('candyTimeRetry').onclick = () => { overlay.remove(); candyLoadLevel(candyCurrentLevel); };
     document.getElementById('candyTimeHome').onclick = () => {
         overlay.remove();
-        navStack = ['candy-home'];
+        navStack = ['home-screen'];
         candyRenderHome();
         showScreen('candy-home');
         updateTopBar('candy-home');
         updateBackBtn();
     };
 }
-
 function showCandyCompleteModal(starCount, hasDetective) {
     const isLast = candyCurrentLevel === CANDY_TOTAL_LEVELS;
     const encourage = getEncourageText(starCount);
@@ -1911,7 +2243,6 @@ function showCandyCompleteModal(starCount, hasDetective) {
             </div>
         </div>`;
     document.body.appendChild(overlay);
-
     const detBtn = document.getElementById('candyDetectiveBtn');
     if (detBtn) detBtn.onclick = () => { overlay.remove(); detectiveStart('candy', candyCurrentLevel); };
     const nextM = document.getElementById('candyNextModalBtn');
@@ -1925,20 +2256,18 @@ function showCandyCompleteModal(starCount, hasDetective) {
     document.getElementById('candyRetryModalBtn').onclick = () => { overlay.remove(); candyLoadLevel(candyCurrentLevel); };
     document.getElementById('candyHomeModalBtn').onclick = () => {
         overlay.remove();
-        navStack = ['candy-home'];
+        navStack = ['home-screen'];
         candyRenderHome();
         showScreen('candy-home');
         updateTopBar('candy-home');
         updateBackBtn();
     };
 }
-
 function candyLoadLevel(level) {
     if (level < 1 || level > CANDY_TOTAL_LEVELS) return;
     stopCandyTimer();
     if (candyTimeoutId) { clearTimeout(candyTimeoutId); candyTimeoutId = null; }
     if (speechSynth) speechSynth.cancel();
-
     candyCurrentLevel = level;
     candyConfig = candyGetLevelConfig(level);
     candyCurrentWords = selectWordsForLevel(candyProgress, level, candyConfig);
@@ -1950,7 +2279,6 @@ function candyLoadLevel(level) {
     candyLock = false;
     candyGameActive = true;
     candyNextBtn.disabled = true;
-
     candyUpdateStars(0);
     if (candyConfig.timeLimit) {
         candyTimerBox.style.display = 'flex';
@@ -1960,23 +2288,18 @@ function candyLoadLevel(level) {
     } else {
         candyTimerBox.style.display = 'none';
     }
-
     candyGameHint.textContent = `🧩 ${candyConfig.phase} · ${candyConfig.pairCount}组 · 复习 ${candyConfig.reviewWordCount}`;
     candyMessage.textContent = `第 ${candyCurrentLevel} 关：找出「中文 + 单词 + 图片」三张同源卡！`;
     candyUpdateStats();
     candyRenderBoard();
     if (candyConfig.timeLimit) startCandyTimer();
 }
-
 function candyStart(level) {
     navigateTo('candy-game');
     candyLoadLevel(level);
 }
-
 candyResetLevel.addEventListener('click', () => candyLoadLevel(candyCurrentLevel));
-candyNextBtn.addEventListener('click', () => {
-    if (candyCurrentLevel < CANDY_TOTAL_LEVELS) candyLoadLevel(candyCurrentLevel + 1);
-});
+candyNextBtn.addEventListener('click', () => { if (candyCurrentLevel < CANDY_TOTAL_LEVELS) candyLoadLevel(candyCurrentLevel + 1); });
 candyBackHome.addEventListener('click', () => {
     if (speechSynth) speechSynth.cancel();
     stopCandyTimer();
@@ -2005,7 +2328,6 @@ candyResetBtn.addEventListener('click', () => {
 // 翻牌记忆模式
 // ============================================================
 const MEMORY_TOTAL_LEVELS = 120;
-
 function memoryGetLevelConfig(level) {
     let pairCount, newWordCount, timeLimit, phase;
     if (level <= 20) { pairCount = 3; newWordCount = 2; timeLimit = null; phase = '入门'; }
@@ -2080,13 +2402,8 @@ const memoryJumpInput = document.getElementById('memoryJumpInput');
 const memoryJumpBtn = document.getElementById('memoryJumpBtn');
 const memoryResetBtn = document.getElementById('memoryResetBtn');
 
-function memoryGetMastered() {
-    return Object.values(memoryProgress.wordStats).filter(w => w.mastered).length;
-}
-function memoryGetStars() {
-    return Object.values(memoryProgress.levelStars).reduce((a,b) => a+b, 0) + (memoryProgress.bonusStars || 0);
-}
-
+function memoryGetMastered() { return Object.values(memoryProgress.wordStats).filter(w => w.mastered).length; }
+function memoryGetStars() { return Object.values(memoryProgress.levelStars).reduce((a,b) => a+b, 0) + (memoryProgress.bonusStars || 0); }
 function memoryRenderHome() {
     memoryCurrentLevel = memoryProgress.currentLevel || 1;
     memoryHomeLevel.textContent = memoryCurrentLevel;
@@ -2099,7 +2416,6 @@ function memoryRenderHome() {
     memoryContinueLevel.textContent = memoryCurrentLevel;
     memoryJumpInput.value = memoryCurrentLevel;
 }
-
 function memoryBuildCards(pairs) {
     const cards = [];
     pairs.forEach((pair, pairId) => {
@@ -2108,25 +2424,19 @@ function memoryBuildCards(pairs) {
     });
     return shuffleArray(cards);
 }
-
 function memoryUpdateStats() {
     memoryPairsMatchedSpan.textContent = memoryMatched;
     memoryAttemptsSpan.textContent = memoryAttempts;
 }
 function memorySetMessage(text, isGood = true) {
     memoryMessage.textContent = text;
-    memoryMessage.style.background = isGood ?
-        'linear-gradient(135deg,#eef6ff,#d4e8ff)' :
-        'linear-gradient(135deg,#ffcdd2,#ef9a9a)';
+    memoryMessage.style.background = isGood ? 'linear-gradient(135deg,#eef6ff,#d4e8ff)' : 'linear-gradient(135deg,#ffcdd2,#ef9a9a)';
 }
 function memoryUpdateStars(starCount) {
     const stars = memoryStarsDisplay.querySelectorAll('.star');
     stars.forEach((star, idx) => {
-        if (idx < starCount) {
-            star.textContent = '★'; star.classList.add('earned'); star.style.color = '#ffb800';
-        } else {
-            star.textContent = '☆'; star.classList.remove('earned'); star.style.color = '#aaa';
-        }
+        if (idx < starCount) { star.textContent = '★'; star.classList.add('earned'); star.style.color = '#ffb800'; }
+        else { star.textContent = '☆'; star.classList.remove('earned'); star.style.color = '#aaa'; }
     });
 }
 function memoryCalculateStars(pairCount, attempts) {
@@ -2193,7 +2503,7 @@ function memoryShowTimeUpModal() {
     document.getElementById('memTimeRetry').onclick = () => { overlay.remove(); memoryLoadLevel(memoryCurrentLevel); };
     document.getElementById('memTimeHome').onclick = () => {
         overlay.remove();
-        navStack = ['memory-home'];
+        navStack = ['home-screen'];
         memoryRenderHome();
         showScreen('memory-home');
         updateTopBar('memory-home');
@@ -2223,7 +2533,6 @@ function memoryShowCompleteModal(stars, hasDetective) {
             </div>
         </div>`;
     document.body.appendChild(overlay);
-
     const detBtn = document.getElementById('memDetectiveBtn');
     if (detBtn) detBtn.onclick = () => { overlay.remove(); detectiveStart('memory', memoryCurrentLevel); };
     const nextM = document.getElementById('memNextModalBtn');
@@ -2237,14 +2546,13 @@ function memoryShowCompleteModal(stars, hasDetective) {
     document.getElementById('memRetryModalBtn').onclick = () => { overlay.remove(); memoryLoadLevel(memoryCurrentLevel); };
     document.getElementById('memHomeModalBtn').onclick = () => {
         overlay.remove();
-        navStack = ['memory-home'];
+        navStack = ['home-screen'];
         memoryRenderHome();
         showScreen('memory-home');
         updateTopBar('memory-home');
         updateBackBtn();
     };
 }
-
 function memoryRenderBoard() {
     memoryBoard.innerHTML = '';
     memoryCards.forEach((card, index) => {
@@ -2253,14 +2561,11 @@ function memoryRenderBoard() {
         if (card.matched) cardEl.classList.add('matched');
         if (memoryFlippedIdx.includes(index) && !card.matched) cardEl.classList.add('flipped');
         cardEl.dataset.index = index;
-
         const back = document.createElement('div');
         back.className = 'face back';
         back.textContent = '?';
-
         const front = document.createElement('div');
         front.className = 'face front';
-
         if (card.type === 'word') {
             const wordSpan = document.createElement('div');
             wordSpan.className = 'word-text';
@@ -2270,10 +2575,7 @@ function memoryRenderBoard() {
                 const speakerBtn = document.createElement('button');
                 speakerBtn.className = 'speaker-btn';
                 speakerBtn.textContent = '🔊';
-                speakerBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    speakWord(card.content);
-                });
+                speakerBtn.addEventListener('click', (e) => { e.stopPropagation(); speakWord(card.content); });
                 front.appendChild(speakerBtn);
             }
         } else {
@@ -2282,7 +2584,6 @@ function memoryRenderBoard() {
             emojiSpan.textContent = card.content;
             front.appendChild(emojiSpan);
         }
-
         cardEl.appendChild(back);
         cardEl.appendChild(front);
         cardEl.addEventListener('click', () => memoryHandleClick(index));
@@ -2290,33 +2591,26 @@ function memoryRenderBoard() {
     });
     memoryUpdateStats();
 }
-
 function memoryHandleClick(index) {
     if (memoryLock || !memoryGameActive) return;
     const card = memoryCards[index];
     if (card.matched) return;
     if (memoryFlippedIdx.includes(index)) return;
-
     memoryFlippedIdx.push(index);
     const cardEl = document.querySelector(`.card-memory[data-index="${index}"]`);
     if (cardEl) cardEl.classList.add('flipped');
-
     if (card.type === 'word') speakWord(card.content);
     else speakWord(card.word);
-
     if (memoryFlippedIdx.length === 1) {
         memorySetMessage(`👉 已翻开：${card.type === 'word' ? card.content : '图片'}`, true);
         return;
     }
-
     memoryAttempts++;
     memoryUpdateStats();
     memoryLock = true;
-
     const firstIdx = memoryFlippedIdx[0];
     const firstCard = memoryCards[firstIdx];
     const isMatch = (firstCard.pairId === card.pairId) && (firstCard.type !== card.type);
-
     if (isMatch) {
         memoryConsecutiveWrong = 0;
         setTimeout(() => {
@@ -2346,12 +2640,10 @@ function memoryHandleClick(index) {
         }, 1200);
     }
 }
-
 function memoryShowHint() {
     const unmatched = [];
     memoryCards.forEach((c, idx) => { if (!c.matched) unmatched.push({ card: c, idx }); });
     if (unmatched.length < 2) return;
-
     const byPair = {};
     unmatched.forEach(item => {
         if (!byPair[item.card.pairId]) byPair[item.card.pairId] = [];
@@ -2359,25 +2651,18 @@ function memoryShowHint() {
     });
     const pairs = Object.values(byPair).filter(arr => arr.length === 2);
     if (pairs.length === 0) return;
-
     const chosen = pairs[Math.floor(Math.random() * pairs.length)];
     memorySetMessage('💡 看这里！这对是正确的～', true);
-
     chosen.forEach(item => {
         const el = document.querySelector(`.card-memory[data-index="${item.idx}"]`);
         if (el) {
             el.style.boxShadow = '0 0 0 5px #8cc8f0, 0 7px 0 #a8b8c8';
             el.style.transform = 'scale(1.08)';
-            setTimeout(() => {
-                el.style.boxShadow = '';
-                el.style.transform = '';
-            }, 1500);
+            setTimeout(() => { el.style.boxShadow = ''; el.style.transform = ''; }, 1500);
         }
     });
-
     setTimeout(() => speakWord(chosen[0].card.word, 0.9), 300);
 }
-
 function memoryCheckWin() {
     if (memoryMatched === memoryConfig.pairCount) {
         memoryStopTimer();
@@ -2386,14 +2671,10 @@ function memoryCheckWin() {
         memoryUpdateStars(stars);
         const prev = memoryProgress.levelStars[memoryCurrentLevel] || 0;
         if (stars > prev) memoryProgress.levelStars[memoryCurrentLevel] = stars;
-        if (memoryCurrentLevel >= memoryProgress.currentLevel) {
-            memoryProgress.currentLevel = Math.min(MEMORY_TOTAL_LEVELS, memoryCurrentLevel + 1);
-        }
+        if (memoryCurrentLevel >= memoryProgress.currentLevel) memoryProgress.currentLevel = Math.min(MEMORY_TOTAL_LEVELS, memoryCurrentLevel + 1);
         memorySaveProgress();
         speakEncouragement(stars);
-
         const shouldTrigger = shouldTriggerDetective(memoryCurrentLevel, memoryProgress);
-
         setTimeout(() => {
             if (shouldTrigger) {
                 markDetectiveTriggered(memoryCurrentLevel, memoryProgress, memorySaveProgress);
@@ -2404,12 +2685,10 @@ function memoryCheckWin() {
         }, 500);
     }
 }
-
 function memoryLoadLevel(level) {
     memoryStopTimer();
     if (memoryHintTimeout) { clearTimeout(memoryHintTimeout); memoryHintTimeout = null; }
     if (speechSynth) speechSynth.cancel();
-
     memoryCurrentLevel = level;
     memoryFlippedIdx = [];
     memoryLock = false;
@@ -2417,7 +2696,6 @@ function memoryLoadLevel(level) {
     memoryAttempts = 0;
     memoryConsecutiveWrong = 0;
     memoryGameActive = true;
-
     memoryConfig = memoryGetLevelConfig(level);
     memoryCurrentWords = selectWordsForLevel(memoryProgress, level, memoryConfig);
     memoryRenderLevelInfo();
@@ -2427,12 +2705,10 @@ function memoryLoadLevel(level) {
     memorySetMessage('✨ 翻开卡片，配对单词和图片吧！', true);
     memoryUpdateStats();
 }
-
 function memoryStart(level) {
     navigateTo('memory-game');
     memoryLoadLevel(level);
 }
-
 memoryResetLevel.addEventListener('click', () => memoryLoadLevel(memoryCurrentLevel));
 memoryBackHome.addEventListener('click', () => {
     if (speechSynth) speechSynth.cancel();
@@ -2472,7 +2748,933 @@ memorySoundToggle.addEventListener('click', () => {
     }
 });
 
+// ============================================================
+// 三字经 · 艾宾浩斯记忆闯关（整合版）
+// ============================================================
+const SANZIJING_LINES = [
+    { pinyin: 'rén zhī chū xìng běn shàn xìng xiāng jìn xí xiāng yuǎn', hanzi: '人之初 性本善 性相近 习相远' },
+    { pinyin: 'gǒu bú jiào xìng nǎi qiān jiào zhī dào guì yǐ zhuān', hanzi: '苟不教 性乃迁 教之道 贵以专' },
+    { pinyin: 'xī mèng mǔ zé lín chǔ zǐ bù xué duàn jī zhù', hanzi: '昔孟母 择邻处 子不学 断机杼' },
+    { pinyin: 'dòu yān shān yǒu yì fāng jiāo wǔ zǐ míng jù yáng', hanzi: '窦燕山 有义方 教五子 名俱扬' },
+    { pinyin: 'yǎng bú jiào fù zhī guò jiào bù yán shī zhī duò', hanzi: '养不教 父之过 教不严 师之惰' },
+    { pinyin: 'zǐ bù xué fēi suǒ yí yòu bù xué lǎo hé wéi', hanzi: '子不学 非所宜 幼不学 老何为' },
+    { pinyin: 'yù bù zhuó bù chéng qì rén bù xué bù zhī yì', hanzi: '玉不琢 不成器 人不学 不知义' },
+    { pinyin: 'wéi rén zǐ fāng shào shí qīn shī yǒu xí lǐ yí', hanzi: '为人子 方少时 亲师友 习礼仪' },
+    { pinyin: 'xiāng jiǔ líng néng wēn xí xiào yú qīn suǒ dāng zhí', hanzi: '香九龄 能温席 孝于亲 所当执' },
+    { pinyin: 'róng sì suì néng ràng lí dì yú zhǎng yí xiān zhī', hanzi: '融四岁 能让梨 弟于长 宜先知' },
+    { pinyin: 'shǒu xiào tì cì jiàn wén zhī mǒu shù shí mǒu wén', hanzi: '首孝悌 次见闻 知某数 识某文' },
+    { pinyin: 'yī ér shí shí ér bǎi bǎi ér qiān qiān ér wàn', hanzi: '一而十 十而百 百而千 千而万' },
+    { pinyin: 'sān cái zhě tiān dì rén sān guāng zhě rì yuè xīng', hanzi: '三才者 天地人 三光者 日月星' },
+    { pinyin: 'sān gāng zhě jūn chén yì fù zǐ qīn fū fù shùn', hanzi: '三纲者 君臣义 父子亲 夫妇顺' },
+    { pinyin: 'yuē chūn xià yuē qiū dōng cǐ sì shí yùn bù qióng', hanzi: '曰春夏 曰秋冬 此四时 运不穷' },
+    { pinyin: 'yuē nán běi yuē xī dōng cǐ sì fāng yìng hū zhōng', hanzi: '曰南北 曰西东 此四方 应乎中' },
+    { pinyin: 'yuē shuǐ huǒ mù jīn tǔ cǐ wǔ xíng běn hū shù', hanzi: '曰水火 木金土 此五行 本乎数' },
+    { pinyin: 'shí gān zhě jiǎ zhì guǐ shí èr zhī zǐ zhì hài', hanzi: '十干者 甲至癸 十二支 子至亥' },
+    { pinyin: 'yuē huáng dào rì suǒ chán yuē chì dào dāng zhōng quán', hanzi: '曰黄道 日所躔 曰赤道 当中权' },
+    { pinyin: 'chì dào xià wēn nuǎn jí wǒ zhōng huá zài dōng běi', hanzi: '赤道下 温暖极 我中华 在东北' },
+    { pinyin: 'hán yù jūn shuāng lù gǎi yòu gāo yuán zuǒ dà hǎi', hanzi: '寒燠均 霜露改 右高原 左大海' },
+    { pinyin: 'yuē jiāng hé yuē huái jì cǐ sì dú shuǐ zhī jì', hanzi: '曰江河 曰淮济 此四渎 水之纪' },
+    { pinyin: 'yuē dài huá sōng héng héng cǐ wǔ yuè shān zhī míng', hanzi: '曰岱华 嵩恒衡 此五岳 山之名' },
+    { pinyin: 'gǔ jiǔ zhōu jīn gǎi zhì chēng xíng shěng sān shí wǔ', hanzi: '古九州 今改制 称行省 三十五' },
+    { pinyin: 'yuē shì nóng yuē gōng shāng cǐ sì mín guó zhī liáng', hanzi: '曰士农 曰工商 此四民 国之良' },
+    { pinyin: 'yuē rén yì lǐ zhì xìn cǐ wǔ cháng bù róng wěn', hanzi: '曰仁义 礼智信 此五常 不容紊' },
+    { pinyin: 'dì suǒ shēng yǒu cǎo mù cǐ zhí wù biàn shuǐ lù', hanzi: '地所生 有草木 此植物 遍水陆' },
+    { pinyin: 'yǒu chóng yú yǒu niǎo shòu cǐ dòng wù néng fēi zǒu', hanzi: '有虫鱼 有鸟兽 此动物 能飞走' },
+    { pinyin: 'dào liáng shū mài shǔ jì cǐ liù gǔ rén suǒ shí', hanzi: '稻梁菽 麦黍稷 此六谷 人所食' },
+    { pinyin: 'mǎ niú yáng jī quǎn shǐ cǐ liù chù rén suǒ sì', hanzi: '马牛羊 鸡犬豕 此六畜 人所饲' },
+    { pinyin: 'yuē xǐ nù yuē āi jù ài wù yù qī qíng jù', hanzi: '曰喜怒 曰哀惧 爱恶欲 七情俱' },
+    { pinyin: 'qīng chì huáng jí hēi bái cǐ wǔ sè mù suǒ shí', hanzi: '青赤黄 及黑白 此五色 目所识' },
+    { pinyin: 'suān kǔ gān jí xīn xián cǐ wǔ wèi kǒu suǒ hán', hanzi: '酸苦甘 及辛咸 此五味 口所含' },
+    { pinyin: 'shān jiāo xiāng jí xīng xiǔ cǐ wǔ xiù bí suǒ xiù', hanzi: '膻焦香 及腥朽 此五臭 鼻所嗅' },
+    { pinyin: 'páo tǔ gé mù shí jīn yǔ sī zhú nǎi bā yīn', hanzi: '匏土革 木石金 与丝竹 乃八音' },
+    { pinyin: 'yuē píng shǎng yuē qù rù cǐ sì shēng yí tiáo xié', hanzi: '曰平上 曰去入 此四声 宜调协' },
+    { pinyin: 'gāo zēng zǔ fù ér shēn shēn ér zǐ zǐ ér sūn', hanzi: '高曾祖 父而身 身而子 子而孙' },
+    { pinyin: 'zì zǐ sūn zhì xuán zēng nǎi jiǔ zú rén zhī lún', hanzi: '自子孙 至玄曾 乃九族 人之伦' },
+    { pinyin: 'fù zǐ ēn fū fù cóng xiōng zé yǒu dì zé gōng', hanzi: '父子恩 夫妇从 兄则友 弟则恭' },
+    { pinyin: 'zhǎng yòu xù yǒu yǔ péng jūn zé jìng chén zé zhōng', hanzi: '长幼序 友与朋 君则敬 臣则忠' },
+    { pinyin: 'cǐ shí yì rén suǒ tóng dāng shī xù wù wéi bèi', hanzi: '此十义 人所同 当师叙 勿违背' },
+    { pinyin: 'zhǎn qí shuāi dà xiǎo gōng zhì sī má wǔ fù zhōng', hanzi: '斩齐衰 大小功 至缌麻 五服终' },
+    { pinyin: 'lǐ yuè shè yù shū shù gǔ liù yì jīn bù jù', hanzi: '礼乐射 御书数 古六艺 今不具' },
+    { pinyin: 'wéi shū xué rén gòng zūn jì shí zì jiǎng shuō wén', hanzi: '惟书学 人共遵 既识字 讲说文' },
+    { pinyin: 'yǒu gǔ wén dà xiǎo zhuàn lì cǎo jì bù kě luàn', hanzi: '有古文 大小篆 隶草继 不可乱' },
+    { pinyin: 'ruò guǎng xué jù qí fán dàn lüè shuō néng zhī yuán', hanzi: '若广学 惧其繁 但略说 能知原' },
+    { pinyin: 'fán xùn méng xū jiǎng jiū xiáng xùn gǔ míng jù dòu', hanzi: '凡训蒙 须讲究 详训诂 明句读' },
+    { pinyin: 'wéi xué zhě bì yǒu chū xiǎo xué zhōng zhì sì shū', hanzi: '为学者 必有初 小学终 至四书' },
+    { pinyin: 'lún yǔ zhě èr shí piān qún dì zǐ jì shàn yán', hanzi: '论语者 二十篇 群弟子 记善言' },
+    { pinyin: 'mèng zǐ zhě qī piān zhǐ jiǎng dào dé shuō rén yì', hanzi: '孟子者 七篇止 讲道德 说仁义' },
+    { pinyin: 'zuò zhōng yōng nǎi kǒng jí zhōng bù piān yōng bù yì', hanzi: '作中庸 乃孔伋 中不偏 庸不易' },
+    { pinyin: 'zuò dà xué nǎi zēng zǐ zì xiū qí zhì píng zhì', hanzi: '作大学 乃曾子 自修齐 至平治' },
+    { pinyin: 'zhōng shū shú xiào jīng tōng rú liù jīng shǐ kě dú', hanzi: '中书熟 孝经通 如六经 始可读' },
+    { pinyin: 'shī shū yì lǐ chūn qiū hào liù jīng dāng jiǎng qiú', hanzi: '诗书易 礼春秋 号六经 当讲求' },
+    { pinyin: 'yǒu lián shān yǒu guī cáng yǒu zhōu yì sān yì xiáng', hanzi: '有连山 有归藏 有周易 三易详' },
+    { pinyin: 'yǒu diǎn mó yǒu xùn gào yǒu shì mìng shū zhī ào', hanzi: '有典谟 有训诰 有誓命 书之奥' },
+    { pinyin: 'wǒ zhōu gōng zuò zhōu lǐ zhù liù guān cún zhì tǐ', hanzi: '我周公 作周礼 著六官 存治体' },
+    { pinyin: 'dà xiǎo dài zhù lǐ jì shù shèng yán lǐ yuè bèi', hanzi: '大小戴 注礼记 述圣言 礼乐备' },
+    { pinyin: 'yǒu guó fēng yǒu yǎ sòng hào sì shī dāng fěng yǒng', hanzi: '有国风 有雅颂 号四诗 当讽咏' },
+    { pinyin: 'shī jì wáng chūn qiū zuò yù bāo biǎn bié shàn è', hanzi: '诗既亡 春秋作 寓褒贬 别善恶' },
+    { pinyin: 'sān zhuàn zhě yǒu gōng yáng yǒu zuǒ shì yǒu gǔ liáng', hanzi: '三传者 有公羊 有左氏 有谷梁' },
+    { pinyin: 'ěr yǎ zhě shàn biàn yán qiú jīng xùn cǐ mò xiān', hanzi: '尔雅者 善辨言 求经训 此莫先' },
+    { pinyin: 'gǔ shèng zhù xiān xián zhuàn zhù shū bèi shí sān jīng', hanzi: '古圣著 先贤传 注疏备 十三经' },
+    { pinyin: 'zuǒ zhuàn wài yǒu guó yǔ hé qún jīng shù shí wǔ', hanzi: '左传外 有国语 合群经 数十五' },
+    { pinyin: 'jīng jì míng fāng dú zǐ cuō qí yào jì qí shì', hanzi: '经既明 方读子 撮其要 记其事' },
+    { pinyin: 'wǔ zǐ zhě yǒu xún yáng wén zhōng zǐ jí lǎo zhuāng', hanzi: '五子者 有荀扬 文中子 及老庄' },
+    { pinyin: 'jīng zǐ tōng dú zhū shǐ kǎo shì xì zhī zhōng shǐ', hanzi: '经子通 读诸史 考世系 知终始' },
+    { pinyin: 'zì xī nóng zhì huáng dì hào sān huáng zài shàng shì', hanzi: '自羲农 至黄帝 号三皇 在上世' },
+    { pinyin: 'táng yǒu yú hào èr dì xiāng yī xùn chēng shèng shì', hanzi: '唐有虞 号二帝 相揖逊 称盛世' },
+    { pinyin: 'xià yǒu yǔ shāng yǒu tāng zhōu wén wǔ chēng sān wáng', hanzi: '夏有禹 商有汤 周文武 称三王' },
+    { pinyin: 'xià chuán zǐ jiā tiān xià sì bǎi zǎi qiān xià shè', hanzi: '夏传子 家天下 四百载 迁夏社' },
+    { pinyin: 'tāng fá xià guó hào shāng liù bǎi zǎi zhì zhòu wáng', hanzi: '汤伐夏 国号商 六百载 至纣亡' },
+    { pinyin: 'zhōu wǔ wáng shǐ zhū zhòu bā bǎi zǎi zuì cháng jiǔ', hanzi: '周武王 始诛纣 八百载 最长久' },
+    { pinyin: 'zhōu gòng hé shǐ jì nián lì xuān yōu suì dōng qiān', hanzi: '周共和 始纪年 历宣幽 遂东迁' },
+    { pinyin: 'zhōu dào shuāi wáng gāng zhuì chěng gān gē shàng yóu shuì', hanzi: '周道衰 王纲坠 逞干戈 尚游说' },
+    { pinyin: 'shǐ chūn qiū zhōng zhàn guó wǔ bà qiáng qī xióng chū', hanzi: '始春秋 终战国 五霸强 七雄出' },
+    { pinyin: 'yíng qín shì shǐ jiān bìng chuán èr shì chǔ hàn zhēng', hanzi: '嬴秦氏 始兼并 传二世 楚汉争' },
+    { pinyin: 'gāo zǔ xīng hàn yè jiàn zhì xiào píng wáng mǎng cuàn', hanzi: '高祖兴 汉业建 至孝平 王莽篡' },
+    { pinyin: 'guāng wǔ xīng wéi dōng hàn sì bǎi nián zhōng yú xiàn', hanzi: '光武兴 为东汉 四百年 终于献' },
+    { pinyin: 'wèi shǔ wú zhēng hàn dǐng hào sān guó qì liǎng jìn', hanzi: '魏蜀吴 争汉鼎 号三国 迄两晋' },
+    { pinyin: 'sòng qí jì liáng chén chéng wéi nán cháo dū jīn líng', hanzi: '宋齐继 梁陈承 为南朝 都金陵' },
+    { pinyin: 'běi yuán wèi fēn dōng xī yǔ wén zhōu xīng gāo qí', hanzi: '北元魏 分东西 宇文周 兴高齐' },
+    { pinyin: 'dài zhì suí yī tǔ yǔ bù zài chuán shī tǒng xù', hanzi: '迨至隋 一土宇 不再传 失统绪' },
+    { pinyin: 'táng gāo zǔ qǐ yì shī chú suí luàn chuàng guó jī', hanzi: '唐高祖 起义师 除隋乱 创国基' },
+    { pinyin: 'èr shí chuán sān bǎi zǎi liáng miè zhī guó nǎi gǎi', hanzi: '二十传 三百载 梁灭之 国乃改' },
+    { pinyin: 'liáng táng jìn jí hàn zhōu chēng wǔ dài jiē yǒu yóu', hanzi: '梁唐晋 及汉周 称五代 皆有由' },
+    { pinyin: 'zhào sòng xīng shòu zhōu shàn shí bā chuán nán běi hùn', hanzi: '赵宋兴 受周禅 十八传 南北混' },
+    { pinyin: 'liáo yǔ jīn jiē chēng dì yuán miè jīn jué sòng shì', hanzi: '辽与金 皆称帝 元灭金 绝宋世' },
+    { pinyin: 'yú tú guǎng chāo qián dài jiǔ shí nián guó zuò fèi', hanzi: '舆图广 超前代 九十年 国祚废' },
+    { pinyin: 'dài chéng zǔ qiān yān jīng shí liù shì zhì chóng zhēn', hanzi: '迨成祖 迁燕京 十六世 至崇祯' },
+    { pinyin: 'quán yān sì kòu rú lín lǐ chuǎng chū shén qì fén', hanzi: '权阉肆 寇如林 李闯出 神器焚' },
+    { pinyin: 'qīng shì zǔ yīng jǐng mìng jìng sì fāng kè dà dìng', hanzi: '清世祖 膺景命 靖四方 克大定' },
+    { pinyin: 'yóu kāng yōng lì qián jiā mín ān fù zhì jì kuā', hanzi: '由康雍 历乾嘉 民安富 治绩夸' },
+    { pinyin: 'dào xián jiān biàn luàn qǐ shǐ yīng fǎ rǎo dū bǐ', hanzi: '道咸间 变乱起 始英法 扰都鄙' },
+    { pinyin: 'tóng guāng hòu xuān tǒng ruò chuán jiǔ dì mǎn qīng mò', hanzi: '同光后 宣统弱 传九帝 满清殁' },
+    { pinyin: 'gé mìng xīng fèi dì zhì lì xiàn fǎ jiàn mín guó', hanzi: '革命兴 废帝制 立宪法 建民国' },
+    { pinyin: 'gǔ jīn shǐ quán zài zī zǎi zhì luàn zhī xīng shuāi', hanzi: '古今史 全在兹 载治乱 知兴衰' },
+    { pinyin: 'shǐ suī fán dú yǒu cì shǐ jì yī hàn shū èr', hanzi: '史虽繁 读有次 史记一 汉书二' },
+    { pinyin: 'hòu hàn sān guó zhì sì jiān zhèng jīng cān tōng jiàn', hanzi: '后汉三 国志四 兼证经 参通鉴' },
+    { pinyin: 'dú shǐ zhě kǎo shí lù tōng gǔ jīn ruò qīn mù', hanzi: '读史者 考实录 通古今 若亲目' },
+    { pinyin: 'kǒu ér sòng xīn ér wéi zhāo yú sī xī yú sī', hanzi: '口而诵 心而惟 朝于斯 夕于斯' },
+    { pinyin: 'xī zhòng ní shī xiàng tuó gǔ shèng xián shàng qín xué', hanzi: '昔仲尼 师项橐 古圣贤 尚勤学' },
+    { pinyin: 'zhào zhōng lìng dú lǔ lùn bǐ jì shì xué qiě qín', hanzi: '赵中令 读鲁论 彼既仕 学且勤' },
+    { pinyin: 'pī pú biān xuē zhú jiǎn bǐ wú shū qiě zhī miǎn', hanzi: '披蒲编 削竹简 彼无书 且知勉' },
+    { pinyin: 'tóu xuán liáng zhuī cì gǔ bǐ bù jiào zì qín kǔ', hanzi: '头悬梁 锥刺股 彼不教 自勤苦' },
+    { pinyin: 'rú náng yíng rú yìng xuě jiā suī pín xué bù chuò', hanzi: '如囊萤 如映雪 家虽贫 学不辍' },
+    { pinyin: 'rú fù xīn rú guà jiǎo shēn suī láo yóu kǔ zhuó', hanzi: '如负薪 如挂角 身虽劳 犹苦卓' },
+    { pinyin: 'sū lǎo quán èr shí qī shǐ fā fèn dú shū jí', hanzi: '苏老泉 二十七 始发愤 读书籍' },
+    { pinyin: 'bǐ jì lǎo yóu huǐ chí ěr xiǎo shēng yí zǎo sī', hanzi: '彼既老 犹悔迟 尔小生 宜早思' },
+    { pinyin: 'ruò liáng hào bā shí èr duì dà tíng kuí duō shì', hanzi: '若梁灏 八十二 对大廷 魁多士' },
+    { pinyin: 'bǐ jì chéng zhòng chēng yì ěr xiǎo shēng yí lì zhì', hanzi: '彼既成 众称异 尔小生 宜立志' },
+    { pinyin: 'yíng bā suì néng yǒng shī mì qī suì néng fù qí', hanzi: '莹八岁 能咏诗 泌七岁 能赋棋' },
+    { pinyin: 'bǐ yǐng wù rén chēng qí ěr yòu xué dāng xiào zhī', hanzi: '彼颖悟 人称奇 尔幼学 当效之' },
+    { pinyin: 'cài wén jī néng biàn qín xiè dào yùn néng yǒng yín', hanzi: '蔡文姬 能辩琴 谢道韫 能咏吟' },
+    { pinyin: 'bǐ nǚ zǐ qiě cōng mǐn ěr nán zǐ dāng zì jǐng', hanzi: '彼女子 且聪敏 尔男子 当自警' },
+    { pinyin: 'táng liú yàn fāng qī suì jǔ shén tóng zuò zhèng zì', hanzi: '唐刘晏 方七岁 举神童 作正字' },
+    { pinyin: 'bǐ suī yòu shēn yǐ shì yǒu wéi zhě yì ruò shì', hanzi: '彼虽幼 身已仕 有为者 亦若是' },
+    { pinyin: 'quǎn shǒu yè jī sī chén gǒu bù xué hé wéi rén', hanzi: '犬守夜 鸡司晨 苟不学 曷为人' },
+    { pinyin: 'cán tǔ sī fēng niàng mì rén bù xué bù rú wù', hanzi: '蚕吐丝 蜂酿蜜 人不学 不如物' },
+    { pinyin: 'yòu xí yè zhuàng zhì shēn shàng kuāng guó xià lì mín', hanzi: '幼习业 壮致身 上匡国 下利民' },
+    { pinyin: 'yáng míng shēng xiǎn fù mǔ guāng yú qián yù yú hòu', hanzi: '扬名声 显父母 光于前 裕于后' },
+    { pinyin: 'rén yí zǐ jīn mǎn yíng wǒ jiào zǐ wéi yī jīng', hanzi: '人遗子 金满赢 我教子 唯一经' },
+    { pinyin: 'qín yǒu gōng xì wú yì jiè zhī zāi yí miǎn lì', hanzi: '勤有功 戏无益 戒之哉 宜勉力' },
+];
+
+const SZJ_UNITS = [];
+SANZIJING_LINES.forEach((line, lineIdx)=>{
+    const hanziParts = line.hanzi.split(' ');
+    const pinyinParts = line.pinyin.split(' ');
+    hanziParts.forEach((h, i)=>{
+        SZJ_UNITS.push({
+            hanzi3: h,
+            pinyin3: pinyinParts.slice(i*3, i*3+3).join(' '),
+            lineIdx, posInLine: i,
+        });
+    });
+});
+const szjTotalUnits = SZJ_UNITS.length;
+const SZJ_UNITS_PER_LEVEL = 6;
+const SZJ_TOTAL_LEVELS = Math.ceil(szjTotalUnits / SZJ_UNITS_PER_LEVEL);
+const EBBINGHAUS_INTERVALS = [
+    5*60*1000, 30*60*1000, 12*60*60*1000, 24*60*60*1000,
+    2*24*60*60*1000, 4*24*60*60*1000, 7*24*60*60*1000,
+    15*24*60*60*1000, 30*24*60*60*1000,
+];
+function szjGetLevelShowMs(levelIndex){
+    const base = 2200, min = 900, step = 30;
+    return Math.max(min, base - levelIndex * step);
+}
+
+const SZJ_STORAGE_KEY = 'sanzijing_ebbinghaus_v2';
+function szjLoad(){
+    try{
+        const raw = localStorage.getItem(SZJ_STORAGE_KEY);
+        if(!raw) return null;
+        return JSON.parse(raw);
+    }catch(e){ return null; }
+}
+function szjSave(){
+    try{
+        localStorage.setItem(SZJ_STORAGE_KEY, JSON.stringify({
+            currentLevel: szjState.currentLevel,
+            levelStars: szjState.levelStars,
+            learnedUnits: szjState.learnedUnits,
+            totalScore: szjState.totalScore,
+            memoryData: szjState.memoryData,
+            savedAt: Date.now(),
+        }));
+    }catch(e){}
+}
+function szjClearSave(){ try{ localStorage.removeItem(SZJ_STORAGE_KEY); }catch(e){} }
+function szjShuffle(arr){
+    for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+    return arr;
+}
+
+const szjState = {
+    currentLevel: 0,
+    levelStars: [],
+    learnedUnits: [],
+    totalScore: 0,
+    memoryData: {},
+    inLevel: false,
+    levelIndex: 0,
+    levelQuestions: [],
+    qIndex: 0,
+    levelCorrect: 0,
+    combo: 0,
+    maxCombo: 0,
+    isReviewMode: false,
+    currentQ: null,
+    locked: false,
+    hintUsed: false,
+    flipped: false,
+    flipTimer: null,
+    optionTimer: null,
+    orderMode: false,
+    orderSlots: [],
+    orderPool: [],
+    orderSlotIndex: 0,
+};
+
+const szjMainArea = document.getElementById('szjMainArea');
+const szjLevelBar = document.getElementById('szjLevelBar');
+const szjLevelBadge = document.getElementById('szjLevelBadge');
+const szjLevelTitle = document.getElementById('szjLevelTitle');
+const szjLevelDots = document.getElementById('szjLevelDots');
+
+function szjUpdateMemory(unitIdx, correct){
+    if(!szjState.memoryData[unitIdx]){
+        szjState.memoryData[unitIdx] = { stage: 0, nextReview: 0, wrongCount: 0, lastReview: Date.now() };
+    }
+    const m = szjState.memoryData[unitIdx];
+    m.lastReview = Date.now();
+    if(correct){
+        if(m.stage < EBBINGHAUS_INTERVALS.length-1) m.stage++;
+        m.nextReview = Date.now() + EBBINGHAUS_INTERVALS[m.stage];
+        m.wrongCount = 0;
+    } else {
+        m.wrongCount++;
+        m.stage = Math.max(0, m.stage - 1);
+        m.nextReview = Date.now() + 2*60*1000;
+    }
+}
+function szjGetDueReviewUnits(){
+    const now = Date.now();
+    const due = [];
+    for(const idxStr in szjState.memoryData){
+        const idx = parseInt(idxStr);
+        const m = szjState.memoryData[idx];
+        if(m.nextReview <= now && szjState.learnedUnits.includes(idx)) due.push(idx);
+    }
+    due.sort((a,b)=>szjState.memoryData[a].nextReview - szjState.memoryData[b].nextReview);
+    return due;
+}
+
+/* 三字经地图 */
+function szjRenderMap(){
+    szjState.inLevel = false;
+    szjState.orderMode = false;
+    szjState.isReviewMode = false;
+    szjLevelBar.style.display = 'none';
+    updateTopBar('szj-screen');
+    szjScoreDisplay.textContent = szjState.totalScore;
+
+    const learnedCount = szjState.learnedUnits.length;
+    const pct = Math.round(learnedCount / szjTotalUnits * 100);
+    const totalStars = szjState.levelStars.reduce((a,b)=>a+b,0);
+    const maxStars = SZJ_TOTAL_LEVELS * 3;
+    const dueReviews = szjGetDueReviewUnits();
+
+    let html = `<div class="fade-in">
+        <div class="szj-map-title">🏆 三字经闯关</div>
+        <div class="szj-map-sub">已学 ${learnedCount} / ${szjTotalUnits} 句 · 星星 ${totalStars} / ${maxStars}</div>
+        <div class="szj-progress-outer"><div class="szj-progress-inner" style="width:${pct}%"></div></div>`;
+
+    if(dueReviews.length > 0){
+        html += `
+        <div class="szj-review-banner" id="szjReviewBanner">
+            <div class="rb-left">
+                <span class="rb-icon">🧠</span>
+                <div class="rb-text">
+                    <span class="rb-title">复习时间到</span>
+                    <span class="rb-sub">艾宾浩斯记忆 · 巩固旧知识</span>
+                </div>
+            </div>
+            <span class="rb-count">${dueReviews.length}句</span>
+        </div>`;
+    } else if(learnedCount > 0){
+        html += `
+        <div class="szj-review-banner" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);box-shadow:0 6px 0 #a5d6a7,0 8px 16px rgba(70,120,50,.15);cursor:default">
+            <div class="rb-left">
+                <span class="rb-icon">✅</span>
+                <div class="rb-text">
+                    <span class="rb-title" style="color:#2e7d32">今日复习已完成</span>
+                    <span class="rb-sub" style="color:#4a754a">继续学习新内容吧</span>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    const groups = [];
+    for(let i=0; i<SZJ_TOTAL_LEVELS; i+=6){
+        groups.push({ start:i, end:Math.min(i+6, SZJ_TOTAL_LEVELS) });
+    }
+    groups.forEach((g, gi)=>{
+        const s = g.start * SZJ_UNITS_PER_LEVEL + 1;
+        const e = Math.min(g.end * SZJ_UNITS_PER_LEVEL, szjTotalUnits);
+        html += `<div class="szj-level-group">
+            <div class="szj-level-group-title">第${s}-${e}句</div>
+            <div class="szj-level-grid">`;
+        for(let i=g.start; i<g.end; i++){
+            const unlocked = i <= szjState.currentLevel;
+            const stars = szjState.levelStars[i] || 0;
+            const starText = stars>0 ? '⭐'.repeat(stars) : '☆☆☆';
+            const lockIcon = unlocked ? '' : '<span class="lock-icon">🔒</span>';
+            html += `
+            <div class="szj-level-card ${unlocked?'unlocked':'locked'}" data-level="${i}">
+                ${lockIcon}
+                <div class="lv-num">${i+1}</div>
+                <div class="lv-stars">${starText}</div>
+                <div class="lv-label">第${i*SZJ_UNITS_PER_LEVEL+1}-${Math.min((i+1)*SZJ_UNITS_PER_LEVEL, szjTotalUnits)}句</div>
+            </div>`;
+        }
+        html += `</div></div>`;
+    });
+
+    html += `<div style="text-align:center;margin-top:8px">
+        <button class="szj-btn szj-btn-hint" id="szjViewFullBtn" type="button">📜 查看全文</button>
+        <button class="szj-btn szj-btn-order" id="szjResetBtn" type="button" style="margin-left:8px">🗑️ 重置</button>
+    </div>`;
+
+    if(szjState.currentLevel >= SZJ_TOTAL_LEVELS){
+        html += `<div style="text-align:center;font-size:1rem;color:#a1582e;font-weight:700;letter-spacing:2px;margin-top:12px">
+            🎉 全部通关！你已经学完《三字经》全文！记得常回来复习哦～
+        </div>`;
+    }
+    html += `</div>`;
+
+    szjMainArea.innerHTML = html;
+
+    szjMainArea.querySelectorAll('.szj-level-card').forEach(card=>{
+        card.addEventListener('click', ()=>{
+            const idx = parseInt(card.dataset.level);
+            if(idx > szjState.currentLevel) return;
+            szjStartLevel(idx);
+        });
+    });
+    const rb = document.getElementById('szjReviewBanner');
+    if(rb && dueReviews.length > 0){
+        rb.addEventListener('click', ()=>{ playSelectSound(); szjStartReviewMode(); });
+    }
+    document.getElementById('szjViewFullBtn').addEventListener('click', ()=>{ playSelectSound(); szjRenderFullText(); });
+    document.getElementById('szjResetBtn').addEventListener('click', ()=>{
+        if(confirm('确定要重置所有三字经学习进度吗？此操作不可恢复。')){
+            szjClearSave();
+            szjState.currentLevel = 0;
+            szjState.levelStars = new Array(SZJ_TOTAL_LEVELS).fill(0);
+            szjState.learnedUnits = [];
+            szjState.totalScore = 0;
+            szjState.memoryData = {};
+            szjScoreDisplay.textContent = 0;
+            szjRenderMap();
+            updateHomeMiniCards();
+        }
+    });
+    updateHomeMiniCards();
+}
+
+/* 三字经全文 */
+function szjRenderFullText(){
+    szjLevelBar.style.display = 'none';
+    let html = `
+    <div class="fade-in">
+        <div class="szj-map-title">📜 全文进度</div>
+        <div class="szj-map-sub">绿色 = 全部学会 · 橙色 = 部分学会</div>
+        <div class="szj-fulltext-view">`;
+    SANZIJING_LINES.forEach((line, i)=>{
+        const base = i*4;
+        let learnedCount = 0;
+        for(let k=0; k<4; k++){
+            if(szjState.learnedUnits.includes(base+k)) learnedCount++;
+        }
+        let cls = 'ft-line';
+        if(learnedCount === 4) cls += ' learned';
+        else if(learnedCount > 0) cls += ' partial';
+        html += `<div class="${cls}">
+            <span class="ft-pinyin">${line.pinyin}</span>
+            ${line.hanzi}
+        </div>`;
+    });
+    html += `</div>
+        <div style="text-align:center;margin-top:14px">
+            <button class="szj-btn szj-btn-primary" id="szjBackMapBtn" type="button">🔙 返回地图</button>
+        </div>
+    </div>`;
+    szjMainArea.innerHTML = html;
+    document.getElementById('szjBackMapBtn').addEventListener('click', ()=>{ playSelectSound(); szjRenderMap(); });
+}
+
+/* 三字经复习模式 */
+function szjStartReviewMode(){
+    const due = szjGetDueReviewUnits();
+    if(due.length === 0){ szjRenderMap(); return; }
+    const reviewUnits = due.slice(0, 8);
+    szjState.inLevel = true;
+    szjState.isReviewMode = true;
+    szjState.levelIndex = -1;
+    szjState.qIndex = 0;
+    szjState.levelCorrect = 0;
+    szjState.combo = 0;
+    szjState.maxCombo = 0;
+    szjState.levelQuestions = reviewUnits.map(idx => ({ idx, isReview:true }));
+    szjLevelBar.style.display = 'flex';
+    szjRenderReviewDots();
+    szjNextQuestion();
+}
+function szjRenderReviewDots(){
+    const qs = szjState.levelQuestions;
+    szjLevelBadge.textContent = '🧠 复习';
+    szjLevelTitle.textContent = `艾宾浩斯记忆 · 巩固旧知识`;
+    let html = '';
+    for(let i=0; i<qs.length; i++){
+        let cls = 'szj-level-dot';
+        if(i < szjState.qIndex) cls += ' done';
+        else if(i === szjState.qIndex) cls += ' current';
+        html += `<div class="${cls}">${i+1}</div>`;
+    }
+    szjLevelDots.innerHTML = html;
+}
+
+/* 三字经新关卡 */
+function szjStartLevel(levelIndex){
+    szjState.inLevel = true;
+    szjState.isReviewMode = false;
+    szjState.levelIndex = levelIndex;
+    szjState.qIndex = 0;
+    szjState.levelCorrect = 0;
+    szjState.combo = 0;
+    szjState.maxCombo = 0;
+    const start = levelIndex * SZJ_UNITS_PER_LEVEL;
+    const newUnits = [];
+    for(let i=start; i<Math.min(start+SZJ_UNITS_PER_LEVEL, szjTotalUnits); i++) newUnits.push(i);
+    szjState.levelQuestions = newUnits.map(idx => ({ idx, isReview:false }));
+    szjLevelBar.style.display = 'flex';
+    szjRenderLevelDots();
+    szjNextQuestion();
+}
+function szjRenderLevelDots(){
+    const qs = szjState.levelQuestions;
+    szjLevelBadge.textContent = `第${szjState.levelIndex+1}关`;
+    szjLevelTitle.textContent = `共${qs.length}句 · 显示${(szjGetLevelShowMs(szjState.levelIndex)/1000).toFixed(1)}秒`;
+    let html = '';
+    for(let i=0; i<qs.length; i++){
+        let cls = 'szj-level-dot';
+        if(i < szjState.qIndex) cls += ' done';
+        else if(i === szjState.qIndex) cls += ' current';
+        html += `<div class="${cls}">${i+1}</div>`;
+    }
+    szjLevelDots.innerHTML = html;
+}
+
+/* 三字经出题 */
+function szjNextQuestion(){
+    if(szjState.qIndex >= szjState.levelQuestions.length){
+        if(szjState.isReviewMode) szjFinishReviewMode();
+        else szjStartOrderMode();
+        return;
+    }
+    if(szjState.isReviewMode) szjRenderReviewDots();
+    else szjRenderLevelDots();
+
+    const q = szjState.levelQuestions[szjState.qIndex];
+    const unitIdx = q.idx;
+    const unit = SZJ_UNITS[unitIdx];
+    szjState.currentQ = q;
+    szjState.locked = false;
+    szjState.hintUsed = false;
+    szjState.flipped = false;
+    if(szjState.flipTimer){ clearTimeout(szjState.flipTimer); szjState.flipTimer=null; }
+    if(szjState.optionTimer){ clearTimeout(szjState.optionTimer); szjState.optionTimer=null; }
+
+    const labelCls = q.isReview ? 'szj-learn-label review' : 'szj-learn-label new';
+    const labelText = q.isReview ? `🧠 复习` : `📚 第${unitIdx+1}句`;
+
+    szjMainArea.innerHTML = `
+    <div class="fade-in">
+        <div class="szj-card-scene">
+            <div class="szj-learn-card" id="szjLearnCard">
+                <div class="szj-card-face szj-card-front">
+                    <div class="${labelCls}">${labelText}</div>
+                    <div class="szj-speaker-icon">🔊</div>
+                    <div class="szj-big-line" id="szjBigLine">${unit.hanzi3}</div>
+                    <div class="szj-big-pinyin" id="szjBigPinyin">${unit.pinyin3}</div>
+                    <div class="szj-countdown-hint" id="szjCountdownHint">👀 仔细看，马上翻面…</div>
+                </div>
+                <div class="szj-card-face szj-card-back">
+                    <div class="szj-learn-label">🤔 回忆一下</div>
+                    <div class="question-mark">？</div>
+                    <div class="szj-back-hint">刚才那三个字是什么？</div>
+                </div>
+            </div>
+        </div>
+        <div class="szj-practice-area" id="szjPracticeArea">
+            <div class="szj-practice-title">🔍 选出刚才看到的三个字</div>
+            <div class="szj-options-grid" id="szjOptionsContainer"></div>
+            <div class="szj-feedback-msg" id="szjFeedbackMsg"></div>
+            <div class="szj-action-area">
+                <button class="szj-btn szj-btn-speak" id="szjSpeakBtn" type="button">🔊 读一读</button>
+                <button class="szj-btn szj-btn-hint" id="szjHintBtn" type="button" disabled>💡 提示</button>
+                <button class="szj-btn szj-btn-next" id="szjNextBtn" type="button" disabled>下一句 ➡️</button>
+            </div>
+        </div>
+    </div>`;
+
+    const learnCard = document.getElementById('szjLearnCard');
+    const bigLine = document.getElementById('szjBigLine');
+    const practiceArea = document.getElementById('szjPracticeArea');
+    const optionsContainer = document.getElementById('szjOptionsContainer');
+    const nextBtn = document.getElementById('szjNextBtn');
+    const hintBtn = document.getElementById('szjHintBtn');
+    const speakBtn = document.getElementById('szjSpeakBtn');
+    const countdownHint = document.getElementById('szjCountdownHint');
+    const feedbackMsg = document.getElementById('szjFeedbackMsg');
+
+    bigLine.classList.remove('pop');
+    void bigLine.offsetWidth;
+    bigLine.classList.add('pop');
+
+    const options = szjBuildOptions(unitIdx);
+    optionsContainer.innerHTML = '';
+    options.forEach(item=>{
+        const btn = document.createElement('button');
+        btn.className = 'szj-option-btn';
+        btn.type = 'button';
+        btn.textContent = item.hanzi3;
+        btn.dataset.idx = item.idx;
+        btn.dataset.correct = item.idx === unitIdx ? 'true' : 'false';
+        btn.addEventListener('click', szjOnOptionClick);
+        optionsContainer.appendChild(btn);
+    });
+
+    setTimeout(()=>speakChinese(unit.hanzi3, 0.8), 200);
+    setTimeout(()=>countdownHint.classList.add('show'), 250);
+
+    const showMs = szjState.isReviewMode ? Math.max(szjGetLevelShowMs(0), 1800) : szjGetLevelShowMs(szjState.levelIndex);
+    szjState.flipTimer = setTimeout(()=>{
+        if(!szjState.flipped){
+            szjState.flipped = true;
+            learnCard.classList.add('flipped');
+            countdownHint.classList.remove('show');
+            playSelectSound();
+        }
+        szjState.optionTimer = setTimeout(()=>{
+            practiceArea.classList.add('visible');
+            feedbackMsg.textContent = '🤔 哪三个字是刚才看到的？';
+            feedbackMsg.className = 'szj-feedback-msg';
+        }, 800);
+    }, showMs);
+
+    learnCard.addEventListener('click', ()=>{
+        if(szjState.locked) return;
+        playSelectSound();
+        speakChinese(unit.hanzi3, 0.8);
+        if(!szjState.flipped){
+            bigLine.classList.remove('pop');
+            void bigLine.offsetWidth;
+            bigLine.classList.add('pop');
+        }
+    });
+    speakBtn.addEventListener('click', ()=>{
+        if(szjState.locked) return;
+        playSelectSound();
+        speakChinese(unit.hanzi3, 0.8);
+    });
+    hintBtn.addEventListener('click', ()=>{
+        if(szjState.locked || szjState.hintUsed) return;
+        szjState.hintUsed = true;
+        hintBtn.disabled = true;
+        document.querySelectorAll('.szj-option-btn').forEach(b=>{
+            if(b.dataset.correct==='true') b.classList.add('hint-pulse');
+        });
+        feedbackMsg.textContent = '💡 看，闪烁的就是答案哦～';
+        feedbackMsg.className = 'szj-feedback-msg';
+        playSelectSound();
+    });
+    nextBtn.addEventListener('click', ()=>{
+        if(nextBtn.disabled) return;
+        playSelectSound();
+        szjState.qIndex++;
+        szjNextQuestion();
+    });
+}
+
+function szjBuildOptions(correctIdx){
+    const distractors = [];
+    const used = new Set([correctIdx]);
+    const currentUnit = SZJ_UNITS[correctIdx];
+    const sameLineUnits = [];
+    for(let i=0; i<szjTotalUnits; i++){
+        if(SZJ_UNITS[i].lineIdx === currentUnit.lineIdx && i !== correctIdx) sameLineUnits.push(i);
+    }
+    szjShuffle(sameLineUnits);
+    for(const n of sameLineUnits){
+        if(distractors.length >= 3) break;
+        if(!used.has(n)){ distractors.push(n); used.add(n); }
+    }
+    const neighbors = [];
+    for(let d=1; d<=6; d++){
+        if(correctIdx-d >= 0) neighbors.push(correctIdx-d);
+        if(correctIdx+d < szjTotalUnits) neighbors.push(correctIdx+d);
+    }
+    szjShuffle(neighbors);
+    for(const n of neighbors){
+        if(distractors.length >= 3) break;
+        if(!used.has(n)){ distractors.push(n); used.add(n); }
+    }
+    let attempts = 0;
+    while(distractors.length < 3 && attempts < 500){
+        const n = Math.floor(Math.random()*szjTotalUnits);
+        if(!used.has(n)){ distractors.push(n); used.add(n); }
+        attempts++;
+    }
+    const all = [correctIdx, ...distractors];
+    szjShuffle(all);
+    return all.map(i => ({ idx:i, hanzi3:SZJ_UNITS[i].hanzi3 }));
+}
+
+function szjOnOptionClick(e){
+    if(szjState.locked) return;
+    const btn = e.currentTarget;
+    const isCorrect = btn.dataset.correct === 'true';
+    const unitIdx = szjState.currentQ.idx;
+    const unit = SZJ_UNITS[unitIdx];
+
+    if(!szjState.flipped){
+        if(szjState.flipTimer){ clearTimeout(szjState.flipTimer); szjState.flipTimer=null; }
+        szjState.flipped = true;
+        const lc = document.getElementById('szjLearnCard');
+        if(lc) lc.classList.add('flipped');
+        const ch = document.getElementById('szjCountdownHint');
+        if(ch) ch.classList.remove('show');
+        playSelectSound();
+    }
+
+    const allBtns = document.querySelectorAll('.szj-option-btn');
+
+    if(isCorrect){
+        szjState.locked = true;
+        const nextBtn=document.getElementById('szjNextBtn'), hintBtn=document.getElementById('szjHintBtn'), speakBtn=document.getElementById('szjSpeakBtn');
+        if(nextBtn) nextBtn.disabled = false;
+        if(hintBtn) hintBtn.disabled = true;
+        if(speakBtn) speakBtn.disabled = true;
+        allBtns.forEach(b=>{ b.disabled=true; b.classList.remove('hint-pulse'); });
+
+        btn.classList.add('correct');
+        szjState.totalScore++;
+        szjState.levelCorrect++;
+        szjState.combo++;
+        if(szjState.combo > szjState.maxCombo) szjState.maxCombo = szjState.combo;
+        szjScoreDisplay.textContent = szjState.totalScore;
+
+        if(!szjState.learnedUnits.includes(unitIdx)) szjState.learnedUnits.push(unitIdx);
+        szjUpdateMemory(unitIdx, true);
+        szjSave();
+
+        spawnFloatStars(btn, 5);
+        if(szjScoreBoard){ szjScoreBoard.classList.add('bump'); setTimeout(()=>szjScoreBoard.classList.remove('bump'), 400); }
+        createConfetti(szjState.combo>=3?16:8, ['⭐','🌟','✨','🎉','🎊','💫','🏆','🌈','🍭']);
+        playMatchSound();
+        setTimeout(()=>speakChinese(unit.hanzi3, 0.8), 250);
+
+        const fb = document.getElementById('szjFeedbackMsg');
+        if(fb){
+            fb.textContent = szjState.combo>=3 ? `🎉 连对 ${szjState.combo} 句！` : '🎉 答对了！';
+            fb.className = 'szj-feedback-msg success';
+        }
+        if(szjState.isReviewMode){
+            if(nextBtn) nextBtn.textContent = '继续 ➡️';
+        } else if(szjState.qIndex >= szjState.levelQuestions.length-1){
+            if(nextBtn) nextBtn.textContent = '📝 背诵检验';
+        }
+    } else {
+        btn.classList.add('wrong');
+        allBtns.forEach(b=>{
+            if(b.dataset.correct === 'true') b.classList.add('correct');
+        });
+        const lc = document.getElementById('szjLearnCard');
+        if(lc && szjState.flipped){
+            szjState.flipped = false;
+            lc.classList.remove('flipped');
+            playSelectSound();
+        }
+        szjState.combo = 0;
+        playErrorSound();
+        setTimeout(()=>speakChinese(unit.hanzi3, 0.8), 350);
+        szjUpdateMemory(unitIdx, false);
+        szjSave();
+
+        const fb = document.getElementById('szjFeedbackMsg');
+        if(fb){
+            fb.textContent = '💪 再看看正确的字，然后重选一次～';
+            fb.className = 'szj-feedback-msg error';
+        }
+        setTimeout(()=>{
+            allBtns.forEach(b=>{
+                b.classList.remove('wrong');
+                b.disabled = false;
+            });
+            szjState.locked = false;
+            const fb2 = document.getElementById('szjFeedbackMsg');
+            if(fb2){
+                fb2.textContent = '🤔 再选一次，哪三个字是刚才看到的？';
+                fb2.className = 'szj-feedback-msg';
+            }
+        }, 2000);
+    }
+}
+
+/* 三字经排序模式 */
+function szjStartOrderMode(){
+    szjState.orderMode = true;
+    const newUnits = szjState.levelQuestions.filter(q=>!q.isReview).map(q=>q.idx);
+    if(newUnits.length < 2){ szjFinishLevel(); return; }
+    szjState.orderSlots = new Array(newUnits.length).fill(null);
+    szjState.orderPool = szjShuffle([...newUnits]);
+    szjState.orderSlotIndex = 0;
+    szjRenderOrderMode();
+}
+function szjRenderOrderMode(){
+    szjLevelBar.style.display = 'none';
+    const newUnits = szjState.levelQuestions.filter(q=>!q.isReview).map(q=>q.idx);
+
+    let html = `
+    <div class="fade-in">
+        <div class="szj-order-area">
+            <div class="szj-order-title">📝 背诵检验：按顺序排出本关学的句子</div>
+            <div class="szj-order-slots" id="szjOrderSlots">`;
+    newUnits.forEach((idx, i)=>{
+        const filled = szjState.orderSlots[i];
+        const slotText = filled !== null ? SZJ_UNITS[filled].hanzi3 : `第${i+1}句`;
+        const cls = filled !== null ? 'szj-order-slot filled' : 'szj-order-slot';
+        html += `<div class="${cls}" data-slot="${i}">${slotText}</div>`;
+    });
+    html += `</div>
+            <div style="text-align:center;font-size:.85rem;color:#a5835a;font-weight:600;margin-bottom:8px">
+                点击下方字，按顺序填入
+            </div>
+            <div class="szj-order-pool" id="szjOrderPool">`;
+    szjState.orderPool.forEach(idx=>{
+        const used = szjState.orderSlots.includes(idx);
+        html += `<div class="szj-order-card ${used?'used':''}" data-idx="${idx}">${SZJ_UNITS[idx].hanzi3}</div>`;
+    });
+    html += `</div>
+            <div class="szj-feedback-msg" id="szjOrderFeedback"></div>
+            <div class="szj-action-area">
+                <button class="szj-btn szj-btn-order" id="szjCheckOrderBtn" type="button" disabled>✅ 检查</button>
+                <button class="szj-btn szj-btn-speak" id="szjOrderSpeakBtn" type="button">🔊 听一听</button>
+            </div>
+        </div>
+    </div>`;
+    szjMainArea.innerHTML = html;
+
+    szjMainArea.querySelectorAll('.szj-order-card').forEach(card=>{
+        card.addEventListener('click', ()=>{
+            if(szjState.orderSlotIndex >= szjState.orderSlots.length) return;
+            const idx = parseInt(card.dataset.idx);
+            if(szjState.orderSlots.includes(idx)) return;
+            playSelectSound();
+            szjState.orderSlots[szjState.orderSlotIndex] = idx;
+            szjState.orderSlotIndex++;
+            szjRenderOrderMode();
+        });
+    });
+    szjMainArea.querySelectorAll('.szj-order-slot').forEach(slot=>{
+        slot.addEventListener('click', ()=>{
+            const i = parseInt(slot.dataset.slot);
+            if(szjState.orderSlots[i] !== null){
+                playSelectSound();
+                for(let j=i; j<szjState.orderSlots.length; j++) szjState.orderSlots[j] = null;
+                szjState.orderSlotIndex = i;
+                szjRenderOrderMode();
+            }
+        });
+    });
+    document.getElementById('szjOrderSpeakBtn').addEventListener('click', ()=>{
+        playSelectSound();
+        const text = newUnits.map(i=>SZJ_UNITS[i].hanzi3).join('，');
+        speakChinese(text, 0.8);
+    });
+    const checkBtn = document.getElementById('szjCheckOrderBtn');
+    if(szjState.orderSlotIndex >= szjState.orderSlots.length) checkBtn.disabled = false;
+    checkBtn.addEventListener('click', ()=>{
+        if(checkBtn.disabled) return;
+        szjCheckOrder(checkBtn);
+    });
+}
+function szjCheckOrder(checkBtn){
+    checkBtn.disabled = true;
+    const newUnits = szjState.levelQuestions.filter(q=>!q.isReview).map(q=>q.idx);
+    let allCorrect = true;
+    const slots = document.querySelectorAll('.szj-order-slot');
+    newUnits.forEach((correctIdx, i)=>{
+        const userIdx = szjState.orderSlots[i];
+        if(userIdx === correctIdx) slots[i].classList.add('correct');
+        else { slots[i].classList.add('wrong'); allCorrect = false; }
+    });
+    const fb = document.getElementById('szjOrderFeedback');
+    if(allCorrect){
+        playMatchSound(); createConfetti(20, ['⭐','🌟','✨','🎉','🎊','💫','🏆','🌈','🍭']);
+        fb.textContent = '🎉 太棒了！顺序完全正确！';
+        fb.className = 'szj-feedback-msg success';
+        setTimeout(()=>szjFinishLevel(), 1500);
+    } else {
+        playErrorSound();
+        fb.textContent = '💪 顺序有点不对，看看正确的顺序～';
+        fb.className = 'szj-feedback-msg error';
+        setTimeout(()=>{
+            const slots2 = document.querySelectorAll('.szj-order-slot');
+            slots2.forEach((slot, i)=>{
+                slot.textContent = SZJ_UNITS[newUnits[i]].hanzi3;
+                slot.classList.remove('wrong');
+                slot.classList.add('correct');
+            });
+            setTimeout(()=>szjFinishLevel(), 2200);
+        }, 1500);
+    }
+}
+
+/* 三字经复习结算 */
+function szjFinishReviewMode(){
+    szjState.inLevel = false;
+    szjLevelBar.style.display = 'none';
+    const total = szjState.levelQuestions.length;
+    const correct = szjState.levelCorrect;
+    playLevelCompleteSound(); createConfetti(20, ['⭐','🌟','✨','🎉','🎊','💫','🏆','🌈','🍭']);
+    szjMainArea.innerHTML = `
+    <div class="szj-result-screen fade-in">
+        <div class="szj-result-emoji">🧠</div>
+        <div class="szj-result-title">复习完成！</div>
+        <div class="szj-result-sub">艾宾浩斯记忆，让知识更牢固</div>
+        <div class="szj-result-stats">
+            <div class="szj-result-stat"><div class="num">${correct}/${total}</div><div class="lbl">答对</div></div>
+            <div class="szj-result-stat"><div class="num">${szjState.learnedUnits.length}</div><div class="lbl">累计学会</div></div>
+        </div>
+        <div class="szj-action-area">
+            <button class="szj-btn szj-btn-primary" id="szjBackMapBtn" type="button">🔙 返回地图</button>
+        </div>
+    </div>`;
+    document.getElementById('szjBackMapBtn').addEventListener('click', ()=>{ playSelectSound(); szjRenderMap(); });
+    szjSave();
+}
+
+/* 三字经新关卡结算 */
+function szjFinishLevel(){
+    szjState.inLevel = false;
+    szjLevelBar.style.display = 'none';
+    szjState.orderMode = false;
+
+    const total = szjState.levelQuestions.length;
+    const correct = szjState.levelCorrect;
+    const pct = correct / total;
+
+    let stars = 0;
+    if(pct >= 0.9) stars = 3;
+    else if(pct >= 0.7) stars = 2;
+    else if(pct >= 0.5) stars = 1;
+    if(correct === total && szjState.maxCombo === total) stars = 3;
+
+    const prevStars = szjState.levelStars[szjState.levelIndex] || 0;
+    if(stars > prevStars) szjState.levelStars[szjState.levelIndex] = stars;
+    if(szjState.levelIndex === szjState.currentLevel && szjState.currentLevel < SZJ_TOTAL_LEVELS) szjState.currentLevel++;
+    szjSave();
+    updateHomeMiniCards();
+
+    let emoji, title, sub;
+    if(stars === 3){ emoji='🏆'; title='完美通关！'; sub='全部答对，太厉害了！'; }
+    else if(stars === 2){ emoji='🌟'; title='很棒！'; sub='再仔细一点就满星啦～'; }
+    else if(stars === 1){ emoji='👍'; title='通过啦'; sub='继续加油，再挑战一次吧！'; }
+    else { emoji='💪'; title='再来一次吧'; sub='别灰心，多练几次就记住啦～'; }
+
+    if(stars > 0){ playLevelCompleteSound(); createConfetti(30, ['⭐','🌟','✨','🎉','🎊','💫','🏆','🌈','🍭']); }
+    else { playErrorSound(); }
+
+    const isLast = szjState.levelIndex >= SZJ_TOTAL_LEVELS - 1;
+    const nextBtnText = isLast ? '🏆 回到地图' : '➡️ 下一关';
+
+    szjMainArea.innerHTML = `
+    <div class="szj-result-screen fade-in">
+        <div class="szj-result-emoji">${emoji}</div>
+        <div class="szj-result-title">${title}</div>
+        <div class="szj-result-sub">${sub}</div>
+        <div class="szj-result-stars">${'⭐'.repeat(stars)}${'☆'.repeat(3-stars)}</div>
+        <div class="szj-result-stats">
+            <div class="szj-result-stat"><div class="num">${correct}/${total}</div><div class="lbl">答对</div></div>
+            <div class="szj-result-stat"><div class="num">${szjState.maxCombo}</div><div class="lbl">最高连击</div></div>
+            <div class="szj-result-stat"><div class="num">${szjState.learnedUnits.length}</div><div class="lbl">累计学会</div></div>
+        </div>
+        <div style="margin-bottom:16px">
+            <div style="font-size:.9rem;color:#8a6a4a;font-weight:600;margin-bottom:8px">本关学习的句子：</div>
+            <div style="font-size:.95rem;color:#6b3f1c;line-height:1.9;background:#f7e9d5;border-radius:16px;padding:10px 14px;letter-spacing:3px">
+                ${szjState.levelQuestions.filter(q=>!q.isReview).map(q=>SZJ_UNITS[q.idx].hanzi3).join(' · ')}
+            </div>
+        </div>
+        <div class="szj-action-area">
+            <button class="szj-btn szj-btn-hint" id="szjRetryBtn" type="button">🔄 重玩本关</button>
+            <button class="szj-btn szj-btn-primary" id="szjNextLevelBtn" type="button">${nextBtnText}</button>
+        </div>
+    </div>`;
+
+    document.getElementById('szjRetryBtn').addEventListener('click', ()=>{ playSelectSound(); szjStartLevel(szjState.levelIndex); });
+    document.getElementById('szjNextLevelBtn').addEventListener('click', ()=>{
+        playSelectSound();
+        if(isLast) szjRenderMap();
+        else szjStartLevel(szjState.levelIndex + 1);
+    });
+    setTimeout(()=>{
+        if(stars === 3) speakChinese('完美通关，你太棒了', 0.9);
+        else if(stars === 2) speakChinese('很棒，再仔细一点就满星了', 0.9);
+        else if(stars === 1) speakChinese('通过啦，继续加油', 0.9);
+        else speakChinese('再来一次吧，多练几次就记住啦', 0.9);
+    }, 500);
+}
+
+/* 三字经初始化 */
+function szjInit(){
+    const save = szjLoad();
+    if(save){
+        szjState.currentLevel = save.currentLevel || 0;
+        szjState.levelStars = save.levelStars || new Array(SZJ_TOTAL_LEVELS).fill(0);
+        szjState.learnedUnits = save.learnedUnits || [];
+        szjState.totalScore = save.totalScore || 0;
+        szjState.memoryData = save.memoryData || {};
+        while(szjState.levelStars.length < SZJ_TOTAL_LEVELS) szjState.levelStars.push(0);
+    } else {
+        szjState.levelStars = new Array(SZJ_TOTAL_LEVELS).fill(0);
+    }
+    szjScoreDisplay.textContent = szjState.totalScore;
+}
+
+// ============================================================
 // 启动
+// ============================================================
 document.body.addEventListener('click', function initAudioOnce() {
     initAudio();
     if (speechSynth && voices.length === 0) loadVoices();
@@ -2485,6 +3687,9 @@ if (speechSynth) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+    szjInit();
+    candyLoadProgress();
+    memoryLoadProgress();
     updateHomeMiniCards();
     showScreen('home-screen');
     updateTopBar('home-screen');
