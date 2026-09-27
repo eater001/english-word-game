@@ -953,23 +953,56 @@ let soundEnabled = true;
 function loadVoices() {
     if (!speechSynth) return;
     voices = speechSynth.getVoices();
-    const priority = [
-        'Microsoft Aria Online','Microsoft Jenny Online','Microsoft Guy Online',
-        'Microsoft Zira','Microsoft Aria','Microsoft Jenny','Microsoft Guy',
-        'Microsoft','Google US English','Samantha','Karen','Moira'
+
+    // 英语语音：按“效果优先”挑选，美式优先，其次英式，最后任意英语
+    const enVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+
+    // 效果较好的常见语音名（跨平台，按自然度/童声友好度排序）
+    const preferredNames = [
+        'Aria', 'Jenny', 'Guy', 'Zira', 'Samantha', 'Karen', 'Moira',
+        'Google US English', 'Google UK English Female', 'Google UK English Male'
     ];
+
     americanVoice = null;
-    for (const kw of priority) {
-        const found = voices.find(v => v.lang.startsWith('en') && v.name.includes(kw));
+
+    // 1) 先找美式 + 名字命中优先列表
+    for (const name of preferredNames) {
+        const found = enVoices.find(v =>
+            v.lang.toLowerCase().startsWith('en-us') && v.name.includes(name)
+        );
         if (found) { americanVoice = found; break; }
     }
-    if (!americanVoice) americanVoice = voices.find(v => v.lang === 'en-US');
-    if (!americanVoice) americanVoice = voices.find(v => v.lang.startsWith('en'));
-    if (!americanVoice) americanVoice = voices[0] || null;
 
-    chineseVoice = voices.find(v => v.lang.startsWith('zh') && v.name.includes('Microsoft'))
-                || voices.find(v => v.lang === 'zh-CN')
-                || voices.find(v => v.lang.startsWith('zh')) || null;
+    // 2) 再找任意英语 + 名字命中优先列表
+    if (!americanVoice) {
+        for (const name of preferredNames) {
+            const found = enVoices.find(v => v.name.includes(name));
+            if (found) { americanVoice = found; break; }
+        }
+    }
+
+    // 3) 退而求其次：美式 → 英式 → 任意英语
+    if (!americanVoice) {
+        americanVoice = enVoices.find(v => v.lang.toLowerCase().startsWith('en-us'))
+                     || enVoices.find(v => v.lang.toLowerCase().startsWith('en-gb'))
+                     || enVoices[0]
+                     || null;
+    }
+
+    // 中文语音：同样按效果优先，普通话优先
+    const zhVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('zh'));
+    const preferredZhNames = ['Xiaoxiao', 'Xiaoyi', 'Yunxi', 'Yunyang', 'Huihui', 'Yaoyao'];
+    chineseVoice = null;
+    for (const name of preferredZhNames) {
+        const found = zhVoices.find(v => v.name.includes(name));
+        if (found) { chineseVoice = found; break; }
+    }
+    if (!chineseVoice) {
+        chineseVoice = zhVoices.find(v => v.lang.toLowerCase() === 'zh-cn')
+                    || zhVoices.find(v => v.lang.toLowerCase().startsWith('zh-cn'))
+                    || zhVoices[0]
+                    || null;
+    }
 }
 if (speechSynth) {
     loadVoices();
@@ -982,7 +1015,8 @@ if (speechSynth) {
 function speakWord(word, rate=1.0) {
     if (!soundEnabled || !speechSynth) return false;
     try {
-        if (speechSynth.speaking || speechSynth.pending) speechSynth.cancel();
+        // 只在正在朗读时取消，避免不必要的中断与启动延迟
+        if (speechSynth.speaking) speechSynth.cancel();
         const u = new SpeechSynthesisUtterance(word);
         u.lang = 'en-US'; u.rate = rate; u.pitch = 1.6; u.volume = 1.0;
         if (americanVoice) u.voice = americanVoice;
@@ -993,7 +1027,7 @@ function speakWord(word, rate=1.0) {
 function speakChinese(text) {
     if (!soundEnabled || !speechSynth) return;
     try {
-        if (speechSynth.speaking || speechSynth.pending) speechSynth.cancel();
+        if (speechSynth.speaking) speechSynth.cancel();
         const u = new SpeechSynthesisUtterance(text);
         u.lang = 'zh-CN'; u.rate = 1.0; u.pitch = 1.3;
         if (chineseVoice) u.voice = chineseVoice;
@@ -1592,7 +1626,6 @@ function renderGarden(mode, containerId) {
     }
 
     // ===== 藤蔓连线 =====
-    // 用曲线连接相邻的花朵
     for (let i = 0; i < flowerPositions.length - 1; i++) {
         const a = flowerPositions[i];
         const b = flowerPositions[i + 1];
@@ -1605,7 +1638,6 @@ function renderGarden(mode, containerId) {
         const midX = (startX + endX) / 2;
         const midY = Math.min(startY, endY) - 14;
 
-        // 用 SVG path 画藤蔓
         const svgNS = "http://www.w3.org/2000/svg";
         const svg = document.createElementNS(svgNS, "svg");
         svg.setAttribute("class", "vine-connection");
@@ -2270,7 +2302,6 @@ function candyRenderBoard() {
         if (card.type === 'chinese') {
             cardDiv.innerHTML = `<div class="chinese-text">${card.content}</div>`;
         } else if (card.type === 'image') {
-            // 颜色词显示为彩色球，其他显示 emoji
             if (COLOR_WORDS[card.word]) {
                 cardDiv.innerHTML = `<div class="color-ball" style="background: ${COLOR_WORDS[card.word]};"></div>`;
             } else {
@@ -2282,9 +2313,12 @@ function candyRenderBoard() {
 
         cardDiv.addEventListener('click', (e) => {
             if (card.matched) return;
-            // 中文卡片朗读普通话，英文卡片朗读英语
+            // 点击瞬间强制发音：
+            // 中文卡片 → 用中文语音读中文
+            // 英文/颜色球卡片 → 用英文语音读英文
+            if (speechSynth) speechSynth.cancel();
             if (card.type === 'chinese') {
-                speakChinese(card.word);
+                speakChinese(card.content);
             } else {
                 speakWord(card.word);
             }
@@ -2335,11 +2369,7 @@ function candyHandleClick(cardId, event) {
             candyRenderBoard();
             playMatchSound();
             createStars(clickX, clickY, 8);
-            setTimeout(() => {
-                // 匹配成功时先读英文再读中文
-                speakWord(words[0], 1.0);
-                setTimeout(() => speakChinese(words[0]), 800);
-            }, 200);
+            // 配对成功不再额外朗读，点击时已读过
             candyMessage.textContent = `✔️ 太棒了！${words[0]} 三张卡全配对！`;
             recordWord(candyProgress, candySaveProgress, words[0], candyCurrentLevel);
             candyLock = false;
@@ -2576,7 +2606,7 @@ candyResetBtn.addEventListener('click', () => {
 });
 
 // ============================================================
-// 翻牌记忆模式（保持不变，仅保留原逻辑）
+// 翻牌记忆模式
 // ============================================================
 function memoryGetLevelConfig(level) {
     const { levelInGarden } = getGardenInfo(level);
@@ -2952,7 +2982,7 @@ function memoryShowHint() {
     memorySetMessage('💡 看这里！这对是正确的～', true);
 
     chosen.forEach(item => {
-        const el = document.querySelector(`.card-memory[data-index="${item.idx}"]`);
+        const el = document.querySelector(`.card-memory[data-idx="${item.idx}"]`);
         if (el) {
             el.style.boxShadow = '0 0 0 5px #ffd54f, 0 7px 0 #9b7e5e';
             el.style.transform = 'scale(1.08)';
