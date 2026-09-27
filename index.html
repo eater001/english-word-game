@@ -851,7 +851,7 @@ body {
         </div>
         <div class="learning-hint" id="memoryGameHint">🧠 科学记忆</div>
         <div class="board-memory" id="memoryBoard"></div>
-        <div class="message-area" id="memoryMessage">✨ 翻开卡片，配对中文和图片</div>
+        <div class="message-area" id="memoryMessage">✨ 翻开卡片，配对英文和图片</div>
         <div class="controls">
             <button class="ctrl-btn gray" id="memoryBackHome">🌻 返回花园</button>
             <button class="ctrl-btn" id="memoryResetLevel">🔄 重玩</button>
@@ -2606,7 +2606,7 @@ candyResetBtn.addEventListener('click', () => {
 });
 
 // ============================================================
-// 翻牌记忆模式
+// 翻牌记忆模式（英文单词卡 ↔ 图片卡）
 // ============================================================
 function memoryGetLevelConfig(level) {
     const { levelInGarden } = getGardenInfo(level);
@@ -2712,15 +2712,19 @@ function memoryRenderHome() {
     renderGardenCollection('memory', 'memoryCollection');
 }
 
+// ===== 翻牌记忆：英文单词卡 ↔ 图片卡 =====
 function memoryBuildCards(pairs) {
     const cards = [];
     pairs.forEach((pair, pairId) => {
-        const chinese = WORD_CHINESE[pair.word] || '?';
+        // 英文单词卡
         cards.push({
-            pairId, type: 'chinese', content: chinese, word: pair.word, matched: false
+            pairId, type: 'word', content: formatWordDisplay(pair.word),
+            word: pair.word, matched: false
         });
+        // 图片卡
         cards.push({
-            pairId, type: 'emoji', content: pair.emoji, word: pair.word, matched: false
+            pairId, type: 'emoji', content: pair.emoji,
+            word: pair.word, matched: false
         });
     });
     return shuffleArray(cards);
@@ -2868,6 +2872,7 @@ function memoryShowCompleteModal(stars, hasDetective, gardenSwitched) {
     };
 }
 
+// ===== 翻牌记忆：卡片渲染（英文单词卡 + 图片卡） =====
 function memoryRenderBoard() {
     memoryBoard.innerHTML = '';
     memoryCards.forEach((card, index) => {
@@ -2884,15 +2889,14 @@ function memoryRenderBoard() {
         const front = document.createElement('div');
         front.className = 'face front';
 
-        if (card.type === 'chinese') {
-            const chineseSpan = document.createElement('div');
-            chineseSpan.className = 'word-text';
-            chineseSpan.textContent = card.content;
-            chineseSpan.style.fontSize = '1.3rem';
-            chineseSpan.style.color = '#1b5e20';
-            chineseSpan.style.fontWeight = '900';
-            front.appendChild(chineseSpan);
+        if (card.type === 'word') {
+            // 英文单词卡
+            const wordSpan = document.createElement('div');
+            wordSpan.className = 'word-text';
+            wordSpan.textContent = card.content;
+            front.appendChild(wordSpan);
         } else {
+            // 图片卡
             const emojiSpan = document.createElement('div');
             emojiSpan.className = 'emoji';
             emojiSpan.textContent = card.content;
@@ -2917,10 +2921,11 @@ function memoryHandleClick(index) {
     const cardEl = document.querySelector(`.card-memory[data-index="${index}"]`);
     if (cardEl) cardEl.classList.add('flipped');
 
+    // 翻牌瞬间朗读英文
     speakWord(card.word);
 
     if (memoryFlippedIdx.length === 1) {
-        memorySetMessage(`👉 已翻开：${card.type === 'chinese' ? card.content : '图片'}`, true);
+        memorySetMessage(`👉 已翻开：${card.type === 'word' ? card.content : '图片'}`, true);
         return;
     }
 
@@ -2982,7 +2987,7 @@ function memoryShowHint() {
     memorySetMessage('💡 看这里！这对是正确的～', true);
 
     chosen.forEach(item => {
-        const el = document.querySelector(`.card-memory[data-idx="${item.idx}"]`);
+        const el = document.querySelector(`.card-memory[data-index="${item.idx}"]`);
         if (el) {
             el.style.boxShadow = '0 0 0 5px #ffd54f, 0 7px 0 #9b7e5e';
             el.style.transform = 'scale(1.08)';
@@ -3060,7 +3065,7 @@ function memoryLoadLevel(level) {
     memoryCards = memoryBuildCards(memoryCurrentWords);
     memoryRenderBoard();
     if (memoryConfig.timeLimit) memoryStartTimer();
-    memorySetMessage('✨ 翻开卡片，配对中文和图片吧！', true);
+    memorySetMessage('✨ 翻开卡片，配对英文和图片吧！', true);
     memoryUpdateStats();
 }
 
