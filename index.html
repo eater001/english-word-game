@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>趣味英语 · 知识果园</title>
+<title>趣味英语 · 知识花园</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Poppins',system-ui,sans-serif;
     user-select:none; -webkit-tap-highlight-color:transparent; }
@@ -49,7 +49,8 @@ body {
 .home-stat .stat-num { font-size:1.4rem; font-weight:800; color:#2e7d32; line-height:1; }
 .home-stat .stat-label { font-size:0.68rem; color:#8a7a5a; font-weight:700; margin-top:5px; }
 
-.tree-container {
+/* ===== 花园容器 ===== */
+.garden-container {
     position:relative; width:100%; height:460px;
     background:linear-gradient(180deg,#87CEEB 0%,#B0E0E6 40%,#dcedc1 75%,#a8e6cf 100%);
     border-radius:24px; overflow-y:auto; overflow-x:hidden;
@@ -57,8 +58,8 @@ body {
     margin:12px 0;
     scroll-behavior:smooth;
 }
-.tree-container::-webkit-scrollbar { width:6px; }
-.tree-container::-webkit-scrollbar-thumb { background:#66bb6a; border-radius:3px; }
+.garden-container::-webkit-scrollbar { width:6px; }
+.garden-container::-webkit-scrollbar-thumb { background:#66bb6a; border-radius:3px; }
 
 .sky-deco { position:absolute; pointer-events:none; z-index:1; }
 .sun {
@@ -76,149 +77,194 @@ body {
     50% { transform:translateX(15px); }
 }
 
-.tree-ground {
-    position:absolute; bottom:0; left:0; width:100%; height:30px;
-    background:linear-gradient(180deg,#8d6e63,#6d4c41);
+/* ===== 草地 ===== */
+.garden-ground {
+    position:absolute; bottom:0; left:0; width:100%; height:60px;
+    background:linear-gradient(180deg,#8bc34a 0%,#7cb342 40%,#689f38 100%);
     border-radius:0 0 22px 22px;
-    box-shadow:inset 0 4px 8px rgba(0,0,0,0.2);
+    z-index:1;
+    box-shadow:inset 0 8px 16px rgba(0,0,0,0.15);
+}
+.garden-ground::before {
+    content:""; position:absolute; top:0; left:0; right:0; height:16px;
+    background:radial-gradient(ellipse at 20% 100%, rgba(255,255,255,0.35), transparent 60%),
+               radial-gradient(ellipse at 70% 100%, rgba(255,255,255,0.35), transparent 60%);
+}
+
+/* ===== 藤蔓 SVG 层 ===== */
+.vine-svg {
+    position:absolute; top:0; left:0;
+    width:100%; height:100%;
+    pointer-events:none;
     z-index:2;
+    overflow:visible;
 }
-.tree-ground::before {
-    content:"🌱🌱🌱🌱🌱🌱🌱🌱🌱🌱🌱🌱";
-    position:absolute; top:-8px; left:0; right:0;
-    font-size:0.75rem; text-align:center;
-    letter-spacing:4px; opacity:0.7;
+.vine-path {
+    fill:none;
+    stroke:#4caf50;
+    stroke-width:5;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    filter:drop-shadow(2px 2px 2px rgba(0,0,0,0.15));
+    transition:stroke-dashoffset 1.5s ease;
 }
-
-.tree-trunk {
-    position:absolute; bottom:30px; left:50%;
-    width:20px; transform:translateX(-50%);
-    background:linear-gradient(90deg,#6d4c41,#8d6e63,#6d4c41);
-    border-radius:10px 10px 0 0;
-    transition:height 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    z-index:3;
-    box-shadow:2px 0 6px rgba(0,0,0,0.2);
+.vine-path.new {
+    animation:vineGrow 1.5s ease-out forwards;
 }
-.tree-trunk::before {
-    content:""; position:absolute; inset:0;
-    background:repeating-linear-gradient(0deg, transparent 0 20px, rgba(0,0,0,0.1) 20px 22px);
-    border-radius:10px 10px 0 0;
+@keyframes vineGrow {
+    from { stroke-dashoffset: var(--len); }
+    to { stroke-dashoffset: 0; }
 }
-
-.tree-crown {
-    position:absolute; left:50%;
-    transform:translateX(-50%);
-    font-size:4rem; z-index:4;
-    transition:top 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    filter:drop-shadow(0 4px 8px rgba(0,0,0,0.15));
-    animation:crownSway 4s ease-in-out infinite;
-}
-@keyframes crownSway {
-    0%,100% { transform:translateX(-50%) rotate(-2deg); }
-    50% { transform:translateX(-50%) rotate(2deg); }
+.vine-leaf {
+    fill:#66bb6a;
+    opacity:0.85;
 }
 
-.tree-branch {
-    position:absolute; height:4px;
-    background:linear-gradient(90deg,#6d4c41,#8d6e63);
-    border-radius:2px; z-index:3;
-    transform-origin:0 50%;
-    transition:opacity 0.6s ease;
-}
-
-.tree-fruit {
-    position:absolute; width:44px; height:44px;
-    border-radius:50%;
+/* ===== 花朵（长在藤上） ===== */
+.flower {
+    position:absolute;
     display:flex; flex-direction:column;
-    align-items:center; justify-content:center;
-    font-weight:800; cursor:pointer;
+    align-items:center; justify-content:flex-end;
+    cursor:pointer;
     transition:all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     z-index:6;
-    box-shadow:0 4px 8px rgba(0,0,0,0.2), inset -3px -3px 6px rgba(0,0,0,0.15), inset 3px 3px 6px rgba(255,255,255,0.4);
+    transform-origin:bottom center;
+    animation:flowerSway 3.5s ease-in-out infinite;
 }
-.tree-fruit .fruit-num {
-    font-size:0.9rem; line-height:1;
-    text-shadow:1px 1px 0 rgba(255,255,255,0.6);
+@keyframes flowerSway {
+    0%,100% { transform:translateX(-50%) rotate(-3deg); }
+    50% { transform:translateX(-50%) rotate(3deg); }
 }
-.tree-fruit .fruit-stars {
-    font-size:0.5rem; margin-top:1px;
-    letter-spacing:-1px; line-height:1;
+.flower .flower-stem {
+    width:4px;
+    background:linear-gradient(180deg,#66bb6a,#2e7d32);
+    border-radius:2px;
+}
+.flower .flower-head {
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2),
+               inset -4px -4px 8px rgba(0,0,0,0.15),
+               inset 4px 4px 8px rgba(255,255,255,0.5);
+    border:3px solid rgba(255,255,255,0.85);
+    position:relative;
+    transition:all 0.3s;
+}
+.flower .flower-center {
+    position:absolute; border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #fff9c4, #ffd54f);
+    box-shadow:inset -2px -2px 4px rgba(0,0,0,0.2);
+    z-index:2;
+}
+/* 花瓣 */
+.flower .petal {
+    position:absolute;
+    border-radius:50%;
+    box-shadow:inset -2px -2px 3px rgba(0,0,0,0.12),
+               inset 2px 2px 3px rgba(255,255,255,0.4);
+}
+.flower .flower-num {
+    position:absolute; top:-22px; left:50%; transform:translateX(-50%);
+    background:#fff; color:#2e7d32;
+    font-size:0.65rem; font-weight:800;
+    padding:1px 6px; border-radius:10px;
+    white-space:nowrap;
+    box-shadow:0 2px 4px rgba(0,0,0,0.15);
+    border:1.5px solid #66bb6a;
+    opacity:0;
+    transition:opacity 0.2s;
+    z-index:5;
+}
+.flower:hover .flower-num { opacity:1; }
+
+/* 当前关：跳动 */
+.flower.current {
+    animation:flowerPulse 1.6s ease-in-out infinite;
+    z-index:10;
+}
+@keyframes flowerPulse {
+    0%,100% { transform:translateX(-50%) scale(1); filter:drop-shadow(0 0 0 rgba(255,107,107,0)); }
+    50% { transform:translateX(-50%) scale(1.1); filter:drop-shadow(0 0 14px rgba(255,107,107,0.7)); }
 }
 
-.tree-fruit.locked {
-    width:30px; height:30px;
-    background:radial-gradient(circle at 30% 30%, #bdbdbd, #757575);
-    color:#fff; opacity:0.7;
+/* 未解锁：花苞 */
+.flower.locked {
     cursor:not-allowed;
-    box-shadow:0 3px 6px rgba(0,0,0,0.25);
+    opacity:0.55;
+    filter:grayscale(0.5);
+    animation:none;
 }
-.tree-fruit.locked .fruit-num { display:none; }
-.tree-fruit.locked::after {
-    content:"🔒"; font-size:0.85rem;
+.flower.locked .flower-head {
+    background:radial-gradient(circle at 35% 35%, #bdbdbd, #757575) !important;
+    border:2px dashed rgba(255,255,255,0.7);
 }
+.flower.locked .petal { display:none; }
 
-.tree-fruit.current {
-    width:54px; height:54px;
-    background:radial-gradient(circle at 30% 30%, #ff6b6b, #d32f2f);
-    color:#fff;
-    animation:fruitPulse 2s ease-in-out infinite;
-    box-shadow:0 6px 12px rgba(211,47,47,0.5), inset -3px -3px 8px rgba(0,0,0,0.2), inset 3px 3px 8px rgba(255,255,255,0.4);
-    border:3px solid #fff;
+/* bonus 关 */
+.flower.bonus .flower-head {
+    box-shadow:0 0 0 4px #fff, 0 0 22px rgba(255,215,0,0.9),
+               inset -4px -4px 8px rgba(0,0,0,0.15),
+               inset 4px 4px 8px rgba(255,255,255,0.5);
 }
-.tree-fruit.current::before {
-    content:""; position:absolute;
-    top:-8px; left:50%; transform:translateX(-50%);
-    width:4px; height:10px; background:#5d4037;
-    border-radius:2px;
-}
-.tree-fruit.current::after {
-    content:"🍃"; position:absolute;
-    top:-12px; right:4px; font-size:0.9rem;
-    transform:rotate(20deg);
-}
-@keyframes fruitPulse {
-    0%,100% { transform:scale(1); }
-    50% { transform:scale(1.08); }
-}
-
-.tree-fruit.done {
-    background:radial-gradient(circle at 30% 30%, #ffd966, #f9a825);
-    color:#5d2e00;
-    border:2px solid #fff;
-}
-.tree-fruit.done::before {
-    content:""; position:absolute;
-    top:-7px; left:50%; transform:translateX(-50%);
-    width:3px; height:9px; background:#5d4037;
-    border-radius:2px;
-}
-
-.tree-fruit.bonus {
-    background:radial-gradient(circle at 30% 30%, #ce93d8, #8e24aa);
-    color:#fff;
-    border:3px solid #fff;
-}
-.tree-fruit.bonus::after {
-    content:"🕵️"; position:absolute;
-    top:-10px; right:-6px; font-size:1.2rem;
+.flower.bonus::after {
+    content:"⭐"; position:absolute; top:-6px; right:-8px;
+    font-size:1rem;
     filter:drop-shadow(0 2px 3px rgba(0,0,0,0.3));
-    animation:crownSway 2s ease-in-out infinite;
+    z-index:12;
 }
 
-.next-hint {
-    position:absolute; left:50%; transform:translateX(-50%);
-    background:rgba(255,255,255,0.95);
-    padding:6px 14px; border-radius:20px;
-    font-size:0.8rem; font-weight:800; color:#d32f2f;
+/* 绽放动画 */
+@keyframes bloom {
+    0% { transform:translateX(-50%) scale(0) rotate(-180deg); opacity:0; }
+    60% { transform:translateX(-50%) scale(1.3) rotate(20deg); opacity:1; }
+    100% { transform:translateX(-50%) scale(1) rotate(0); opacity:1; }
+}
+.flower.blooming { animation:bloom 0.9s ease-out forwards; }
+
+/* 花园底部提示 */
+.garden-hint {
+    position:absolute; bottom:8px; left:50%; transform:translateX(-50%);
+    background:rgba(255,255,255,0.9);
+    padding:4px 12px; border-radius:20px;
+    font-size:0.75rem; font-weight:800; color:#2e7d32;
+    box-shadow:0 3px 8px rgba(0,0,0,0.15);
+    z-index:20; white-space:nowrap;
+    pointer-events:none;
+}
+
+/* ===== 收藏栏 ===== */
+.garden-collection {
+    display:flex; gap:6px; justify-content:center;
+    flex-wrap:wrap; margin:8px 0;
+}
+.garden-collection-item {
+    width:44px; height:44px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.5rem;
+    background:linear-gradient(145deg,#e8f5e9,#c8e6c9);
+    border:3px solid #fff;
     box-shadow:0 4px 8px rgba(0,0,0,0.15);
-    z-index:8; white-space:nowrap;
-    animation:bounceHint 1.5s ease-in-out infinite;
+    position:relative;
+    transition:all 0.3s;
 }
-@keyframes bounceHint {
-    0%,100% { transform:translateX(-50%) translateY(0); }
-    50% { transform:translateX(-50%) translateY(-5px); }
+.garden-collection-item.done {
+    background:linear-gradient(145deg,#fff9c4,#ffe082);
+}
+.garden-collection-item.current {
+    box-shadow:0 4px 8px rgba(0,0,0,0.15), 0 0 0 4px rgba(76,175,80,0.5);
+    animation:treeCollectPulse 1.5s ease-in-out infinite;
+}
+.garden-collection-item.locked {
+    background:linear-gradient(145deg,#e0e0e0,#bdbdbd);
+    opacity:0.6;
+}
+@keyframes treeCollectPulse {
+    0%,100% { transform:scale(1); }
+    50% { transform:scale(1.1); }
 }
 
+/* 开始按钮 */
 .start-btn-wrapper {
     position:sticky; bottom:8px;
     display:flex; justify-content:center;
@@ -281,63 +327,6 @@ body {
     50% { transform:translate(-50%, -5px); }
 }
 
-.tree-switch-banner {
-    position:absolute; top:50%; left:50%;
-    transform:translate(-50%, -50%);
-    background:linear-gradient(135deg,#fff9c4,#ffd54f);
-    border:4px solid #fff;
-    border-radius:24px; padding:20px 28px;
-    text-align:center; z-index:30;
-    box-shadow:0 12px 30px rgba(0,0,0,0.3);
-    animation:switchBanner 3s ease-in-out forwards;
-    pointer-events:none;
-}
-.tree-switch-banner .big-emoji { font-size:3.5rem; margin-bottom:8px; }
-.tree-switch-banner .text { font-size:1.2rem; font-weight:800; color:#5d2e00; }
-.tree-switch-banner .subtext { font-size:0.9rem; color:#8a5a00; margin-top:4px; font-weight:700; }
-@keyframes switchBanner {
-    0% { transform:translate(-50%, -50%) scale(0) rotate(-20deg); opacity:0; }
-    20% { transform:translate(-50%, -50%) scale(1.1) rotate(5deg); opacity:1; }
-    30% { transform:translate(-50%, -50%) scale(1) rotate(0deg); }
-    80% { transform:translate(-50%, -50%) scale(1) rotate(0deg); opacity:1; }
-    100% { transform:translate(-50%, -50%) scale(0.8) rotate(10deg); opacity:0; }
-}
-
-.tree-collection {
-    display:flex; gap:6px; justify-content:center;
-    flex-wrap:wrap; margin:8px 0;
-}
-.tree-collection-item {
-    width:44px; height:44px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    font-size:1.4rem;
-    background:linear-gradient(145deg,#e8f5e9,#c8e6c9);
-    border:3px solid #fff;
-    box-shadow:0 4px 8px rgba(0,0,0,0.15);
-    position:relative;
-    transition:all 0.3s;
-}
-.tree-collection-item.unlocked {
-    background:linear-gradient(145deg,#ffd966,#ffb347);
-}
-.tree-collection-item.locked {
-    background:linear-gradient(145deg,#e0e0e0,#bdbdbd);
-    opacity:0.6;
-}
-.tree-collection-item.current {
-    box-shadow:0 4px 8px rgba(0,0,0,0.15), 0 0 0 4px rgba(76,175,80,0.5);
-    animation:treeCollectPulse 1.5s ease-in-out infinite;
-}
-@keyframes treeCollectPulse {
-    0%,100% { transform:scale(1); }
-    50% { transform:scale(1.1); }
-}
-.tree-collection-item .check {
-    position:absolute; bottom:-4px; right:-4px;
-    font-size:0.9rem;
-    filter:drop-shadow(0 1px 2px rgba(0,0,0,0.3));
-}
-
 /* 浇水动画 */
 .watering-can {
     position:absolute;
@@ -385,23 +374,6 @@ body {
     100% { transform:translate(-50%, -30px) scale(0.8); opacity:0; }
 }
 
-.soil-wet {
-    position:absolute;
-    bottom:30px; left:50%;
-    transform:translateX(-50%);
-    width:80px; height:8px;
-    background:radial-gradient(ellipse, rgba(79,195,247,0.6), transparent);
-    border-radius:50%;
-    z-index:22;
-    pointer-events:none;
-    animation:soilWetFade 3s ease-out forwards;
-}
-@keyframes soilWetFade {
-    0% { opacity:0; transform:translateX(-50%) scaleX(0.3); }
-    30% { opacity:1; transform:translateX(-50%) scaleX(1.2); }
-    100% { opacity:0; transform:translateX(-50%) scaleX(1.5); }
-}
-
 .water-drop {
     position:absolute; font-size:1.8rem;
     pointer-events:none; z-index:11;
@@ -425,87 +397,27 @@ body {
     100% { transform:translateY(-80px) scale(0.8); opacity:0; }
 }
 
-.growth-stage-indicator {
-    position:absolute;
-    top:50%; left:50%;
+/* 新花绽放横幅 */
+.bloom-banner {
+    position:absolute; top:50%; left:50%;
     transform:translate(-50%, -50%);
-    background:rgba(255,255,255,0.95);
-    border:3px solid #66bb6a;
-    border-radius:20px;
-    padding:12px 24px;
-    text-align:center;
-    z-index:35;
+    background:linear-gradient(135deg,#fff9c4,#ffd54f);
+    border:4px solid #fff;
+    border-radius:24px; padding:18px 26px;
+    text-align:center; z-index:30;
+    box-shadow:0 12px 30px rgba(0,0,0,0.3);
+    animation:switchBanner 3s ease-in-out forwards;
     pointer-events:none;
-    box-shadow:0 10px 25px rgba(0,0,0,0.2);
-    animation:stageIndicator 2.5s ease-in-out forwards;
 }
-.growth-stage-indicator .stage-emoji {
-    font-size:3rem;
-    display:block;
-    margin-bottom:4px;
-    animation:stageEmojiBounce 0.6s ease-in-out infinite alternate;
-}
-@keyframes stageEmojiBounce {
-    from { transform:scale(1) rotate(-3deg); }
-    to { transform:scale(1.15) rotate(3deg); }
-}
-.growth-stage-indicator .stage-text {
-    font-size:1rem;
-    font-weight:800;
-    color:#2e7d32;
-}
-.growth-stage-indicator .stage-sub {
-    font-size:0.75rem;
-    color:#66bb6a;
-    font-weight:700;
-    margin-top:2px;
-}
-@keyframes stageIndicator {
-    0% { transform:translate(-50%, -50%) scale(0) rotate(-30deg); opacity:0; }
-    15% { transform:translate(-50%, -50%) scale(1.1) rotate(5deg); opacity:1; }
-    25% { transform:translate(-50%, -50%) scale(1) rotate(0deg); }
+.bloom-banner .big-flower { font-size:3.5rem; margin-bottom:6px; }
+.bloom-banner .text { font-size:1.15rem; font-weight:800; color:#5d2e00; }
+.bloom-banner .subtext { font-size:0.85rem; color:#8a5a00; margin-top:4px; font-weight:700; }
+@keyframes switchBanner {
+    0% { transform:translate(-50%, -50%) scale(0) rotate(-20deg); opacity:0; }
+    20% { transform:translate(-50%, -50%) scale(1.1) rotate(5deg); opacity:1; }
+    30% { transform:translate(-50%, -50%) scale(1) rotate(0deg); }
     80% { transform:translate(-50%, -50%) scale(1) rotate(0deg); opacity:1; }
     100% { transform:translate(-50%, -50%) scale(0.8) rotate(10deg); opacity:0; }
-}
-
-.tree-seedling {
-    position:absolute;
-    left:50%;
-    transform:translateX(-50%);
-    font-size:2rem;
-    z-index:5;
-    animation:seedlingWiggle 1.5s ease-in-out infinite;
-    filter:drop-shadow(0 3px 4px rgba(0,0,0,0.2));
-}
-@keyframes seedlingWiggle {
-    0%, 100% { transform:translateX(-50%) rotate(-5deg); }
-    50% { transform:translateX(-50%) rotate(5deg); }
-}
-
-.growth-beam {
-    position:absolute;
-    left:50%;
-    transform:translateX(-50%);
-    width:60px;
-    background:linear-gradient(180deg, rgba(255,235,59,0.6), rgba(255,235,59,0));
-    border-radius:30px;
-    pointer-events:none;
-    z-index:4;
-    animation:beamRise 1.5s ease-out forwards;
-}
-@keyframes beamRise {
-    0% { height:0; opacity:0; }
-    30% { opacity:1; }
-    100% { height:200px; opacity:0; }
-}
-
-.tree-trunk.growing {
-    animation:trunkGrow 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-@keyframes trunkGrow {
-    0% { filter:brightness(1); }
-    30% { filter:brightness(1.5) saturate(1.5); }
-    100% { filter:brightness(1); }
 }
 
 .progress-bar-wrapper { background:#e0d5c0; border-radius:40px;
@@ -807,22 +719,17 @@ body {
     .detective-item { font-size:2.3rem; width:48px; height:48px; }
     .detective-slot { width:30px; height:30px; font-size:18px; }
     .detective-speak-btn { width:58px; height:58px; font-size:26px; }
-    .tree-container { height:400px; }
-    .tree-fruit { width:38px; height:38px; }
-    .tree-fruit.current { width:48px; height:48px; }
-    .tree-fruit.locked { width:26px; height:26px; }
-    .tree-fruit .fruit-num { font-size:0.8rem; }
-    .tree-crown { font-size:3rem; }
+    .garden-container { height:400px; }
+    .garden-collection-item { width:38px; height:38px; font-size:1.2rem; }
     .start-btn { font-size:1rem; padding:12px 22px; }
-    .tree-collection-item { width:38px; height:38px; font-size:1.2rem; }
 }
 @media (max-width:450px) {
     .board-candy, .board-memory { grid-template-columns:repeat(3,1fr); gap:6px; }
     .controls { flex-direction:column; }
     .ctrl-btn { width:100%; }
     .mode-switch { width:100%; justify-content:center; }
-    .tree-container { height:360px; }
-    .tree-collection-item { width:34px; height:34px; font-size:1.1rem; }
+    .garden-container { height:360px; }
+    .garden-collection-item { width:34px; height:34px; font-size:1.1rem; }
 }
 </style>
 </head>
@@ -833,14 +740,14 @@ body {
 <div class="bg-float" style="left:45%;animation-delay:6s;">⭐</div>
 <div class="bg-float" style="left:70%;animation-delay:2s;">🎈</div>
 <div class="bg-float" style="left:88%;animation-delay:8s;">🐱</div>
-<div class="bg-float" style="left:35%;animation-delay:10s;">🍎</div>
-<div class="bg-float" style="left:60%;animation-delay:5s;">🐻</div>
+<div class="bg-float" style="left:35%;animation-delay:10s;">🌻</div>
+<div class="bg-float" style="left:60%;animation-delay:5s;">🦋</div>
 
 <div class="game-wrapper">
     <div class="top-bar">
         <div class="main-title">
             <span class="title-emoji" id="mainEmoji">🧩</span>
-            <h1 id="mainTitle">知识果园 · 三消</h1>
+            <h1 id="mainTitle">知识花园 · 三消</h1>
         </div>
         <div class="mode-switch">
             <button class="mode-btn active" id="modeCandy" data-mode="candy">🧩 三消</button>
@@ -856,16 +763,17 @@ body {
             <div class="home-stat"><div class="stat-num" id="candyHomeBadges">0</div><div class="stat-label">徽章</div></div>
         </div>
 
-        <div class="learning-hint" id="candyTreeHint">🌳 每通一关自动浇水，树会慢慢长大！</div>
+        <div class="learning-hint" id="candyGardenHint">🌸 每过一关，藤蔓上就会开出一朵新花！</div>
 
-        <div class="tree-collection" id="candyCollection"></div>
+        <div class="garden-collection" id="candyCollection"></div>
 
-        <div class="tree-container" id="candyTree">
+        <div class="garden-container" id="candyGarden">
             <div class="sky-deco sun">☀️</div>
             <div class="sky-deco cloud-deco" style="top:20px;left:15%;">☁️</div>
             <div class="sky-deco cloud-deco" style="top:60px;left:70%;animation-delay:2s;">☁️</div>
             <div class="sky-deco cloud-deco" style="top:120px;left:25%;animation-delay:4s;">☁️</div>
-            <div class="tree-ground"></div>
+            <svg class="vine-svg" id="candyVineSvg" preserveAspectRatio="none"></svg>
+            <div class="garden-ground"></div>
         </div>
 
         <div class="button-row">
@@ -894,7 +802,7 @@ body {
         <div class="board-candy" id="candyBoard"></div>
         <div class="message-area" id="candyMessage">👆 找出「中文 + 英文 + 图片」三张同源卡，一起消除！</div>
         <div class="controls">
-            <button class="ctrl-btn gray" id="candyBackHome">🌳 返回树</button>
+            <button class="ctrl-btn gray" id="candyBackHome">🌻 返回花园</button>
             <button class="ctrl-btn" id="candyResetLevel">🔄 重玩本关</button>
             <button class="ctrl-btn green" id="candyNextBtn" disabled>➡️ 下一关</button>
         </div>
@@ -908,16 +816,17 @@ body {
             <div class="home-stat"><div class="stat-num" id="memoryHomeBadges">0</div><div class="stat-label">徽章</div></div>
         </div>
 
-        <div class="learning-hint" id="memoryTreeHint">🌳 每通一关自动浇水，树会慢慢长大！</div>
+        <div class="learning-hint" id="memoryGardenHint">🌸 每过一关，藤蔓上就会开出一朵新花！</div>
 
-        <div class="tree-collection" id="memoryCollection"></div>
+        <div class="garden-collection" id="memoryCollection"></div>
 
-        <div class="tree-container" id="memoryTree">
+        <div class="garden-container" id="memoryGarden">
             <div class="sky-deco sun">☀️</div>
             <div class="sky-deco cloud-deco" style="top:20px;left:15%;">☁️</div>
             <div class="sky-deco cloud-deco" style="top:60px;left:70%;animation-delay:2s;">☁️</div>
             <div class="sky-deco cloud-deco" style="top:120px;left:25%;animation-delay:4s;">☁️</div>
-            <div class="tree-ground"></div>
+            <svg class="vine-svg" id="memoryVineSvg" preserveAspectRatio="none"></svg>
+            <div class="garden-ground"></div>
         </div>
 
         <div class="button-row">
@@ -946,7 +855,7 @@ body {
         <div class="board-memory" id="memoryBoard"></div>
         <div class="message-area" id="memoryMessage">✨ 翻开卡片，配对中文和图片</div>
         <div class="controls">
-            <button class="ctrl-btn gray" id="memoryBackHome">🌳 返回树</button>
+            <button class="ctrl-btn gray" id="memoryBackHome">🌻 返回花园</button>
             <button class="ctrl-btn" id="memoryResetLevel">🔄 重玩</button>
         </div>
     </div>
@@ -1017,21 +926,16 @@ const playBadgeSound = () => {
     setTimeout(() => playTone(1174, 0.12, 'sine', 0.25), 100);
     setTimeout(() => playTone(1568, 0.25, 'sine', 0.25), 220);
 };
-const playGrowthSound = () => {
-    playTone(440, 0.15, 'sine', 0.15);
-    setTimeout(() => playTone(587, 0.15, 'sine', 0.18), 100);
-    setTimeout(() => playTone(698, 0.2, 'sine', 0.2), 200);
-};
 const playWaterSound = () => {
     playTone(880, 0.08, 'sine', 0.1);
     setTimeout(() => playTone(1200, 0.1, 'sine', 0.12), 80);
     setTimeout(() => playTone(1600, 0.15, 'sine', 0.15), 160);
 };
-const playTreeSwitchSound = () => {
-    playTone(523, 0.2, 'sine', 0.25);
-    setTimeout(() => playTone(659, 0.2, 'sine', 0.25), 150);
-    setTimeout(() => playTone(784, 0.2, 'sine', 0.25), 300);
-    setTimeout(() => playTone(1046, 0.4, 'sine', 0.3), 450);
+const playBloomSound = () => {
+    playTone(659, 0.1, 'sine', 0.22);
+    setTimeout(() => playTone(784, 0.12, 'sine', 0.22), 90);
+    setTimeout(() => playTone(988, 0.15, 'sine', 0.25), 180);
+    setTimeout(() => playTone(1318, 0.35, 'sine', 0.28), 300);
 };
 
 // ============================================================
@@ -1078,17 +982,6 @@ function speakWord(word, rate=1.0) {
         if (speechSynth.speaking || speechSynth.pending) speechSynth.cancel();
         const u = new SpeechSynthesisUtterance(word);
         u.lang = 'en-US'; u.rate = rate; u.pitch = 1.6; u.volume = 1.0;
-        if (americanVoice) u.voice = americanVoice;
-        speechSynth.speak(u);
-        return true;
-    } catch(e) { return false; }
-}
-function speakLetter(letter) {
-    if (!soundEnabled || !speechSynth) return false;
-    try {
-        if (speechSynth.speaking || speechSynth.pending) speechSynth.cancel();
-        const u = new SpeechSynthesisUtterance(letter);
-        u.lang = 'en-US'; u.rate = 1.0; u.pitch = 1.7; u.volume = 1.0;
         if (americanVoice) u.voice = americanVoice;
         speechSynth.speak(u);
         return true;
@@ -1148,7 +1041,7 @@ function createStars(x, y, count=5) {
     for (let i = 0; i < count; i++) {
         const star = document.createElement('div');
         star.className = 'star-fall';
-        star.textContent = ['⭐','🌟','✨','💫'][Math.floor(Math.random()*4)];
+        star.textContent = ['⭐','🌟','✨','💫','🌸'][Math.floor(Math.random()*5)];
         star.style.left = (x + (Math.random()-0.5)*100) + 'px';
         star.style.top = y + 'px';
         star.style.fontSize = (1.2 + Math.random()) + 'rem';
@@ -1158,7 +1051,8 @@ function createStars(x, y, count=5) {
     }
 }
 function createConfetti(count=20) {
-    const colors = ['#ff6b6b','#feca57','#48dbfb','#1dd1a1','#f368e0','#ff9f43'];
+    const colors = ['#ff6b6b','#feca57','#48dbfb','#1dd1a1','#f368e0','#ff9f43',
+                    '#ff8a80','#ffd54f','#ce93d8'];
     for (let i = 0; i < count; i++) {
         const c = document.createElement('div');
         c.className = 'confetti';
@@ -1365,16 +1259,16 @@ const WORD_BANK_WITH_DIFFICULTY = WORD_BANK.map(w => ({
 }));
 
 function getMaxDifficultyForLevel(level) {
-    const treeIndex = Math.min(Math.floor((level - 1) / 60), 5);
-    const levelInTree = ((level - 1) % 60) + 1;
+    const gardenIndex = Math.min(Math.floor((level - 1) / 60), 5);
+    const levelInGarden = ((level - 1) % 60) + 1;
     let maxDiff;
-    if (treeIndex === 0) maxDiff = 2;
-    else if (treeIndex === 1) maxDiff = 3;
-    else if (treeIndex === 2) maxDiff = 3;
-    else if (treeIndex === 3) maxDiff = 4;
-    else if (treeIndex === 4) maxDiff = 4;
+    if (gardenIndex === 0) maxDiff = 2;
+    else if (gardenIndex === 1) maxDiff = 3;
+    else if (gardenIndex === 2) maxDiff = 3;
+    else if (gardenIndex === 3) maxDiff = 4;
+    else if (gardenIndex === 4) maxDiff = 4;
     else maxDiff = 5;
-    if (levelInTree > 40 && maxDiff < 5) maxDiff++;
+    if (levelInGarden > 40 && maxDiff < 5) maxDiff++;
     return maxDiff;
 }
 
@@ -1401,7 +1295,7 @@ function switchMode(mode) {
     modeCandy.classList.toggle('active', mode === 'candy');
     modeMemory.classList.toggle('active', mode === 'memory');
     mainEmoji.textContent = mode === 'candy' ? '🧩' : '🧠';
-    mainTitle.textContent = mode === 'candy' ? '知识果园 · 三消' : '知识果园 · 翻牌';
+    mainTitle.textContent = mode === 'candy' ? '知识花园 · 三消' : '知识花园 · 翻牌';
     hideAllScreens();
     if (mode === 'candy') {
         candyRenderHome();
@@ -1476,31 +1370,50 @@ function recordWord(progress, saveFn, word, level) {
 }
 
 // ============================================================
-// 知识果园：6 棵树 × 60 关 = 360 关
+// 知识花园：6 个区域 × 60 关 = 360 关
 // ============================================================
-const LEVELS_PER_TREE = 60;
-const TREE_COUNT = 6;
-const TOTAL_LEVELS = LEVELS_PER_TREE * TREE_COUNT;
+const LEVELS_PER_GARDEN = 60;
+const GARDEN_COUNT = 6;
+const TOTAL_LEVELS = LEVELS_PER_GARDEN * GARDEN_COUNT;
 
-const TREE_TYPES = [
-    { emoji:'🍎', name:'苹果树', color:'#ff6b6b', dark:'#d32f2f', crown:'🌳' },
-    { emoji:'🍊', name:'橘子树', color:'#ffb74d', dark:'#e65100', crown:'🌳' },
-    { emoji:'🍇', name:'葡萄树', color:'#ce93d8', dark:'#7b1fa2', crown:'🌳' },
-    { emoji:'🍒', name:'樱桃树', color:'#ff5252', dark:'#b71c1c', crown:'🌳' },
-    { emoji:'🍑', name:'桃树',   color:'#ffab91', dark:'#d84315', crown:'🌳' },
-    { emoji:'🍐', name:'梨树',   color:'#dce775', dark:'#9e9d24', crown:'🌳' }
+const GARDEN_TYPES = [
+    { emoji:'🌻', name:'向日葵园' },
+    { emoji:'🌷', name:'郁金香园' },
+    { emoji:'🌹', name:'玫瑰园' },
+    { emoji:'🌺', name:'芙蓉园' },
+    { emoji:'🌸', name:'樱花小径' },
+    { emoji:'💐', name:'花束园' }
 ];
 
-function getTreeInfo(level) {
-    const treeIndex = Math.min(Math.floor((level - 1) / LEVELS_PER_TREE), TREE_COUNT - 1);
-    const levelInTree = ((level - 1) % LEVELS_PER_TREE) + 1;
-    return { treeIndex, levelInTree, treeType: TREE_TYPES[treeIndex] };
+// 花朵配色池
+const FLOWER_COLORS = [
+    { petal:'#ff6b6b', edge:'#d32f2f' },
+    { petal:'#ffb74d', edge:'#e65100' },
+    { petal:'#ffd54f', edge:'#f9a825' },
+    { petal:'#aed581', edge:'#689f38' },
+    { petal:'#81c784', edge:'#388e3c' },
+    { petal:'#4fc3f7', edge:'#0277bd' },
+    { petal:'#9575cd', edge:'#4527a0' },
+    { petal:'#f06292', edge:'#c2185b' },
+    { petal:'#f48fb1', edge:'#ad1457' },
+    { petal:'#ff8a65', edge:'#d84315' },
+    { petal:'#ba68c8', edge:'#7b1fa2' },
+    { petal:'#4db6ac', edge:'#00695c' }
+];
+
+// 花瓣数量
+const FLOWER_PETALS = [5, 6, 7, 8, 9, 10];
+
+function getGardenInfo(level) {
+    const gardenIndex = Math.min(Math.floor((level - 1) / LEVELS_PER_GARDEN), GARDEN_COUNT - 1);
+    const levelInGarden = ((level - 1) % LEVELS_PER_GARDEN) + 1;
+    return { gardenIndex, levelInGarden, gardenType: GARDEN_TYPES[gardenIndex] };
 }
 
-function getDoneInTree(progress, treeIndex) {
+function getDoneInGarden(progress, gardenIndex) {
     let count = 0;
-    for (let i = 1; i <= LEVELS_PER_TREE; i++) {
-        const globalLv = treeIndex * LEVELS_PER_TREE + i;
+    for (let i = 1; i <= LEVELS_PER_GARDEN; i++) {
+        const globalLv = gardenIndex * LEVELS_PER_GARDEN + i;
         if (progress.levelStars && progress.levelStars[globalLv] !== undefined) {
             count++;
         }
@@ -1508,153 +1421,277 @@ function getDoneInTree(progress, treeIndex) {
     return count;
 }
 
-function getTreeHeightInTree(progress, treeIndex) {
-    const doneInTree = getDoneInTree(progress, treeIndex);
-    return 60 + doneInTree * (340 / LEVELS_PER_TREE);
+// 确定性选取花朵样式
+function getFlowerStyle(level) {
+    const colorIdx = (level * 7 + level * level * 3) % FLOWER_COLORS.length;
+    const petalCount = FLOWER_PETALS[(level * 5 + Math.floor(level / 3)) % FLOWER_PETALS.length];
+    return {
+        color: FLOWER_COLORS[colorIdx],
+        petalCount: petalCount
+    };
 }
 
-function renderTree(mode, containerId) {
+// ============================================================
+// 渲染花园：藤蔓串花
+// ============================================================
+function renderGarden(mode, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    const oldTrunk = container.querySelector('.tree-trunk');
-    const oldCrown = container.querySelector('.tree-crown');
-    const oldExtras = container.querySelectorAll('.tree-fruit, .tree-branch, .next-hint, .growth-particle, .water-drop, .start-btn-wrapper, .finger-hint, .tap-bubble');
-    if (oldTrunk) oldTrunk.remove();
-    if (oldCrown) oldCrown.remove();
-    oldExtras.forEach(el => el.remove());
+    // 清理旧的动态元素
+    container.querySelectorAll('.flower, .start-btn-wrapper, .finger-hint, .tap-bubble, .garden-hint').forEach(el => el.remove());
+    const svg = container.querySelector('.vine-svg');
+    if (svg) svg.innerHTML = '';
 
     const progress = mode === 'candy' ? candyProgress : memoryProgress;
     const currentLevel = progress.currentLevel || 1;
     const levelStars = progress.levelStars || {};
+    const info = getGardenInfo(currentLevel);
 
-    const info = getTreeInfo(currentLevel);
-    const treeType = info.treeType;
-    const treeHeight = getTreeHeightInTree(progress, info.treeIndex);
-    const containerHeight = container.clientHeight;
+    const W = container.clientWidth;
+    const H = container.clientHeight;
+    const groundTop = H - 60; // 草地顶部
 
-    const trunk = document.createElement('div');
-    trunk.className = 'tree-trunk';
-    trunk.style.height = Math.min(treeHeight, containerHeight - 60) + 'px';
-    container.appendChild(trunk);
+    const doneInGarden = getDoneInGarden(progress, info.gardenIndex);
+    const displayCount = Math.min(LEVELS_PER_GARDEN, doneInGarden + 3);
 
-    const crown = document.createElement('div');
-    crown.className = 'tree-crown';
-    crown.textContent = treeType.crown;
-    crown.style.top = (containerHeight - Math.min(treeHeight, containerHeight - 60) - 40) + 'px';
-    container.appendChild(crown);
-
-    // 每 2 关显示一个果子
-    const fruitCount = Math.ceil(LEVELS_PER_TREE / 2);
-    const doneInTreeCount = getDoneInTree(progress, info.treeIndex);
-
-    const positions = [];
-    for (let i = 0; i < fruitCount; i++) {
-        const t = i / (fruitCount - 1);
-        const y = Math.min(treeHeight, containerHeight - 60) * (1 - t) + 20;
-        const side = i % 2 === 0 ? -1 : 1;
-        const amplitude = 30 + t * 25;
-        const xPercent = 50 + side * amplitude * (0.7 + Math.random() * 0.3);
-        positions.push({ x: xPercent + '%', y, side });
-    }
-
-    const doneFruitCount = Math.ceil(doneInTreeCount / 2);
-    const displayCount = Math.min(fruitCount, doneFruitCount + 3);
+    // 花朵在藤蔓上的位置
+    // 藤蔓是一条从左下角蜿蜒向上的曲线
+    const flowersPerRow = Math.max(5, Math.floor(W / 80));
+    const rowGap = 58; // 每行之间的垂直间距
+    const flowerPositions = []; // 记录每朵花的位置，用于画藤蔓
 
     for (let i = 0; i < displayCount; i++) {
-        // 每个果子代表 2 关
-        const levelA = i * 2 + 1;
-        const levelB = i * 2 + 2;
-        const globalLvA = info.treeIndex * LEVELS_PER_TREE + levelA;
-        const globalLvB = info.treeIndex * LEVELS_PER_TREE + levelB;
+        const levelInGarden = i + 1;
+        const globalLv = info.gardenIndex * LEVELS_PER_GARDEN + levelInGarden;
 
-        const pos = positions[i];
-        const unlocked = levelA <= info.levelInTree;
-        const doneA = levelStars[globalLvA] !== undefined;
-        const doneB = levelStars[globalLvB] !== undefined;
-        const done = doneA && doneB;
-        const partialDone = (doneA || doneB) && !done;
-        const isCurrent = (globalLvA === currentLevel || globalLvB === currentLevel) && !done;
-        const isBonus = globalLvA % 10 === 0 || globalLvB % 10 === 0;
+        const unlocked = levelInGarden <= info.levelInGarden;
+        const done = levelStars[globalLv] !== undefined;
+        const isCurrent = (globalLv === currentLevel) && !done;
 
-        const branch = document.createElement('div');
-        branch.className = 'tree-branch';
-        const trunkX = container.clientWidth / 2;
-        const fruitX = parseFloat(pos.x) / 100 * container.clientWidth;
-        branch.style.left = Math.min(trunkX, fruitX) + 'px';
-        branch.style.top = pos.y + 20 + 'px';
-        branch.style.width = Math.abs(fruitX - trunkX) + 'px';
-        if (fruitX < trunkX) {
-            branch.style.transform = 'rotate(180deg)';
-            branch.style.transformOrigin = '100% 50%';
+        // 网格布局
+        const row = Math.floor(i / flowersPerRow);
+        const col = i % flowersPerRow;
+        const flowersInThisRow = Math.min(flowersPerRow, displayCount - row * flowersPerRow);
+        const colWidth = W / (flowersInThisRow + 1);
+
+        // 每行左右交错，让藤蔓更自然
+        const rowOffset = (row % 2 === 0) ? 0 : colWidth * 0.3;
+        let x = colWidth * (col + 1) + rowOffset;
+        if (row % 2 === 1 && col === flowersInThisRow - 1) x = Math.min(x, W - 30);
+
+        const baseY = groundTop - row * rowGap + 20;
+
+        flowerPositions.push({ x, y: baseY, levelInGarden, globalLv });
+
+        // 花朵大小
+        let flowerScale = 0.9;
+        if (isCurrent) flowerScale = 1.2;
+        else if (done) flowerScale = 1.05;
+
+        const style = getFlowerStyle(globalLv);
+        const headSize = Math.round(34 * flowerScale);
+        const stemHeight = Math.round(24 * flowerScale);
+
+        const flower = document.createElement('div');
+        flower.className = 'flower';
+        flower.style.left = x + 'px';
+        flower.style.top = (baseY - stemHeight - headSize) + 'px';
+        flower.style.transform = 'translateX(-50%)';
+        flower.style.transformOrigin = 'bottom center';
+
+        if (done) flower.classList.add('done');
+        if (isCurrent) flower.classList.add('current');
+        if (!unlocked && !done) flower.classList.add('locked');
+        if (globalLv % 10 === 0 && (unlocked || done)) flower.classList.add('bonus');
+
+        // 花茎（短）
+        const stem = document.createElement('div');
+        stem.className = 'flower-stem';
+        stem.style.height = stemHeight + 'px';
+        flower.appendChild(stem);
+
+        // 花头
+        const head = document.createElement('div');
+        head.className = 'flower-head';
+        head.style.width = headSize + 'px';
+        head.style.height = headSize + 'px';
+        if (!flower.classList.contains('locked')) {
+            head.style.background = `radial-gradient(circle at 35% 35%, ${style.color.petal}, ${style.color.edge})`;
         }
-        container.appendChild(branch);
 
-        const fruit = document.createElement('div');
-        fruit.className = 'tree-fruit';
-        fruit.style.left = pos.x;
-        fruit.style.top = pos.y + 'px';
-        fruit.style.transform = 'translateX(-50%)';
+        // 花瓣
+        if (!flower.classList.contains('locked')) {
+            const petalCount = style.petalCount;
+            const petalSize = headSize * 0.55;
+            const petalRadius = headSize * 0.32;
+            for (let p = 0; p < petalCount; p++) {
+                const angle = (p / petalCount) * Math.PI * 2 - Math.PI / 2;
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                petal.style.width = petalSize + 'px';
+                petal.style.height = petalSize + 'px';
+                petal.style.background = `radial-gradient(circle at 35% 35%, ${style.color.petal}, ${style.color.edge})`;
+                petal.style.left = `calc(50% + ${Math.cos(angle) * petalRadius}px)`;
+                petal.style.top = `calc(50% + ${Math.sin(angle) * petalRadius}px)`;
+                petal.style.transform = 'translate(-50%, -50%)';
+                head.appendChild(petal);
+            }
+        }
 
-        if (done) {
-            fruit.classList.add('done');
-            fruit.style.background = `radial-gradient(circle at 30% 30%, ${treeType.color}, ${treeType.dark})`;
-            const starsA = levelStars[globalLvA] || 0;
-            const starsB = levelStars[globalLvB] || 0;
-            fruit.innerHTML = `
-                <div class="fruit-num" style="font-size:0.75rem;">${levelA}-${levelB}</div>
-                <div class="fruit-stars">${'★'.repeat(Math.max(starsA, starsB))}</div>
-            `;
-            fruit.addEventListener('click', () => {
-                if (mode === 'candy') candyStart(globalLvA);
-                else memoryStart(globalLvA);
+        // 花心
+        const center = document.createElement('div');
+        center.className = 'flower-center';
+        center.style.width = (headSize * 0.42) + 'px';
+        center.style.height = (headSize * 0.42) + 'px';
+        head.appendChild(center);
+
+        // 关卡号
+        const num = document.createElement('div');
+        num.className = 'flower-num';
+        num.textContent = `第 ${globalLv} 关`;
+        head.appendChild(num);
+
+        flower.appendChild(head);
+
+        // 点击事件
+        if (done || unlocked) {
+            flower.addEventListener('click', () => {
+                if (mode === 'candy') candyStart(globalLv);
+                else memoryStart(globalLv);
             });
         } else if (isCurrent) {
-            fruit.classList.add('current');
-            if (isBonus) fruit.classList.add('bonus');
-            fruit.innerHTML = `<div class="fruit-num" style="font-size:0.75rem;">${levelA}-${levelB}</div>`;
-            fruit.addEventListener('click', () => {
+            flower.addEventListener('click', () => {
                 if (mode === 'candy') candyStart(currentLevel);
                 else memoryStart(currentLevel);
             });
+        }
 
+        // 当前关的提示
+        if (isCurrent) {
             const bubble = document.createElement('div');
             bubble.className = 'tap-bubble';
             bubble.textContent = '点我！';
-            bubble.style.left = pos.x;
-            bubble.style.top = (pos.y - 22) + 'px';
+            bubble.style.left = x + 'px';
+            bubble.style.top = (baseY - stemHeight - headSize - 30) + 'px';
             container.appendChild(bubble);
 
             const finger = document.createElement('div');
             finger.className = 'finger-hint';
             finger.textContent = '👆';
-            finger.style.left = pos.x;
-            finger.style.top = (pos.y + 38) + 'px';
+            finger.style.left = x + 'px';
+            finger.style.top = (baseY - stemHeight + 5) + 'px';
             container.appendChild(finger);
-        } else if (partialDone || unlocked) {
-            fruit.classList.add('done');
-            fruit.style.background = `radial-gradient(circle at 30% 30%, ${treeType.color}, ${treeType.dark})`;
-            fruit.innerHTML = `<div class="fruit-num" style="font-size:0.75rem;">${levelA}-${levelB}</div>`;
-            fruit.addEventListener('click', () => {
-                if (mode === 'candy') candyStart(globalLvA);
-                else memoryStart(globalLvA);
-            });
-        } else {
-            fruit.classList.add('locked');
         }
 
-        if (isBonus && (unlocked || done)) {
-            fruit.classList.add('bonus');
-        }
-
-        container.appendChild(fruit);
+        container.appendChild(flower);
     }
 
+    // ===== 绘制藤蔓 SVG =====
+    if (svg && flowerPositions.length > 0) {
+        svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+        svg.setAttribute('width', W);
+        svg.setAttribute('height', H);
+
+        // 从草地底部开始，蛇形穿过每一朵花
+        const points = [];
+        // 起点：底部中间偏左
+        points.push({ x: 20, y: groundTop + 30 });
+
+        // 对每一行，取该行花的位置，做一条平滑曲线
+        const rows = {};
+        flowerPositions.forEach(p => {
+            const row = Math.floor((p.levelInGarden - 1) / flowersPerRow);
+            if (!rows[row]) rows[row] = [];
+            rows[row].push(p);
+        });
+
+        const sortedRows = Object.keys(rows).map(Number).sort((a, b) => a - b);
+
+        sortedRows.forEach(rowIdx => {
+            const rowFlowers = rows[rowIdx].sort((a, b) => a.x - b.x);
+            const rowY = rowFlowers[0].y;
+
+            if (rowIdx % 2 === 0) {
+                // 从左到右
+                rowFlowers.forEach((f, idx) => {
+                    if (idx === 0) {
+                        // 从上一行或起点连过来
+                        points.push({ x: f.x, y: rowY });
+                    } else {
+                        points.push({ x: f.x, y: rowY });
+                    }
+                });
+            } else {
+                // 从右到左
+                rowFlowers.slice().reverse().forEach(f => {
+                    points.push({ x: f.x, y: rowY });
+                });
+            }
+            // 到下一行的过渡点（在行尾往上走）
+            const lastF = rowIdx % 2 === 0 ? rowFlowers[rowFlowers.length - 1] : rowFlowers[0];
+            points.push({ x: lastF.x, y: rowY - rowGap / 2 });
+        });
+
+        // 终点：最上面一朵花的稍上方
+        if (flowerPositions.length > 0) {
+            const topFlower = flowerPositions.reduce((a, b) => a.y < b.y ? a : b);
+            points.push({ x: topFlower.x, y: topFlower.y - 20 });
+        }
+
+        // 用二次贝塞尔曲线生成平滑路径
+        let d = `M ${points[0].x} ${points[0].y}`;
+        for (let i = 1; i < points.length; i++) {
+            const prev = points[i - 1];
+            const cur = points[i];
+            const cpx = (prev.x + cur.x) / 2;
+            const cpy = (prev.y + cur.y) / 2;
+            d += ` Q ${prev.x} ${prev.y} ${cpx} ${cpy}`;
+        }
+        if (points.length > 1) {
+            const last = points[points.length - 1];
+            d += ` T ${last.x} ${last.y}`;
+        }
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('class', 'vine-path');
+        // 计算总长度用于生长动画
+        try {
+            const len = path.getTotalLength ? path.getTotalLength() : 1000;
+            path.style.setProperty('--len', len);
+            path.style.strokeDasharray = len;
+            path.style.strokeDashoffset = 0;
+        } catch(e) {}
+        svg.appendChild(path);
+
+        // 藤蔓上的叶子装饰
+        points.forEach((pt, i) => {
+            if (i % 2 === 0 && i > 0) {
+                const leaf = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+                leaf.setAttribute('cx', pt.x + (i % 4 === 0 ? -8 : 8));
+                leaf.setAttribute('cy', pt.y + 4);
+                leaf.setAttribute('rx', '5');
+                leaf.setAttribute('ry', '3');
+                leaf.setAttribute('class', 'vine-leaf');
+                leaf.setAttribute('transform', `rotate(${i % 4 === 0 ? -30 : 30} ${pt.x} ${pt.y})`);
+                svg.appendChild(leaf);
+            }
+        });
+    }
+
+    // 底部提示
+    const hint = document.createElement('div');
+    hint.className = 'garden-hint';
+    hint.textContent = `🌸 藤蔓上已开花 ${doneInGarden} / ${LEVELS_PER_GARDEN} 朵`;
+    container.appendChild(hint);
+
+    // 开始按钮
     const btnWrapper = document.createElement('div');
     btnWrapper.className = 'start-btn-wrapper';
     const startBtn = document.createElement('button');
     startBtn.className = 'start-btn';
-    startBtn.innerHTML = `<span>🌱</span> 开始第 ${currentLevel} 关`;
+    startBtn.innerHTML = `<span>🌸</span> 开始第 ${currentLevel} 关`;
     startBtn.addEventListener('click', () => {
         if (mode === 'candy') candyStart(currentLevel);
         else memoryStart(currentLevel);
@@ -1662,60 +1699,50 @@ function renderTree(mode, containerId) {
     btnWrapper.appendChild(startBtn);
     container.appendChild(btnWrapper);
 
+    // 滚动到当前花
     setTimeout(() => {
-        const currentNode = container.querySelector('.tree-fruit.current');
-        if (currentNode) {
-            const nodeTop = parseFloat(currentNode.style.top);
-            container.scrollTop = Math.max(0, nodeTop - container.clientHeight / 2);
+        const currentFlower = container.querySelector('.flower.current');
+        if (currentFlower) {
+            const flowerTop = parseFloat(currentFlower.style.top);
+            container.scrollTop = Math.max(0, flowerTop - container.clientHeight / 2);
         } else {
-            container.scrollTop = 0;
+            container.scrollTop = container.scrollHeight;
         }
     }, 150);
 }
 
-function animateWaterAndGrowth(mode, onComplete) {
-    const containerId = mode === 'candy' ? 'candyTree' : 'memoryTree';
+// ============================================================
+// 浇水 + 新花绽放动画
+// ============================================================
+function animateWaterAndBloom(mode, onComplete) {
+    const containerId = mode === 'candy' ? 'candyGarden' : 'memoryGarden';
     const container = document.getElementById(containerId);
     if (!container) return;
 
     const progress = mode === 'candy' ? candyProgress : memoryProgress;
     const currentLevel = progress.currentLevel || 1;
-    const doneInTree = getDoneInTree(progress, getTreeInfo(currentLevel).treeIndex);
-
-    let stageEmoji = '🌱';
-    let stageText = '种子发芽啦！';
-    let stageSub = '刚刚破土而出';
-    if (doneInTree >= LEVELS_PER_TREE) {
-        stageEmoji = '🌳'; stageText = '长成参天大树！'; stageSub = '硕果累累';
-    } else if (doneInTree >= 40) {
-        stageEmoji = '🌳'; stageText = '树冠茂盛！'; stageSub = '快长成大树了';
-    } else if (doneInTree >= 20) {
-        stageEmoji = '🌲'; stageText = '长成小树啦！'; stageSub = '茁壮成长中';
-    } else if (doneInTree >= 10) {
-        stageEmoji = '🌿'; stageText = '长出枝叶！'; stageSub = '越长越高';
-    } else if (doneInTree >= 1) {
-        stageEmoji = '🌱'; stageText = '冒出小芽！'; stageSub = '刚探出头';
-    }
 
     playWaterSound();
 
-    const trunk = container.querySelector('.tree-trunk');
-    const trunkX = trunk ? trunk.offsetLeft + trunk.offsetWidth / 2 : container.clientWidth / 2;
-    const trunkTop = trunk ? trunk.offsetTop : container.clientHeight - 100;
+    const currentFlower = container.querySelector('.flower.current');
+    const flowerX = currentFlower ? parseFloat(currentFlower.style.left) : container.clientWidth / 2;
+    const flowerTop = currentFlower ? parseFloat(currentFlower.style.top) : container.clientHeight - 150;
 
+    // 浇水壶
     const can = document.createElement('div');
     can.className = 'watering-can';
     can.textContent = '🚿';
-    can.style.left = (trunkX + 20) + 'px';
-    can.style.top = Math.max(20, trunkTop - 70) + 'px';
+    can.style.left = (flowerX + 30) + 'px';
+    can.style.top = Math.max(20, flowerTop - 60) + 'px';
     container.appendChild(can);
     setTimeout(() => can.remove(), 2300);
 
+    // 水流 + 水滴
     setTimeout(() => {
         const stream = document.createElement('div');
         stream.className = 'water-stream';
-        stream.style.left = (trunkX - 2) + 'px';
-        stream.style.top = Math.max(20, trunkTop - 50) + 'px';
+        stream.style.left = (flowerX - 2) + 'px';
+        stream.style.top = Math.max(20, flowerTop - 40) + 'px';
         container.appendChild(stream);
         setTimeout(() => stream.remove(), 2300);
 
@@ -1724,123 +1751,161 @@ function animateWaterAndGrowth(mode, onComplete) {
                 const drop = document.createElement('div');
                 drop.className = 'water-drop';
                 drop.textContent = '💧';
-                drop.style.left = (trunkX - 15 + Math.random() * 30) + 'px';
-                drop.style.top = Math.max(20, trunkTop - 40) + 'px';
+                drop.style.left = (flowerX - 18 + Math.random() * 36) + 'px';
+                drop.style.top = Math.max(20, flowerTop - 30) + 'px';
                 drop.style.fontSize = (1.2 + Math.random() * 0.6) + 'rem';
                 container.appendChild(drop);
                 setTimeout(() => drop.remove(), 1300);
-            }, i * 100);
+            }, i * 90);
         }
     }, 500);
 
+    // 水花
     setTimeout(() => {
-        const soilWet = document.createElement('div');
-        soilWet.className = 'soil-wet';
-        container.appendChild(soilWet);
-        setTimeout(() => soilWet.remove(), 3000);
-
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 6; i++) {
             const splash = document.createElement('div');
             splash.className = 'water-splash';
             splash.textContent = ['💦','✨','💧'][Math.floor(Math.random()*3)];
-            splash.style.left = (trunkX - 20 + Math.random() * 40) + 'px';
-            splash.style.top = (container.clientHeight - 45) + 'px';
+            splash.style.left = (flowerX - 20 + Math.random() * 40) + 'px';
+            splash.style.top = (flowerTop + 40) + 'px';
             splash.style.animationDelay = (i * 0.1) + 's';
             container.appendChild(splash);
             setTimeout(() => splash.remove(), 1000);
         }
     }, 1200);
 
+    // 新花绽放
     setTimeout(() => {
-        const beam = document.createElement('div');
-        beam.className = 'growth-beam';
-        beam.style.bottom = '30px';
-        container.appendChild(beam);
-        setTimeout(() => beam.remove(), 1600);
+        const justDone = currentLevel;
+        const justDoneInfo = getGardenInfo(justDone);
+        const style = getFlowerStyle(justDone);
+        const petalCount = style.petalCount;
 
-        const seedling = document.createElement('div');
-        seedling.className = 'tree-seedling';
-        seedling.textContent = stageEmoji;
-        seedling.style.bottom = '35px';
-        container.appendChild(seedling);
-        setTimeout(() => seedling.remove(), 2500);
+        // 直接在当前花的位置创建绽放动画的花
+        const bloomFlower = document.createElement('div');
+        bloomFlower.className = 'flower blooming';
+        bloomFlower.style.left = flowerX + 'px';
+        bloomFlower.style.top = flowerTop + 'px';
+        bloomFlower.style.transform = 'translateX(-50%)';
+        bloomFlower.style.transformOrigin = 'bottom center';
+        bloomFlower.style.zIndex = 30;
 
-        playGrowthSound();
-        for (let i = 0; i < 12; i++) {
+        const headSize = 40;
+        const stemHeight = 24;
+
+        const stem = document.createElement('div');
+        stem.className = 'flower-stem';
+        stem.style.height = stemHeight + 'px';
+        bloomFlower.appendChild(stem);
+
+        const head = document.createElement('div');
+        head.className = 'flower-head';
+        head.style.width = headSize + 'px';
+        head.style.height = headSize + 'px';
+        head.style.background = `radial-gradient(circle at 35% 35%, ${style.color.petal}, ${style.color.edge})`;
+
+        const petalSize = headSize * 0.55;
+        const petalRadius = headSize * 0.32;
+        for (let p = 0; p < petalCount; p++) {
+            const angle = (p / petalCount) * Math.PI * 2 - Math.PI / 2;
+            const petal = document.createElement('div');
+            petal.className = 'petal';
+            petal.style.width = petalSize + 'px';
+            petal.style.height = petalSize + 'px';
+            petal.style.background = `radial-gradient(circle at 35% 35%, ${style.color.petal}, ${style.color.edge})`;
+            petal.style.left = `calc(50% + ${Math.cos(angle) * petalRadius}px)`;
+            petal.style.top = `calc(50% + ${Math.sin(angle) * petalRadius}px)`;
+            petal.style.transform = 'translate(-50%, -50%)';
+            head.appendChild(petal);
+        }
+
+        const center = document.createElement('div');
+        center.className = 'flower-center';
+        center.style.width = (headSize * 0.42) + 'px';
+        center.style.height = (headSize * 0.42) + 'px';
+        head.appendChild(center);
+
+        bloomFlower.appendChild(head);
+        container.appendChild(bloomFlower);
+
+        playBloomSound();
+
+        // 花瓣粒子
+        for (let i = 0; i < 16; i++) {
             const p = document.createElement('div');
             p.className = 'growth-particle';
-            p.textContent = ['🌱','✨','🌟','💚','⭐'][Math.floor(Math.random()*5)];
-            p.style.left = (trunkX - 30 + Math.random() * 60) + 'px';
-            p.style.bottom = (35 + Math.random() * 80) + 'px';
-            p.style.animationDelay = (i * 0.08) + 's';
+            p.textContent = ['🌸','✨','🌼','💐','🌟','🌺','🍃'][Math.floor(Math.random()*7)];
+            p.style.left = (flowerX - 40 + Math.random() * 80) + 'px';
+            p.style.bottom = (60 + Math.random() * 100) + 'px';
+            p.style.animationDelay = (i * 0.06) + 's';
+            p.style.fontSize = (1 + Math.random() * 0.8) + 'rem';
             container.appendChild(p);
             setTimeout(() => p.remove(), 1800);
         }
+
+        // 绽放横幅
+        setTimeout(() => {
+            const banner = document.createElement('div');
+            banner.className = 'bloom-banner';
+            banner.innerHTML = `
+                <div class="big-flower">🌸</div>
+                <div class="text">🎉 新花绽放！</div>
+                <div class="subtext">第 ${justDone} 关完成 · 藤蔓上又开了一朵花</div>
+            `;
+            container.appendChild(banner);
+            setTimeout(() => banner.remove(), 3000);
+        }, 300);
     }, 1700);
 
+    // 重新渲染花园
     setTimeout(() => {
-        const indicator = document.createElement('div');
-        indicator.className = 'growth-stage-indicator';
-        indicator.innerHTML = `
-            <span class="stage-emoji">${stageEmoji}</span>
-            <div class="stage-text">${stageText}</div>
-            <div class="stage-sub">${stageSub}</div>
-        `;
-        container.appendChild(indicator);
-        setTimeout(() => indicator.remove(), 2600);
-
-        if (trunk) {
-            trunk.classList.add('growing');
-            setTimeout(() => trunk.classList.remove('growing'), 1500);
-        }
-    }, 2200);
+        renderGarden(mode, containerId);
+    }, 3000);
 
     setTimeout(() => {
-        renderTree(mode, containerId);
-    }, 2600);
-
-    setTimeout(() => {
-        if (typeof onComplete === 'function') {
-            onComplete();
-        }
-    }, 3200);
+        if (typeof onComplete === 'function') onComplete();
+    }, 3400);
 }
 
-function showTreeSwitchBanner(mode, newTreeType, newTreeIndex) {
-    const containerId = mode === 'candy' ? 'candyTree' : 'memoryTree';
+function animateWaterAndGrowth(mode, onComplete) {
+    animateWaterAndBloom(mode, onComplete);
+}
+
+function showGardenSwitchBanner(mode, newGardenType, newGardenIndex) {
+    const containerId = mode === 'candy' ? 'candyGarden' : 'memoryGarden';
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    playTreeSwitchSound();
+    playBloomSound();
 
     const banner = document.createElement('div');
-    banner.className = 'tree-switch-banner';
+    banner.className = 'bloom-banner';
     banner.innerHTML = `
-        <div class="big-emoji">${newTreeType.emoji}</div>
-        <div class="text">🎉 恭喜收获满满！</div>
-        <div class="subtext">第 ${newTreeIndex + 1} 棵 ${newTreeType.name} 种下啦！</div>
+        <div class="big-flower">${newGardenType.emoji}</div>
+        <div class="text">🎉 恭喜完成一区！</div>
+        <div class="subtext">第 ${newGardenIndex + 1} 个区域「${newGardenType.name}」开启！</div>
     `;
     container.appendChild(banner);
     setTimeout(() => banner.remove(), 3200);
 }
 
-function renderTreeCollection(mode, containerId) {
+function renderGardenCollection(mode, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = '';
 
     const progress = mode === 'candy' ? candyProgress : memoryProgress;
     const currentLevel = progress.currentLevel || 1;
-    const info = getTreeInfo(currentLevel);
+    const info = getGardenInfo(currentLevel);
 
-    TREE_TYPES.forEach((tree, idx) => {
+    GARDEN_TYPES.forEach((garden, idx) => {
         const item = document.createElement('div');
-        item.className = 'tree-collection-item';
-        item.textContent = tree.emoji;
+        item.className = 'garden-collection-item';
+        item.textContent = garden.emoji;
 
         let allDone = true;
-        for (let i = 1; i <= LEVELS_PER_TREE; i++) {
-            const globalLv = idx * LEVELS_PER_TREE + i;
+        for (let i = 1; i <= LEVELS_PER_GARDEN; i++) {
+            const globalLv = idx * LEVELS_PER_GARDEN + i;
             if (!progress.levelStars || progress.levelStars[globalLv] === undefined) {
                 allDone = false;
                 break;
@@ -1848,15 +1913,11 @@ function renderTreeCollection(mode, containerId) {
         }
 
         if (allDone) {
-            item.classList.add('unlocked');
-            const check = document.createElement('div');
-            check.className = 'check';
-            check.textContent = '✅';
-            item.appendChild(check);
-        } else if (idx < info.treeIndex) {
-            item.classList.add('unlocked');
-        } else if (idx === info.treeIndex) {
+            item.classList.add('done');
+        } else if (idx === info.gardenIndex) {
             item.classList.add('current');
+        } else if (idx < info.gardenIndex) {
+            item.classList.add('done');
         } else {
             item.classList.add('locked');
         }
@@ -2035,7 +2096,7 @@ function detectiveComplete() {
             <div style="font-size:4rem;margin:12px 0;">${detectiveState.badge}</div>
             <div class="encourage-text">恭喜获得侦探徽章！<br>额外奖励 1 颗星 ⭐</div>
             <div class="modal-buttons">
-                <button class="modal-btn primary" id="detectiveOkBtn">🌳 返回果园</button>
+                <button class="modal-btn primary" id="detectiveOkBtn">🌻 返回花园</button>
             </div>
         </div>`;
     document.body.appendChild(overlay);
@@ -2074,25 +2135,25 @@ function markDetectiveTriggered(level, progress, saveFn) {
 // 三消模式
 // ============================================================
 function candyGetLevelConfig(level) {
-    const { levelInTree } = getTreeInfo(level);
+    const { levelInGarden } = getGardenInfo(level);
     let pairCount;
-    if (levelInTree <= 20) pairCount = 3;
-    else if (levelInTree <= 45) pairCount = 4;
+    if (levelInGarden <= 20) pairCount = 3;
+    else if (levelInGarden <= 45) pairCount = 4;
     else pairCount = 5;
 
     let newWordCount, reviewWordCount;
-    if (levelInTree <= 20) { newWordCount = 2; reviewWordCount = pairCount - newWordCount; }
+    if (levelInGarden <= 20) { newWordCount = 2; reviewWordCount = pairCount - newWordCount; }
     else { newWordCount = 2; reviewWordCount = pairCount - newWordCount; }
     if (reviewWordCount < 0) reviewWordCount = 0;
 
     let timeLimit = null;
-    if (levelInTree > 30) timeLimit = 90;
-    if (levelInTree > 50) timeLimit = 70;
+    if (levelInGarden > 30) timeLimit = 90;
+    if (levelInGarden > 50) timeLimit = 70;
 
     let phase;
-    if (levelInTree <= 10) phase = '入门';
-    else if (levelInTree <= 25) phase = '基础';
-    else if (levelInTree <= 45) phase = '进阶';
+    if (levelInGarden <= 10) phase = '入门';
+    else if (levelInGarden <= 25) phase = '基础';
+    else if (levelInGarden <= 45) phase = '进阶';
     else phase = '大师';
 
     return { pairCount, newWordCount, reviewWordCount, timeLimit, phase };
@@ -2101,7 +2162,7 @@ function candyGetLevelConfig(level) {
 let candyProgress = candyLoadProgress();
 function candyLoadProgress() {
     try {
-        const saved = localStorage.getItem('candyProgressV10');
+        const saved = localStorage.getItem('candyProgressV12');
         if (saved) {
             const d = JSON.parse(saved);
             return {
@@ -2117,7 +2178,7 @@ function candyLoadProgress() {
     return { currentLevel:1, levelStars:{}, wordStats:{}, badges:[], bonusStars:0, detectiveTriggered:[] };
 }
 function candySaveProgress() {
-    try { localStorage.setItem('candyProgressV10', JSON.stringify(candyProgress)); } catch(e) {}
+    try { localStorage.setItem('candyProgressV12', JSON.stringify(candyProgress)); } catch(e) {}
 }
 
 let candyCurrentLevel = 1;
@@ -2152,7 +2213,7 @@ const candyStarsDisplay = document.getElementById('candyStarsDisplay');
 const candyTimerBox = document.getElementById('candyTimerBox');
 const candyTimerValue = document.getElementById('candyTimerValue');
 const candyGameHint = document.getElementById('candyGameHint');
-const candyTreeHint = document.getElementById('candyTreeHint');
+const candyGardenHint = document.getElementById('candyGardenHint');
 
 function candyGetMasteredCount() {
     return Object.values(candyProgress.wordStats).filter(w => w.mastered).length;
@@ -2182,11 +2243,12 @@ function candyRenderHome() {
     candyHomeStars.textContent = candyTotalStars();
     candyHomeBadges.textContent = (candyProgress.badges || []).length;
 
-    const info = getTreeInfo(candyCurrentLevel);
-    candyTreeHint.textContent = `${info.treeType.emoji} 第 ${info.treeIndex + 1} 棵 ${info.treeType.name} · 第 ${info.levelInTree} 关 / ${LEVELS_PER_TREE} 关`;
+    const info = getGardenInfo(candyCurrentLevel);
+    const doneInGarden = getDoneInGarden(candyProgress, info.gardenIndex);
+    candyGardenHint.textContent = `${info.gardenType.emoji} ${info.gardenType.name} · 藤蔓上已开花 ${doneInGarden} / ${LEVELS_PER_GARDEN} 朵`;
 
-    renderTree('candy', 'candyTree');
-    renderTreeCollection('candy', 'candyCollection');
+    renderGarden('candy', 'candyGarden');
+    renderGardenCollection('candy', 'candyCollection');
 }
 
 function candyBuildCards(words) {
@@ -2217,8 +2279,8 @@ function candyUpdateStats() {
     candyMovesSpan.textContent = candyMoves;
     const percent = (candyMatched / candyConfig.pairCount) * 100;
     candyProgressGame.style.width = percent + '%';
-    const info = getTreeInfo(candyCurrentLevel);
-    candyLevelDisplay.textContent = `第 ${candyCurrentLevel} 关 (${info.treeType.emoji}${info.levelInTree}/${LEVELS_PER_TREE})`;
+    const info = getGardenInfo(candyCurrentLevel);
+    candyLevelDisplay.textContent = `第 ${candyCurrentLevel} 关 (${info.gardenType.emoji}${info.levelInGarden}/${LEVELS_PER_GARDEN})`;
 }
 
 function candyRenderBoard() {
@@ -2322,13 +2384,13 @@ function candyCheckComplete() {
         const prev = candyProgress.levelStars[candyCurrentLevel] || 0;
         if (stars > prev) candyProgress.levelStars[candyCurrentLevel] = stars;
 
-        const oldTreeIndex = Math.floor((candyCurrentLevel - 1) / LEVELS_PER_TREE);
+        const oldGardenIndex = Math.floor((candyCurrentLevel - 1) / LEVELS_PER_GARDEN);
         const newCurrentLevel = Math.min(TOTAL_LEVELS, candyCurrentLevel + 1);
         if (newCurrentLevel >= candyProgress.currentLevel || candyCurrentLevel >= candyProgress.currentLevel) {
             candyProgress.currentLevel = newCurrentLevel;
         }
-        const newTreeIndex = Math.floor((newCurrentLevel - 1) / LEVELS_PER_TREE);
-        const treeSwitched = (newTreeIndex > oldTreeIndex) && (candyCurrentLevel % LEVELS_PER_TREE === 0);
+        const newGardenIndex = Math.floor((newCurrentLevel - 1) / LEVELS_PER_GARDEN);
+        const gardenSwitched = (newGardenIndex > oldGardenIndex) && (candyCurrentLevel % LEVELS_PER_GARDEN === 0);
 
         candySaveProgress();
 
@@ -2340,14 +2402,14 @@ function candyCheckComplete() {
         const shouldTrigger = shouldTriggerDetective(candyCurrentLevel, candyProgress);
 
         setTimeout(() => {
-            if (treeSwitched) {
-                showTreeSwitchBanner('candy', TREE_TYPES[newTreeIndex], newTreeIndex);
+            if (gardenSwitched) {
+                showGardenSwitchBanner('candy', GARDEN_TYPES[newGardenIndex], newGardenIndex);
                 setTimeout(() => {
                     if (shouldTrigger) {
                         markDetectiveTriggered(candyCurrentLevel, candyProgress, candySaveProgress);
-                        showCandyCompleteModal(stars, true, treeSwitched);
+                        showCandyCompleteModal(stars, true, gardenSwitched);
                     } else {
-                        showCandyCompleteModal(stars, false, treeSwitched);
+                        showCandyCompleteModal(stars, false, gardenSwitched);
                     }
                 }, 3200);
             } else {
@@ -2399,7 +2461,7 @@ function showCandyTimeUpModal() {
             <div class="encourage-text">别灰心，再试一次一定可以！</div>
             <div class="modal-buttons">
                 <button class="modal-btn primary" id="candyTimeRetry">🔄 重玩本关</button>
-                <button class="modal-btn secondary" id="candyTimeHome">🌳 树</button>
+                <button class="modal-btn secondary" id="candyTimeHome">🌻 花园</button>
             </div>
         </div>`;
     document.body.appendChild(overlay);
@@ -2409,7 +2471,7 @@ function showCandyTimeUpModal() {
     };
 }
 
-function showCandyCompleteModal(starCount, hasDetective, treeSwitched) {
+function showCandyCompleteModal(starCount, hasDetective, gardenSwitched) {
     const isLast = candyCurrentLevel >= TOTAL_LEVELS;
     const encourage = getEncourageText(starCount);
     const overlay = document.createElement('div');
@@ -2423,14 +2485,14 @@ function showCandyCompleteModal(starCount, hasDetective, treeSwitched) {
                 <span class="big-star">${starCount>=3?'★':'☆'}</span>
             </div>
             <div class="encourage-text">${encourage}</div>
-            <div style="font-size:1rem;color:#2e7d32;font-weight:800;margin-bottom:12px;">💧 点「下一关」看小树浇水长大！</div>
-            ${treeSwitched ? '<div style="font-size:1rem;color:#d84315;font-weight:800;margin-bottom:12px;">🌳 新果树已种下！</div>' : ''}
+            <div style="font-size:1rem;color:#2e7d32;font-weight:800;margin-bottom:12px;">🌸 点「下一关」看新花绽放！</div>
+            ${gardenSwitched ? '<div style="font-size:1rem;color:#d84315;font-weight:800;margin-bottom:12px;">🌻 新花园区已开启！</div>' : ''}
             ${hasDetective ? '<div style="font-size:1.1rem;color:#d84315;font-weight:800;margin-bottom:12px;">🕵️ 隐藏寻宝已解锁！</div>' : ''}
             <div class="modal-buttons">
                 ${hasDetective ? '<button class="modal-btn primary" id="candyDetectiveBtn">🕵️ 进入寻宝</button>' : ''}
                 ${!isLast && !hasDetective ? '<button class="modal-btn primary" id="candyNextModalBtn">➡️ 下一关</button>' : ''}
                 <button class="modal-btn secondary" id="candyRetryModalBtn">🔄 重玩</button>
-                <button class="modal-btn secondary" id="candyHomeModalBtn">🌳 看树</button>
+                <button class="modal-btn secondary" id="candyHomeModalBtn">🌻 看花园</button>
             </div>
         </div>`;
     document.body.appendChild(overlay);
@@ -2448,7 +2510,7 @@ function showCandyCompleteModal(starCount, hasDetective, treeSwitched) {
         candySaveProgress();
         switchMode('candy');
         setTimeout(() => {
-            animateWaterAndGrowth('candy', () => {
+            animateWaterAndBloom('candy', () => {
                 candyStart(nextLv);
             });
         }, 300);
@@ -2457,7 +2519,7 @@ function showCandyCompleteModal(starCount, hasDetective, treeSwitched) {
     document.getElementById('candyHomeModalBtn').onclick = () => {
         overlay.remove();
         switchMode('candy');
-        setTimeout(() => animateWaterAndGrowth('candy'), 300);
+        setTimeout(() => animateWaterAndBloom('candy'), 300);
     };
 }
 
@@ -2515,7 +2577,7 @@ candyBackHome.addEventListener('click', () => {
     if (speechSynth) speechSynth.cancel();
     stopCandyTimer();
     switchMode('candy');
-    setTimeout(() => animateWaterAndGrowth('candy'), 100);
+    setTimeout(() => animateWaterAndBloom('candy'), 100);
 });
 candyResetBtn.addEventListener('click', () => {
     if (confirm('确定重置三消进度吗？')) {
@@ -2529,25 +2591,25 @@ candyResetBtn.addEventListener('click', () => {
 // 翻牌记忆模式
 // ============================================================
 function memoryGetLevelConfig(level) {
-    const { levelInTree } = getTreeInfo(level);
+    const { levelInGarden } = getGardenInfo(level);
     let pairCount;
-    if (levelInTree <= 20) pairCount = 3;
-    else if (levelInTree <= 45) pairCount = 4;
+    if (levelInGarden <= 20) pairCount = 3;
+    else if (levelInGarden <= 45) pairCount = 4;
     else pairCount = 5;
 
     let newWordCount, reviewWordCount;
-    if (levelInTree <= 20) { newWordCount = 2; reviewWordCount = pairCount - newWordCount; }
+    if (levelInGarden <= 20) { newWordCount = 2; reviewWordCount = pairCount - newWordCount; }
     else { newWordCount = 2; reviewWordCount = pairCount - newWordCount; }
     if (reviewWordCount < 0) reviewWordCount = 0;
 
     let timeLimit = null;
-    if (levelInTree > 30) timeLimit = 100;
-    if (levelInTree > 50) timeLimit = 80;
+    if (levelInGarden > 30) timeLimit = 100;
+    if (levelInGarden > 50) timeLimit = 80;
 
     let phase;
-    if (levelInTree <= 10) phase = '入门';
-    else if (levelInTree <= 25) phase = '基础';
-    else if (levelInTree <= 45) phase = '进阶';
+    if (levelInGarden <= 10) phase = '入门';
+    else if (levelInGarden <= 25) phase = '基础';
+    else if (levelInGarden <= 45) phase = '进阶';
     else phase = '大师';
 
     return { pairCount, newWordCount, reviewWordCount, timeLimit, phase };
@@ -2556,7 +2618,7 @@ function memoryGetLevelConfig(level) {
 let memoryProgress = memoryLoadProgress();
 function memoryLoadProgress() {
     try {
-        const saved = localStorage.getItem('memoryProgressV9');
+        const saved = localStorage.getItem('memoryProgressV11');
         if (saved) {
             const d = JSON.parse(saved);
             return {
@@ -2572,7 +2634,7 @@ function memoryLoadProgress() {
     return { currentLevel:1, wordStats:{}, levelStars:{}, badges:[], bonusStars:0, detectiveTriggered:[] };
 }
 function memorySaveProgress() {
-    try { localStorage.setItem('memoryProgressV9', JSON.stringify(memoryProgress)); } catch(e) {}
+    try { localStorage.setItem('memoryProgressV11', JSON.stringify(memoryProgress)); } catch(e) {}
 }
 
 let memoryCurrentLevel = 1;
@@ -2608,7 +2670,7 @@ const memoryHomeMastered = document.getElementById('memoryHomeMastered');
 const memoryHomeStars = document.getElementById('memoryHomeStars');
 const memoryHomeBadges = document.getElementById('memoryHomeBadges');
 const memoryResetBtn = document.getElementById('memoryResetBtn');
-const memoryTreeHint = document.getElementById('memoryTreeHint');
+const memoryGardenHint = document.getElementById('memoryGardenHint');
 
 function memoryGetMastered() {
     return Object.values(memoryProgress.wordStats).filter(w => w.mastered).length;
@@ -2624,11 +2686,12 @@ function memoryRenderHome() {
     memoryHomeStars.textContent = memoryGetStars();
     memoryHomeBadges.textContent = (memoryProgress.badges || []).length;
 
-    const info = getTreeInfo(memoryCurrentLevel);
-    memoryTreeHint.textContent = `${info.treeType.emoji} 第 ${info.treeIndex + 1} 棵 ${info.treeType.name} · 第 ${info.levelInTree} 关 / ${LEVELS_PER_TREE} 关`;
+    const info = getGardenInfo(memoryCurrentLevel);
+    const doneInGarden = getDoneInGarden(memoryProgress, info.gardenIndex);
+    memoryGardenHint.textContent = `${info.gardenType.emoji} ${info.gardenType.name} · 藤蔓上已开花 ${doneInGarden} / ${LEVELS_PER_GARDEN} 朵`;
 
-    renderTree('memory', 'memoryTree');
-    renderTreeCollection('memory', 'memoryCollection');
+    renderGarden('memory', 'memoryGarden');
+    renderGardenCollection('memory', 'memoryCollection');
 }
 
 function memoryBuildCards(pairs) {
@@ -2726,7 +2789,7 @@ function memoryShowTimeUpModal() {
             <div class="encourage-text">别灰心，再试一次一定可以！</div>
             <div class="modal-buttons">
                 <button class="modal-btn primary" id="memTimeRetry">🔄 重玩本关</button>
-                <button class="modal-btn secondary" id="memTimeHome">🌳 树</button>
+                <button class="modal-btn secondary" id="memTimeHome">🌻 花园</button>
             </div>
         </div>`;
     document.body.appendChild(overlay);
@@ -2735,7 +2798,7 @@ function memoryShowTimeUpModal() {
         overlay.remove(); switchMode('memory');
     };
 }
-function memoryShowCompleteModal(stars, hasDetective, treeSwitched) {
+function memoryShowCompleteModal(stars, hasDetective, gardenSwitched) {
     const isLast = memoryCurrentLevel >= TOTAL_LEVELS;
     const encourage = getEncourageText(stars);
     const overlay = document.createElement('div');
@@ -2749,14 +2812,14 @@ function memoryShowCompleteModal(stars, hasDetective, treeSwitched) {
                 <span class="big-star">${stars>=3?'★':'☆'}</span>
             </div>
             <div class="encourage-text">${encourage}</div>
-            <div style="font-size:1rem;color:#2e7d32;font-weight:800;margin-bottom:12px;">💧 点「下一关」看小树浇水长大！</div>
-            ${treeSwitched ? '<div style="font-size:1rem;color:#d84315;font-weight:800;margin-bottom:12px;">🌳 新果树已种下！</div>' : ''}
+            <div style="font-size:1rem;color:#2e7d32;font-weight:800;margin-bottom:12px;">🌸 点「下一关」看新花绽放！</div>
+            ${gardenSwitched ? '<div style="font-size:1rem;color:#d84315;font-weight:800;margin-bottom:12px;">🌻 新花园区已开启！</div>' : ''}
             ${hasDetective ? '<div style="font-size:1.1rem;color:#d84315;font-weight:800;margin-bottom:12px;">🕵️ 隐藏寻宝已解锁！</div>' : ''}
             <div class="modal-buttons">
                 ${hasDetective ? '<button class="modal-btn primary" id="memDetectiveBtn">🕵️ 进入寻宝</button>' : ''}
                 ${!isLast && !hasDetective ? '<button class="modal-btn primary" id="memNextModalBtn">➡️ 下一关</button>' : ''}
                 <button class="modal-btn secondary" id="memRetryModalBtn">🔄 重玩</button>
-                <button class="modal-btn secondary" id="memHomeModalBtn">🌳 看树</button>
+                <button class="modal-btn secondary" id="memHomeModalBtn">🌻 看花园</button>
             </div>
         </div>`;
     document.body.appendChild(overlay);
@@ -2774,7 +2837,7 @@ function memoryShowCompleteModal(stars, hasDetective, treeSwitched) {
         memorySaveProgress();
         switchMode('memory');
         setTimeout(() => {
-            animateWaterAndGrowth('memory', () => {
+            animateWaterAndBloom('memory', () => {
                 memoryStart(nextLv);
             });
         }, 300);
@@ -2783,7 +2846,7 @@ function memoryShowCompleteModal(stars, hasDetective, treeSwitched) {
     document.getElementById('memHomeModalBtn').onclick = () => {
         overlay.remove();
         switchMode('memory');
-        setTimeout(() => animateWaterAndGrowth('memory'), 300);
+        setTimeout(() => animateWaterAndBloom('memory'), 300);
     };
 }
 
@@ -2924,13 +2987,13 @@ function memoryCheckWin() {
         const prev = memoryProgress.levelStars[memoryCurrentLevel] || 0;
         if (stars > prev) memoryProgress.levelStars[memoryCurrentLevel] = stars;
 
-        const oldTreeIndex = Math.floor((memoryCurrentLevel - 1) / LEVELS_PER_TREE);
+        const oldGardenIndex = Math.floor((memoryCurrentLevel - 1) / LEVELS_PER_GARDEN);
         const newCurrentLevel = Math.min(TOTAL_LEVELS, memoryCurrentLevel + 1);
         if (newCurrentLevel >= memoryProgress.currentLevel || memoryCurrentLevel >= memoryProgress.currentLevel) {
             memoryProgress.currentLevel = newCurrentLevel;
         }
-        const newTreeIndex = Math.floor((newCurrentLevel - 1) / LEVELS_PER_TREE);
-        const treeSwitched = (newTreeIndex > oldTreeIndex) && (memoryCurrentLevel % LEVELS_PER_TREE === 0);
+        const newGardenIndex = Math.floor((newCurrentLevel - 1) / LEVELS_PER_GARDEN);
+        const gardenSwitched = (newGardenIndex > oldGardenIndex) && (memoryCurrentLevel % LEVELS_PER_GARDEN === 0);
 
         memorySaveProgress();
         speakEncouragement(stars);
@@ -2938,14 +3001,14 @@ function memoryCheckWin() {
         const shouldTrigger = shouldTriggerDetective(memoryCurrentLevel, memoryProgress);
 
         setTimeout(() => {
-            if (treeSwitched) {
-                showTreeSwitchBanner('memory', TREE_TYPES[newTreeIndex], newTreeIndex);
+            if (gardenSwitched) {
+                showGardenSwitchBanner('memory', GARDEN_TYPES[newGardenIndex], newGardenIndex);
                 setTimeout(() => {
                     if (shouldTrigger) {
                         markDetectiveTriggered(memoryCurrentLevel, memoryProgress, memorySaveProgress);
-                        memoryShowCompleteModal(stars, true, treeSwitched);
+                        memoryShowCompleteModal(stars, true, gardenSwitched);
                     } else {
-                        memoryShowCompleteModal(stars, false, treeSwitched);
+                        memoryShowCompleteModal(stars, false, gardenSwitched);
                     }
                 }, 3200);
             } else {
@@ -2995,7 +3058,7 @@ memoryBackHome.addEventListener('click', () => {
     memoryStopTimer();
     if (memoryHintTimeout) { clearTimeout(memoryHintTimeout); memoryHintTimeout = null; }
     switchMode('memory');
-    setTimeout(() => animateWaterAndGrowth('memory'), 100);
+    setTimeout(() => animateWaterAndBloom('memory'), 100);
 });
 memoryResetBtn.addEventListener('click', () => {
     if (confirm('确定重置翻牌记忆进度吗？')) {
@@ -3035,10 +3098,10 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 window.addEventListener('resize', () => {
     if (!document.getElementById('candy-home').classList.contains('hidden')) {
-        renderTree('candy', 'candyTree');
+        renderGarden('candy', 'candyGarden');
     }
     if (!document.getElementById('memory-home').classList.contains('hidden')) {
-        renderTree('memory', 'memoryTree');
+        renderGarden('memory', 'memoryGarden');
     }
 });
 })();
